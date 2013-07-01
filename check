@@ -1,0 +1,11 @@
+#!/bin/sh
+exit 0 # xxx
+#chmod u+w current_flr.txt
+#sed 's/ +$//g' < current_flr.txt >tmp
+#cp tmp current_flr.txt
+#rm -f tmp
+perl flr_to_slr.pl < current_flr.txt > current_slr.txt || exit 1
+#perl check_revnum.pl < current_flr.txt obsolete
+perl check_pd.pl "$@" < current_flr.txt || exit 1
+today="Last updated: $(date '+%d %B %Y' | sed 's/^0*//')"
+/usr/bin/sed -i '' "s/Last updated.*\$/$today/" current_flr.txt 
