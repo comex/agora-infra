@@ -12,12 +12,10 @@ class classmethod_mc(type):
 class singleton(object):
     __metaclass__ = classmethod_mc
 
-# chdir to 
-
 mydir = os.path.dirname(__file__)
 
 def action(callback):
-    return {'action': 'append_const', 'dest': 'actions', 'const': callback}
+    return {'action': 'append_const', 'dest': 'actions', 'const': callback, 'default': []}
 def run_actions(args):
     for action in args.actions:
         action()
