@@ -1,4 +1,4 @@
-import re, datetime, tempfile, subprocess
+import re
 
 class RCSFile:
     tok_re = re.compile('@.*?[^@]@(?!@)|[^@\s]+', re.S)
