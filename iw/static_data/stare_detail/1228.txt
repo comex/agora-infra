@@ -1,0 +1,207 @@
+From - Sat Jun 10 19:39:20 2000
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by hazard.mail.mindspring.net (Mindspring Mail Service) with ESMTP id sk5e2u.3e1.37kb01i
+	for <elysion@mindspring.com>; Sat, 10 Jun 2000 17:51:25 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id VAA13546
+	for agora-official-list; Sat, 10 Jun 2000 21:39:12 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id VAA13538
+	for <agora-official@gecko.serc.rmit.edu.au>; Sat, 10 Jun 2000 21:38:07 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id HAA36160
+	for <agora-official@gecko.serc.rmit.edu.au>; Sun, 11 Jun 2000 07:46:17 +1000 (EST)
+Received: from unknown(147.133.1.1) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma036155; Sun, 11 Jun 00 07:46:15 +1000
+Received: (from mpslon01@localhost)
+	by msuacad.morehead-st.edu (8.10.1/8.10.1) id e5ALf6R27905
+	for agora-official@gecko.serc.rmit.edu.au; Sat, 10 Jun 2000 17:41:06 -0400 (EDT)
+From: Michael Slone <mpslon01@morehead-st.edu>
+Message-Id: <200006102141.e5ALf6R27905@msuacad.morehead-st.edu>
+Subject: OFF: CFJ 1228 Judged TRUE
+To: agora-official@gecko.serc.rmit.edu.au (agora-official)
+Date: Sat, 10 Jun 2000 17:41:05 EDT
+X-Mailer: Elm [revision: 212.4]
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: sk5e2u.3e1.37kb01i
+
+
+==============================  CFJ 1228  ==============================
+
+    The Treasuror's Salary is 0.2 times the Basic Officer's Salary. 
+
+========================================================================
+
+Called by:                     Murphy                                  
+
+Judge:                         t                                       
+Judgement:                     TRUE                                    
+
+Judge selection:
+
+Eligible:                      Crito, Elysion, Kelly, Peekee, Steve,
+                               Taral, Wes, harvel, lee, t              
+
+Not eligible:
+Caller:                        Murphy                                  
+Barred:                        -                                       
+Had eir turn:                  Chuck, Murphy, Palnatoke                
+Already served:                -                                       
+Defaulted:                     Harlequin, Sherlock                     
+By request:                    Blob, Michael                           
+On Hold:                       -                                       
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Murphy               03 Jun 2000 13:42:44 -0700              
+Assigned to t:                 04 Jun 2000 22:52:16 -0400              
+Judged TRUE by t:              11 Jun 2000 00:13:42 +0300              
+Judgement published:           As of this message                      
+
+========================================================================
+
+Caller's Arguments:
+
+On May 31, 2000, Treasuror lee changed the Budget by "setting the
+monthly officer salaries as follows", but e did not explicitly mention
+mention the Treasuror's Salary.  Prior to this change, the Treasuror's
+Salary was 0.2 times the BOS.  (E did not mention the Speaker-Elect's
+Salary either, but the Speaker-Elect's Salary was zero anyway.)
+
+If lee's change did not affect the Salary of any Office not explicitly
+mentioned, then the statement is TRUE.  If it changed such Salaries to
+zero, then the statement is FALSE.
+
+For what it's worth, lee clearly intended the Treasuror's Salary to
+remain at 0.2 times the BOS.  Doing so would maintain the average
+Compensation and average Officer's Salary both at 1.0 times the BOS
+(for which e has a stated preference).  Eir discussion of the change
+in a-d, and eir subsequent paying out of Salaries, also reflect eir
+belief in an unchanged Treasuror's Salary.
+
+========================================================================
+
+Caller's Evidence:
+
+Date: Wed, 31 May 2000 08:26:06 -0500
+Subject: OFF: Budget Change, Completed
+To: agora-official@gecko.serc.rmit.edu.au
+From: lee@schawk.com (_lee _kinkade)
+
+> >> I announce my intention to change the Budget, with support, by setting
+> >the
+> >> monthly officer salaries as follows:
+> >
+> >> Accountor   1.4
+> >> Assessor    1.2
+> >> CotC        1.2
+> >> Herald      1.2
+> >> Justiciar   0.2
+> >> Notary      0.6
+> >> Payroll     2.2
+> >> Priest      1.2
+> >> Promotor    1.5
+> >> Registrar   1.1
+> >> Rulekeepor  1.3
+> >> Scorekeepor 0.7
+>
+>
+>Having received the needed support, i hereby make the above listed changes
+>to the budget.
+
+
+Date: Tue, 02 May 2000 07:41:24 -0500
+Subject: OFF: Treasuror's Budget
+To: agora-official@gecko.serc.rmit.edu.au
+From: lee@schawk.com (_lee _kinkade)
+
+ > Officer Salaries:
+ >                                                In Stems
+ > Accountor                           1.6              64
+ > Assessor                            1.4              56
+ > Clerk of the Courts                   1              40
+ > Herald                              0.8              32
+ > Justiciar                           0.2               8
+ > Notary                              0.8              32
+ > Payroll Clerk                       1.6              64
+ > Priest                                1              40
+ > Promotor                            1.4              56
+ > Registrar                           1.4              56
+ > Rulekeepor                          1.6              64
+ > Scorekeepor                           1              40
+ > Speaker-Elect                         0               0
+ > Treasuror                           0.2               8
+ > Speaker's Gratuity                    1              40
+ > Judicial Salary                     0.5              20
+ > Minimum Income                      0.5              20
+ > Distributor's Gratuity                1              40
+ > New Player Award                      2              80
+ >
+ > Average Compensation                  1
+ > Average Officer's Salary              1
+
+
+Date: Tue, 30 May 2000 15:12:02 -0500
+Subject: DIS: Re: OFF: Budget Change
+To: agora-discussion@gecko.serc.rmit.edu.au
+From: lee@schawk.com (_lee _kinkade)
+
+ >     Office  Current Proto Proposed
+ >             Salary             Change
+ >     Account   1.6  1.3   1.4  -0.2
+ >     Assessor 1.4    1   1.2  -0.2
+ >     CotC        1   1.2   1.2   0.2
+ >     Herald    0.8   1.7   1.2   0.4
+ >     Justiciar 0.2   0.2   0.2     0
+ >     Notary    0.8   0.4   0.6  -0.2
+ >     Payroll   1.6   2.4   2.2   0.6
+ >     Priest      1   1.5   1.2   0.2
+ >     Promotor  1.4   1.6   1.5  0.1
+ >     Registrar 1.4   0.9   1.1  -0.3
+ >     Rulekpr.  1.6   1.2   1.3  -0.3
+ >     Scorekpr.   1   0.4   0.7  -0.3
+ >     Speaker     0    0    0    0
+ >     Treasuror 0.2   0.2   0.2     0
+ >
+ > I have taken into account the proposed budget by Taral, the suggestions
+ > made by Michael, and then tweaked the results to make an average of 1.
+
+
+Date: Wed, 31 May 2000 18:56:59 -0500
+Subject: OFF: Monthly Salaries
+To: agora-official@gecko.serc.rmit.edu.au
+From: lee@schawk.com (_lee _kinkade)
+
+ > I hereby order the Bank to pay the Treasuror, lee, 8 Stems.[PC00213]
+
+========================================================================
+
+Judge t's Arguments:
+
+I Judge this TRUE.
+
+When lee amended the budget, e did not mention the Treasuror's salary. As
+the amendment explicitly defined all changed salaries, it is the court's
+opinion that this was only a partial amendment of the budget, which did
+not modify any salaries which were not mentioned, therefore the
+Treasuror's salary retains its old value.
+
+========================================================================
+
+Judge t's Evidence:
+
+<none>
+
+========================================================================
+
+Clerk of the Courts harvel
+--
+Michael Slone 

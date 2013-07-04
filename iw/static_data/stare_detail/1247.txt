@@ -1,0 +1,94 @@
+From - Fri Oct  6 11:26:09 2000
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by fb04.eng00.mindspring.net (Mindspring Mail Service) with ESMTP id strmof.21fa.37kbi5a
+	for <elysion@mindspring.com>; Fri, 6 Oct 2000 10:00:46 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id OAA22509
+	for agora-official-list; Fri, 6 Oct 2000 14:01:07 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id OAA22506
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 6 Oct 2000 14:01:05 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id BAA95800
+	for <agora-official@gecko.serc.rmit.edu.au>; Sat, 7 Oct 2000 01:00:50 +1100 (EST)
+Received: from biff.kiva.net(206.97.64.31) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma095740; Sat, 7 Oct 00 01:00:27 +1100
+Received: (qmail 23228 invoked from network); 6 Oct 2000 13:56:32 -0000
+Received: from dial-178.bton.kiva.net (HELO klm02) (208.143.10.178)
+  by biff.kiva.net with SMTP; 6 Oct 2000 13:56:32 -0000
+From: "Kelly Martin" <kmartin@kiva.net>
+To: "Agora Official" <agora-official@gecko.serc.rmit.edu.au>
+Subject: OFF: CFJ 1247: assigned to Crito
+Date: Fri, 6 Oct 2000 08:55:58 -0500
+Message-ID: <PMENIJKMIBKNGAPBAJLCGEOACCAA.kmartin@kiva.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2911.0)
+X-Mimeole: Produced By Microsoft MimeOLE V5.50.4133.2400
+Importance: Normal
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: strmof.21fa.37kbi5a
+
+In this message:
+  * CFJ assigned to Crito
+
+Note: As of this assignment, everyone has had eir turn. 
+
+==============================  CFJ 1247  ==============================
+
+t's Order dated Wed, 20 Sep 2000 22:50:26 +0300 was improperly executed.
+
+========================================================================
+
+Called by:                 Taral
+
+Judge:                     Crito
+Judgement:                 
+
+Judge selection:           Crito
+
+Eligible:                  Crito
+
+Not eligible:
+Caller:                    Taral
+Barred:                    -
+Had eir turn:              Blob, Chuck, Elysion, Kelly, lee, Murphy,
+                           Oerjan, Peekee, Steve, t, pTang
+Already served:            -
+Defaulted:                 -
+By request:                harvel, Michael, Wes
+On Hold:                   Palnatoke
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Taral:               20 Sep 2000
+Mis-assigned to Wes:           27 Sep 2000 23:29:56 -0500 
+Assigned to Crito:             As of this message
+
+========================================================================
+
+Caller's Evidence:
+
+<none>
+
+========================================================================
+
+Caller's Arguments:
+
+(Let's see the precedent set for this.)
+
+========================================================================
+
+Chuck

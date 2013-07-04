@@ -1,0 +1,198 @@
+From - Sun Jun 17 11:19:39 2001
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by farley.mail.mindspring.net (Mindspring Mail Service) with ESMTP id strnid.29mp.37kbi1c
+	for <elysion@mindspring.com>; Fri, 6 Oct 2000 10:14:36 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id NAA22479
+	for agora-official-list; Fri, 6 Oct 2000 13:56:38 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id NAA22476
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 6 Oct 2000 13:56:35 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id AAA95621
+	for <agora-official@gecko.serc.rmit.edu.au>; Sat, 7 Oct 2000 00:56:20 +1100 (EST)
+Received: from biff.kiva.net(206.97.64.31) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma095617; Sat, 7 Oct 00 00:56:02 +1100
+Received: (qmail 19419 invoked from network); 6 Oct 2000 13:52:07 -0000
+Received: from dial-178.bton.kiva.net (HELO klm02) (208.143.10.178)
+  by biff.kiva.net with SMTP; 6 Oct 2000 13:52:07 -0000
+From: "Kelly Martin" <kmartin@kiva.net>
+To: "Agora Official" <agora-official@gecko.serc.rmit.edu.au>
+Subject: OFF: CFJ 1246: Judged FALSE
+Date: Fri, 6 Oct 2000 08:51:33 -0500
+Message-ID: <PMENIJKMIBKNGAPBAJLCCEOACCAA.kmartin@kiva.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2911.0)
+X-Mimeole: Produced By Microsoft MimeOLE V5.50.4133.2400
+Importance: Normal
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: strnid.29mp.37kbi1c
+
+In this message:
+  * Judgement by t entered
+
+The Bank incurs a debt of 18 Stems to t as Judicial Salary.
+
+==============================  CFJ 1246  ==============================
+
+Peekee has paid a Fee of 10 Stems since the 15th of September this year.
+
+========================================================================
+
+Called by:                 Peekee
+
+Judge(1):                  t
+Judgement:                 [made self ineligible]
+
+Judge(2):                  pTang
+Judgement:                 FALSE
+
+Judge selection(1):
+
+Eligible:                  t, Wes, pTang
+
+Not eligible:
+Caller:                    Peekee
+Barred:                    Crito
+Had eir turn:              Blob, Chuck, Elysion, Kelly, lee, Murphy,
+                           Oerjan, Peekee, Steve
+Already served:            -
+Defaulted:                 -
+By request:                harvel, Michael, Taral
+On Hold:                   Palnatoke
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+
+Judge selection(2):
+
+Eligible:                  pTang
+
+Not eligible:
+Caller:                    Peekee
+Barred:                    Crito
+Had eir turn:              Blob, Chuck, Elysion, Kelly, lee, Murphy,
+                           Oerjan, Peekee, Steve, Wes
+Already served:            -
+Defaulted:                 -
+By request:                harvel, Michael, Taral, t
+On Hold:                   Palnatoke
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Peekee:              19 Sep 2000
+Peekee bars Crito:             21 Sep 2000
+Taral makes self ineligible:   21 Sep 2000
+Assigned to t:                 27 Sep 2000
+t makes self ineligible:       28 Sep 2000
+Assigned to pTang:             28 Sep 2000 11:06:45 -0500
+Judged FALSE by pTang:         28 Sep 2000 12:36:35 -0700
+
+========================================================================
+
+Caller's Evidence:
+
+>>
+*       From: Alan Riddell
+*       Date: Sat, 16 Sep 2000 14:44:17
+
+------------------------------------------------------------------------
+
+<snip>
+***
+I hereby transfer 10 Stems to the Bank for the purpose of Paying a Fee of 10
+Stems.
+***
+
+<snip>
+***
+I would like to inform the relevant Offices that I wish to obtain 10 IATs.
+***
+<snip>
+
+<<
+
+========================================================================
+
+Caller's Arguments:
+
+The message sent clearly transfers 10 Stems for the purpose of Paying a Fee
+of that amount.
+
+Now,from Rule 1941 "Fees", "To Pay a Fee is to transfer the specified
+quantity of that particular Currency to the Bank if and only if that
+transfer is made solely for the purpose of Paying that particular instance
+of that Fee."
+
+Regardless of if the Fee existed at this point the Transfer would succeed if
+the Fee did exist.
+
+However since that time there has been reason for such a Fee to exist
+(either from the beginning of this message or from the quoted message) and
+even if the Transfer failed to Pay it when the Transfer was made I see no
+reason that it should not pay the Fee when the Fee does come into existence.
+
+If the Fee did not come into existence the question has to be asked when
+ever do the Fees come into existence.  Most messages to Pay Fee are of the
+for "I Transfer XXX to do YYY."  Though this is a lot more compact than what
+I did, I do not see as it is any different.  A Transfer is made and then (if
+in the same sentence) a demand/wish is given.
+
+========================================================================
+
+Judge's Reasoning:
+
+The only Fee Peekee could possibly have Paid is the one
+defined in Rule 1912.
+
+Rule 1912 specifies a Fee of "an equal number of Stems"
+[equal to the number of ABCs the player wishes to obtain]
+
+By R1941, Peekee Paid that Fee iff all of the following are true:
+
+1) Peekee stated publicly a number of some ABC e wished to obtain
+2) Peekee transferred a equal number of Stems to the bank
+3) The transfer was made solely for the purpose of Paying an
+instance of the Fee defined in Rule 1912
+
+Conditions #1 and #2 are true.
+
+However, we have a sticking point on condition 3.
+
+Was the purpose of the transfer solely for the purpose of Paying
+an instance of the Fee defined in Rule 1912?
+
+This hinges on the ill-defined term "instance of a Fee."
+
+I find that the Rules do not speak adequately to this
+point, and will therefore use custom, commonsense etc.
+to guide my ruling.
+
+Commonsense and the best interests of the game dictate
+that Paying a Fee is an action that links a single payment
+to a single effect.  The single effect is enabled by the
+payment.
+
+My fully expanded interpretation of Condition #3 is therefore:
+
+3) The transfer was made solely for the purpose of enabling
+some single effect that the Rules specify is conditional upon
+transferring some amount of Currency to the Bank.
+
+This was NOT the sole purpose of the transfer, therefore
+Peekee did not Pay a Fee.
+
+========================================================================
+

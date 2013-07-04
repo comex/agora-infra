@@ -1,0 +1,367 @@
+From - Thu May 25 15:10:34 2000
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by day.mail.mindspring.net (Mindspring Mail Service) with ESMTP id siq6ug.qpn.37kbi66
+	for <elysion@mindspring.com>; Thu, 25 May 2000 08:25:51 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id MAA04052
+	for agora-official-list; Thu, 25 May 2000 12:10:40 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id MAA04049
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 25 May 2000 12:10:37 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id WAA80301
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 25 May 2000 22:18:14 +1000 (EST)
+Received: from msuacad.morehead-st.edu(147.133.1.1) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma080297; Thu, 25 May 00 22:18:03 +1000
+Received: (from mpslon01@localhost) by msuacad.morehead-st.edu (8.7.1/8.7.1) id IAA18566 for agora-official@gecko.serc.rmit.edu.au; Thu, 25 May 2000 08:15:51 -0400 (EDT)
+From: Michael Slone <mpslon01@msuacad.morehead-st.edu>
+Message-Id: <200005251215.IAA18566@msuacad.morehead-st.edu>
+Subject: OFF: CFJ 1212 Judged TRUE
+To: agora-official@gecko.serc.rmit.edu.au (agora-official)
+Date: Thu, 25 May 2000 8:15:50 EDT
+X-Mailer: Elm [revision: 212.4]
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: siq6ug.qpn.37kbi66
+
+
+==============================  CFJ 1212  ==============================
+
+    Wes became the High Oligarch on Wed, 3 May 2000 12:48:35 +0300. 
+
+========================================================================
+
+Called by:                     t                                       
+
+Judge:                         Elysion                                 
+Judgement:                     TRUE                                    
+
+Judge selection:
+
+Eligible:                      Crito, Elysion, Sherlock                
+
+Not eligible:
+Caller:                        t                                       
+Barred:                        -                                       
+Had eir turn:                  Chuck, Kelly, Murphy, Palnatoke, Steve,
+                               Taral, Wes, harvel, lee, t              
+Already served:                Peekee                                  
+Defaulted:                     Harlequin                               
+By request:                    Blob, Michael                           
+On Hold:                       -                                       
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by t                    04 May 2000 14:10:21 +0300              
+Assigned to Peekee:            04 May 2000 08:14:28 -0400              
+Judged TRUE by Peekee:         07 May 2000 16:38:18 +0100              
+Judgement published:           07 May 2000 11:55:36 -0400              
+Appealed by Steve:             08 May 2000 13:27:46 +1000              
+Appealed by Taral:             08 May 2000 13:29:14 -0500              
+Appealed by Elysion:           08 May 2000 16:53:56 -0400              
+Appeal assigned:               09 May 2000 15:38:01 -0400              
+harvel (C) moves to OVERTURN   13 May 2000 20:04:09 -0400              
+   and reassign:               
+lee (S) moves to OVERTURN and  13 May 2000 20:01:29 -0500              
+   reassign:                   
+Reassigned to Crito (J):       18 May 2000 21:35:00 -0400              
+Crito (J) moves to OVERTURN    19 May 2000 16:41:16 -0400              
+   and reassign:               
+Appeal decision published:     19 May 2000 21:24:17 -0400              
+Reassigned to Elysion:         20 May 2000 09:02:45 -0400              
+Judged TRUE by Elysion:        24 May 2000 20:52:59 -0400              
+Judgement published:           As of this message                      
+
+========================================================================
+
+Caller's Arguments:
+
+Rule 1937 defines how Vacancies in the Oligarchy are filled. It states
+that when there is no High Oligarch "The Low Oligarchs select a Middle
+Oligarch to become High Oligarch." In May 1 00:00:00 GMT, the monthly
+rotation happened (Rule 1938), leaving the seat of High Oligrach open. As
+required by Rule 1937, the Low Oligarchs harvel, Michael and t then
+announced their selection. Wes was chosen to be the High Oligarch by an
+unanimous vote.
+
+Unfortunately, Rule 1938 doesn't define clearly the precise time when Wes
+became the High Oligarch. Three possibilities come to mind:
+
+1) When the required majority has been attained. In this case, this
+happened at Wed, 3 May 2000 09:49:12 +0100, as can be seen from the
+evidence.
+
+2) When all Low Oligarchs have announced their selection. In this case,
+this happened at Wed, 3 May 2000 12:48:35 +0300.
+
+3) After the selection deadline of three days has passed, which in this
+case happened at Thu, 4 May 2000 00:00:00 GMT.
+
+In any case, even if 2) or 3) should be found to be true, apparently all
+Oligarchs are still required to announce their selections, even if it
+would have no effect. This fact does give some support to the statement.
+However, the Rule only mentions what should be done when a selection
+requiring a majority vote does not have a decisive result, not what
+happens when it does.
+
+I attach all three Low Oligarchs' announcement as well as the pertinent
+Rule (R1937) as evidence.
+
+========================================================================
+
+Caller's Evidence:
+
+harvel's announcement
+---------------------
+
+Date: Tue, 02 May 2000 21:35:06 EDT
+From: Michael Slone <mpslon01@msuacad.morehead-st.edu>
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+To: agora-business <agora-business@gecko.serc.rmit.edu.au>
+Subject: BUS: Oligarch selection
+
+(Hoping this works)
+
+I hereby select Wes to become High Oligarch.
+
+--
+Low Oligarch harvel
+What a fabulous "reward"! Why not add the "reward" of not being thrown
+into gaol, while we're at it?
+                -- Blob, in agora-discussion
+
+Michael's announcement
+----------------------
+
+Date: Wed, 3 May 2000 09:49:12 +0100 (BST)
+From: Michael Norrish <Michael.Norrish@cl.cam.ac.uk>
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+To: agora-official@gecko.serc.rmit.edu.au
+Subject: OFF: Oligarch selection
+
+I select Wes to become High Oligarch.
+
+Low Oligarch Michael.
+
+t's announcement
+----------------
+
+Date: Wed, 3 May 2000 12:48:35 +0300 (EEST)
+From: t <ttkorkia@itu.st.jyu.fi>
+To: Agora business <agora-business@gecko.serc.rmit.edu.au>
+Subject: oligarchism
+
+I select Wes to become the High Oligarch.
+
+Wes has been chosen to become the High Oligarch, with 3 votes in favor of
+em and 0 votes in favor of Elysion. There is now a Middle Oligarch
+vacancy.
+
+Now, the question is, whether Wes became the High Oligarch just now or
+already when Michael made eir selection which guaranteed that Wes would be
+chosen. Doesn't matter in this situation but it might in some other
+circumstances. Does anybody want to cfj?
+
+   tttttttttttttttttttttttttttttttttttttttttttttttttteemu korkiakangas
+                        http://www.iki.fi/scurra/ TTTTTT scurra@iki.fi
+
+Rule 1937
+---------
+
+Rule 1937/0 (Power=2)
+Filling Vacancies in the Oligarchy
+
+      Vacancies in the Oligarchy are filled as follows, in order.
+
+      1) If there is no High Oligarch:
+         a) The Low Oligarchs select a Middle Oligarch to become High
+            Oligarch.
+         b) If there are no Low Oligarchs, then the Speaker selects a
+            Middle Oligarch to become High Oligarch.
+         c) If there are no Middle Oligarchs, then the Speaker selects
+            a Low Oligarch to become High Oligarch.
+         d) If there are no Middle Oligarchs or Low Oligarchs, then
+            the Speaker conducts three Auctions:  one for High
+            Oligarch, one for the two Middle Oligarchs, and one for as
+            many Low Oligarch positions for which no Auction is
+            already in progress.
+
+      2) If a Middle Oligarch position is vacant:
+         a) The High Oligarch selects a Low Oligarch to become a
+            Middle Oligarch.
+         b) If there are no Low Oligarchs, then the High Oligarch
+	    conducts a single Auction for L+M positions in the
+	    Oligarchy, where L and M are, respectively, the number of
+	    vacant Low and Middle Oligarch positions for which no
+	    Auction is already in progress. The High Oligarch then
+	    selects M of the new Oligarchs to be Middle Oligarchs.
+
+      3) If a Low Oligarch position is vacant:
+         a) The High Oligarch conducts an Auction for the number of
+            Low Oligarchy positions for which no Auction is already in
+            progress.
+
+      Any selection required by this Rule must be announced within
+      three days. A Player may not change eir selection once e has
+      announced it.
+
+      A Player required to make selection who fails to do so within
+      three days commits the Class 2 Infraction of Oligardiness, which
+      any Player may detect and report.
+
+      Selections performed by two or more Oligarchs are by majority vote.
+      If a single Oligarch who is required to make a selection fails
+      to do so, or if a selection to be performed by majority vote
+      does not produce a decisive result within three days, then the
+      Oligarchs' selections (if any) are cancelled and the Speaker is
+      required to make the selection instead.
+
+========================================================================
+
+Judge Peekee's Arguments:
+
+I hereby Jusge this TRUE.
+
+As wes was selected by the other Oligarchs at such a time when then had all 
+given their choice.  As described in 2) of the callers arguement.
+
+========================================================================
+
+Justice lee's Arguments:
+
+agora-discussion@gecko.serc.rmit.edu.au,Internet writes:
+>>Judge Peekee's Arguments:
+>>
+>>I hereby Jusge this TRUE.
+>>
+>>As wes was selected by the other Oligarchs at such a time when then had
+>>all 
+>>given their choice.  As described in 2) of the callers arguement.
+
+I am bothered that the Peekee made a jusgement and not a judgement.  I am
+also bothered that e did not present any arguments and relied on the
+caller's cursory arguments.  As harvel has shown, there are easy
+counterargument that should at least be presented and answered. I think
+this CFJ deserves more consideration.  I move to overturn and reassign.
+
+========================================================================
+
+Justice Crito's Arguments:
+
+I find I have nothing significant to add to the statements made by the previous
+Justices.  Therefore, I simply move to Overturn CFJ1212 and have it reassigned.
+
+========================================================================
+
+Justice harvel's Arguments:
+
+I am inclined to move to overturn the Judgement to FALSE.  Consider the
+following.  Rule 1937 (already included in the Caller's evidence) indicates
+that if a selection to be performed by majority vote does not produce a
+decisive result within three days, all selections are cancelled.  It seems
+that the Rule might be interpreted as saying that the Middle Oligarch
+selected becomes a High Oligarch as soon as the selection produces a 
+decisive result.  This would have happened at 3 May 2000 09:49:12 +0100,
+making the Statement evidently FALSE.
+
+However, this argument is not sufficiently strong, in my opinion, for an
+Appellate Opinion.  Further, the primary task of the Justices is to determine
+whether the original Judgement should stand.  It is the opinion of this 
+Justice that the original Judgement should not stand.  The original Judge
+gave no arguments.  Although arguments are not legally required, Calling
+for Judgement on a Statement constitutes "proof of the existence of a
+dispute" (R991).  A good Judgement will then consider counterarguments,
+such as the (admittedly simple) one given above, and will provide reasons
+for those who might put forward such arguments (whether such arguments 
+are put forward or not) to agree with the Judgement.  
+
+Therefore, I move to OVERTURN and reassign this CFJ.
+
+========================================================================
+
+Judge Elysion's Arguments:
+
+Rule 1937 does not specify when the selection caused Wes to become High
+Oligarch. There are three likely
+possibilities:
+
+        a) When the selection cannot be changed by further selections by
+the remaining Oligarchs
+        
+        b) When all Oligarchs have selected
+        
+        c) When 3 days have passed
+
+If only 2 Low Oligarchs have selected, and both selected Wes, the third
+is still required to make a selection, even though the group selection
+is already determined. Thus, the selection process does not end at (a).
+Rule 1937 provides for two ways to end the process, (b) and (c)
+(whichever occurs first). In this particular case, (b) occurred first. 
+
+The relevant phrase of the algorithm is "The Low Oligarchs select a
+Middle Oligarch to become High Oligarch." Clearly, after the selection
+process is completed and a Middle Oligarch is chosen, e becomes High
+Oligarch. Although it could be argued that rule 1937 never says when the
+selection causes the Middle Oligarch to become High Oligarch, it is this
+judge's opinion that the most reasonable interpretation of rule 1937 is
+that the change occurs immediately after the process is completed. I
+therefore judge this statement TRUE.
+
+========================================================================
+
+Judge Peekee's Evidence:
+
+<none>
+
+========================================================================
+
+Justice lee's Evidence:
+
+<none>
+
+========================================================================
+
+Justice Crito's Evidence:
+
+<none>
+
+========================================================================
+
+Justice harvel's Evidence:
+
+Rule 991/3 (Power=2)
+Invoking Judgement
+
+      Any Player who seeks formal resolution of any dispute pertaining
+      to this Nomic shall be permitted to request such by submitting a
+      Call for Judgement to the Clerk of the Courts.  For the purpose
+      of this and other Rules, the submission of a Call for Judgement
+      shall constitute proof of the existence of a dispute.
+
+      Any document submitted to the Clerk of the Courts and which is
+      clearly marked as a Call for Judgement is a Call for Judgement.
+
+      The Clerk shall distribute the text of a Call for Judgement,
+      along with any additional material submitted by the Caller
+      (including, but not limited to, Arguments and Evidence) not
+      later than the time e announces the identity of the first Judge
+      assigned to Judge it.
+
+========================================================================
+
+Judge Elysion's Evidence:
+
+<none>
+
+========================================================================
+
+Clerk of the Courts harvel
+--
+Michael Slone 

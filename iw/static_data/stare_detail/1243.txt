@@ -1,0 +1,385 @@
+From - Sun Jun 17 11:18:47 2001
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by tyner.mail.mindspring.net (Mindspring Mail Service) with ESMTP id su6ipl.fu.37kbi5q
+	for <elysion@mindspring.com>; Tue, 10 Oct 2000 13:00:36 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id QAA15388
+	for agora-official-list; Tue, 10 Oct 2000 16:58:49 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id QAA15382
+	for <agora-official@gecko.serc.rmit.edu.au>; Tue, 10 Oct 2000 16:58:45 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id DAA06859
+	for <agora-official@gecko.serc.rmit.edu.au>; Wed, 11 Oct 2000 03:58:55 +1100 (EST)
+Received: from fido.kiva.net(206.97.64.41) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma006855; Wed, 11 Oct 00 03:58:34 +1100
+Received: (qmail 12281 invoked from network); 10 Oct 2000 16:54:30 -0000
+Received: from dial-149.bton.kiva.net (HELO klm02) (208.143.10.149)
+  by fido.kiva.net with SMTP; 10 Oct 2000 16:54:30 -0000
+From: "Kelly Martin" <kmartin@kiva.net>
+To: "Agora Official" <agora-official@gecko.serc.rmit.edu.au>
+Subject: OFF: Final Judgement in CFJ 1243: FALSE
+Date: Tue, 10 Oct 2000 11:53:55 -0500
+Message-ID: <PMENIJKMIBKNGAPBAJLCAEBCCDAA.kmartin@kiva.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: 8bit
+X-Priority: 3 (Normal)
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook IMO, Build 9.0.2416 (9.0.2911.0)
+X-MimeOLE: Produced By Microsoft MimeOLE V5.50.4133.2400
+Importance: Normal
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8003
+X-Mozilla-Status2: 00000000
+X-UIDL: su6ipl.fu.37kbi5q
+
+In this message:
+  Appellate Judgements of pTang and Elysion entered
+
+The Bank incurs debts of 35 Stems each to pTang and Elysion.
+
+==============================  CFJ 1243  ==============================
+
+    Chuck is ineligible to serve as a Justice in the Appeal of CFJ
+    1237.
+
+========================================================================
+
+Called by:                 Steve
+
+Judge:                     Wes
+Judgement:                 TRUE
+Appeals Justices:          Chuck (S), Taral (J), Andre (C)
+Appeals Justices:          t, Kelly, Blob
+Appeals Justices:          Kelly, pTang, Elysion
+Appeals Decision:          OVERTURN (FALSE)
+
+Judge selection:
+
+Eligible:                  Wes, Andre
+
+Not eligible:
+Caller:                    Steve
+Barred:                    -
+Had eir turn:              Blob, Chuck, Elysion, Kelly, lee, Murphy,
+                           Oerjan, Peekee, Steve, t, Taral
+Already served:            -
+Defaulted:                 -
+Previously Defaulted:      Harlequin, Sherlock
+By request:                Crito, harvel, Michael
+On Hold:                   Palnatoke
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+Justice Selection (random):
+
+Eligible:                  Elysion, Murphy, Oerjan, pTang, Peekee
+
+Not eligible:
+Caller:                    Steve
+Barred:                    -
+Judge:                     Wes
+Dismissed:                 Chuck, Taral, Andre, Blob, t
+Service completed:         Kelly
+By request:                Crito, harvel, Michael
+On Hold:                   Palnatoke
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Steve:               22 Aug 2000 11:55:42 +1000
+Assigned to Wes:               22 Aug 2000 14:59:00 -0700
+Judged TRUE by Wes:            25 Aug 2000 00:10:04 -0700
+Judgement Distributed:         25 Aug 2000 00:11:33 -0700
+Andre calls for Appeal:        25 Aug 2000 11:34:40 +0200
+Crito calls for Appeal:        25 Aug 2000 09:59:22 -0400
+harvel calls for Appeal:       25 Aug 2000 13:57:53 -0400
+Oerjan calls for Appeal:       26 Aug 2000 01:31:35 +0200
+Kelly calls for Appeal:        26 Aug 2000 10:03:54 -0500
+Appeal Distributed:            30 Aug 2000 19:27:38 -0700
+Chuck, Taral, and Andre
+      dismissed:               22 Sep 2000
+Appeal assigned to t, Kelly,
+      and Blob:                22 Sep 2000 07:45:25 -0500
+Kelly returns Appellate
+      Judgement:               29 Sep 2000 05:35:47 -0500
+t and Blob dismissed:          06 Oct 2000 08:40:26 -0500
+Appeal assigned to Elysion
+      and pTang:               06 Oct 2000 08:40:26 -0500
+pTang returns Appellate
+      Judgement:			 06 Oct 2000 10:05:45 -0700
+Elysion returns Appelate
+      Judgement:               08 Oct 2000 11:05:37 -0400
+Final Judgement of FALSE
+      entered:                 this message
+
+========================================================================
+
+Caller's Arguments:
+
+I don't intend to argue for a specific Judgement, only to lay before the
+Judge the facts and relevant Rules for em to interpret.
+
+It's clear from the evidence above that Chuck's attempt to make himself
+ineligible occurred well after CFJ 1237 was called, since it occurred
+concurrently with Chuck's Appeal of the CFJ.
+
+Concerning the selection of Justices, Rule 911(iv) states that:
+
+      A Player is ineligible for selection if any of the following is
+      true:
+
+       iv) E was not eligible to Judge the CFJ that resulted in the
+           matter under consideration when it was called, and this
+           restriction does not prevent three eligible Players from
+           being selected by the CotC for the Board.
+
+As Ørjan has pointed out, Chuck was eligible to serve as the Judge of
+CFJ 1237 at the time it was called (more accurately, he was not
+ineligible by reason other than that of having had his turn, which does
+not make him ineligible to serve as Justice). So Chuck does not meet the
+criteria for ineligiblity to serve as a Justice in R911.
+
+However, R911 does not claim to set out necessary and sufficient
+conditions for eligibility to serve as a Justice. It gives only
+sufficient conditions. The possibility remains open that other Rules
+might make Chuck ineligible to serve as Justice in the Appeal of CFJ
+1237.
+
+The obvious place to look is Rule 1567 (Making Oneself Ineligible to
+Judge a CFJ):
+
+      A Player makes emself ineligible to be the Judge of a specific
+      CFJ or type of CFJ by transmitting a notice to the Clerk of the
+      Courts, specifying the CFJ or type of CFJ for which e wishes to
+      be made ineligible.  Such a notice remains in effect until the
+      Player informs the Clerk of the Courts that it is no longer in
+      effect.
+
+Does making oneself ineligible to Judge a CFJ include making oneself
+ineligible to serve as a Justice in the Appeal of that CFJ? If so, then
+we can read R1567 as adding to the possible ways listed in R911 that a
+Player can be ineligible to to be a Justice.
+
+I was initially tempted to reduce this question to a simpler one: is a
+Justice a kind of Judge? But on reflection, I think that would be an
+oversimplification. The relationship between being a Judge and being a
+Justice is very complex. For some Rules (eg, R451, R217) it is important
+that we interpret the word "Judge" as including Justices in its scope.
+Other Rules clearly treat Judges and Justices differenty where Salaries
+and timing of Judgements are concerned. So instead of asking the simple
+question, we should ask: is a Justice a kind of Judge *for a particular
+set of purposes*? I leave it to the Judge of the this CFJ to decide for
+emself whether e thinks that a Justice is a kind of Judge for the
+purposes of deciding ineligibility.
+
+========================================================================
+
+Caller's Evidence:
+
+<http://www.escribe.com/games/agora-business/m952.html>
+
+
+> From: Charles E. Carroll
+> Date: Tue, 1 Aug 2000 08:53:29
+>
+> I too call for the appeal of CFJ 1237, but with different arguments
+> than those that Murphy gave.
+>
+> I also make myself ineligible to judge CFJ 1237.
+
+========================================================================
+
+Judge's Arguments:
+
+Our Arguments in this case are very simple.
+
+We start by rejecting the idea that a Justice is in any way a Judge. A
+Justice is one of the three Players on a Board of Appeals, per Rule
+911. A Judge is the Player assigned to return a Judgement upon a Call
+for Judgement, per Rule 1868. The relationship between the two is
+strictly defined.
+
+On August 1, 2000, Chuck successfully made emself ineligible to be a
+Judge for CFJ 1237, per Rule 1567. On the other hand, Rule 1567 had
+absolutely no effect on eir eligibility as a Justice. None at all.
+Of course, there was already a Judge for CFj 1237, so this wasn't a
+big deal. On the other hand, maybe a new Judge would have to be
+selected at some point, and that newly selected Judge could not be
+Chuck.
+
+But wait! Rule 911 says that if you can't be a Judge, then you can't
+be a Justice. But the timing gets interesting. Rule 911 says that e
+is ineligible if "E was not eligible to Judge the CFJ that resulted
+in the matter under consideration when it was called". When what was
+called? Well, the general rule of pronouns is that it refers to the
+most recent instance of a qualifying object. In this case, that would
+be "the matter under consideration", i.e. the Appeal.
+
+Our opinion is that if a Player is not eligible to be a Judge at the
+time the Appeal is called, then e is not eligible to be a Justice on
+that Appeal. Since Chuck was definitely not eligible to be a Judge at
+the time the Appeal of CFJ 1237 was called, e was not eligible to be
+a Justice.
+
+We therefore return a Judgement of TRUE.
+
+========================================================================
+
+Judge's Evidence:
+
+<none>
+
+========================================================================
+
+Failed Attempt at a Dissenting Opinion:
+
+[Clerk's Note: Although the Application stated that this Dissenting
+Opinion would apply to CFJ 943, we are including it with this CFJ due
+to it's apparent relevance in spite of absolutely no legal obligation
+to do so. The Application was unfortunately invalid, due to CFJ 943
+having been distributed significantly more than seven days prior to
+this Application. It is our informed belief that Andre's intentions
+with regards to this Application were to have it apply to this CFJ,
+but was unsuccessful in doing so.]
+
+type of the application: Application to Submit an Opinion
+CFJ to which it applies: CFJ 943
+label: Dissenting Opinion
+Judgement/Dismissal to which it applies: Judgement by the Judge
+Reasons and Arguments:
+
+> But wait! Rule 911 says that if you can't be a Judge, then you can't
+> be a Justice. But the timing gets interesting. Rule 911 says that e
+> is ineligible if "E was not eligible to Judge the CFJ that resulted
+> in the matter under consideration when it was called". When what was
+> called? Well, the general rule of pronouns is that it refers to the
+> most recent instance of a qualifying object. In this case, that would
+> be "the matter under consideration", i.e. the Appeal.
+
+We reject the reading that 'it' refers to 'the Appeal of the CFJ'.
+
+In the first place, nowhere do the Rules speak about 'calling an Appeal'.
+Thus, there is no 'time when the Appeal was called'. Certainly, the word
+is often used unofficially for the 'insistence' as mentioned in Rule 1564.
+It is natural to say that Game Custom allows the Rules to call such a thing
+'calling for Appeal' without further specifying the meaning. However, the
+phrase here is 'calling FOR appeal'. Thus there is no time when an Appeal
+is called, only one at which it is called FOR.
+
+Even if we would conflate 'calling Appeal' via 'calling for Appeal' with
+'insisting that something is appealed', there is still a problem of timing.
+Most CFJs, when appealed, have had at least three such insistances. Thus,
+there is again not one time when 'the Appeal was called', but three or even
+more such times.
+
+Another point is the meaning of 'the matter under consideration'. The
+Judge has taken for granted that this is the Appeal. However, just one
+line above, Rule 541 says:
+
+  A Player is ineligible for selection if [...]
+
+        iii) E has been Judge in the matter the Board is to consider.
+
+Now, one cannot have been a Judge of the Appeal. Thus, 'the matter the
+Board is to consider' in part (iii) seems to mean 'the CFJ'. This reading,
+however, is in contradiction to part (iv), where the CFJ is said to
+'result in' the matter under consideration. If we could find a single
+reading that causes both to be meaningful, that would be preferable to
+using different meanings for almost the same term in different parts of
+the same rule. And we think there is such a meaning: "the matter under
+consideration" in Rule 911 apparently means "the Judicial process regarding
+a single CFJ". Again, this is something which either is not called, or is
+called at the time the CFJ is, certainly not at the time someone calls for
+Appeal.
+
+In our opinion, any of these arguments would be strong enough to win against
+the rule that the Judge quotes, since, in my opinion, this is an 'if there
+is no other good reason to believe otherwise' rule - and rather weak even
+as such.
+
+
+========================================================================
+
+Oerjan's Gratuitious Arguments:
+
+I wish to note that "matter" as it applies to appeals is also found in
+Rules 1570, 1564 and 1447, and here it clearly means "what is
+(becoming) under Appeal".
+
+Rule 1564 in particular seems to be what defines what a matter is:
+
+      The Judgement entered in any CFJ by its Judge, the grant or
+      denial of any Motion, and the execution of any Judicial Order
+      are all subject to review on appeal to a Board of Appeal.  In
+      addition, a Board of Appeal shall review any claim that a Judge
+      has failed to perform any duty of a Judicial nature which e was
+      required to perform.
+
+These are the matters, not the CFJ itself or the Judicial process.
+
+========================================================================
+
+Appeals decision by Kelly:
+
+In the matter of the Appeal of CFJ 1237 [sic], I rule that the original
+Judgement
+be vacated and that a Judgement of FALSE be entered (that is, I reverse).
+
+I agree with Wes that a Justice is not a Judge.  If some Rule was intended
+to apply to both Judges and Justices, it should say so on its face.
+
+I am of the opinion that the phrase "when it was called" in Rule 911 refers
+to the CFJ and not to "the matter under consideration" because none of the
+matters that a Board of Appeals may consider (see Rule 1564) are capable of
+being "called".  Calling is defined only with respect to Calls for
+Judgement, and none of the matters in Rule 1564 are initiated by "calling"
+anything.  I therefore interpret Rule 911 to make a Player ineligible to be
+a member of a Board of Appeals considering a matter which flows forth from a
+given underlying CFJ if that Player was ineligible to Judge that CFJ at the
+time that CFJ was called.
+
+Since, at the time CFJ 1237 was called, Chuck was (as far as I can tell)
+only ineligible to be a Judge of CFJ 1237 by virtue of already having taken
+his turn, he was eligible to be appointed a Justice on any Appeal flowing
+forth from CFJ 1237.
+
+Kelly Martin, Justice (sitting by designation)
+
+========================================================================
+
+Appeals decision by pTang:
+
+I rule that the original Judgment of CFJ 1243 is incorrect and
+should be reversed, so that CFJ 1243 be found FALSE.
+
+1) A Justice is not a Judge.  I strongly concur with Kelly's
+statement that a Rule that depends upon treating the two
+similarly should explicitly state as much.
+
+2) The referent of "when it was called" in R911 is the CFJ.
+
+Therefore, Chuck was eligible for appointment to the Appeal
+Board.
+
+-pTang, substitute Justice
+
+========================================================================
+
+Appeals decision by Elysion:
+
+This seems almost trivial. Since I made myself ineligible to judge CFJs
+after CFJ 1243 was called but before I was assigned as a Justice, if I am
+eligible to be a Justice then the statement is FALSE, otherwise my ruling
+has no effect.
+
+I therefore move to OVERTURN the original judgement to FALSE.
+
+========================================================================
+

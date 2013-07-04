@@ -47,5 +47,13 @@ def colify(line, colstarts):
     line += '\0'
     return [line[s:e].strip() for s, e in zip(colstarts, colstarts[1:] + [-1])]
 
-def twrap(message):
-    return '\n'.join(textwrap.fill(line) for line in message.split('\n'))
+def twrap(message, width=72, indent=0, subsequent_indent=None):
+    indent = ' ' * indent
+    subsequent_indent = indent if subsequent_indent is None else ' ' * subsequent_indent
+    return '\n'.join(textwrap.fill(line, width=width, initial_indent=indent, subsequent_indent=indent) for line in message.split('\n'))
+
+def faildecode(text):
+    try:
+        return text.decode('utf-8')
+    except:
+        return text.decode('ISO-8859-2')

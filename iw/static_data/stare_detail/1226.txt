@@ -1,0 +1,106 @@
+From - Mon Jun  5 15:21:29 2000
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by mx6.mindspring.com (Mindspring Mail Service) with ESMTP id sjm65s.n3l.37kbi14
+	for <elysion@mindspring.com>; Sun, 4 Jun 2000 23:04:27 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id CAA02169
+	for agora-official-list; Mon, 5 Jun 2000 02:50:41 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id CAA02166
+	for <agora-official@gecko.serc.rmit.edu.au>; Mon, 5 Jun 2000 02:50:39 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id MAA08400
+	for <agora-official@gecko.serc.rmit.edu.au>; Mon, 5 Jun 2000 12:59:22 +1000 (EST)
+Received: from msuacad.morehead-st.edu(147.133.1.1) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma008396; Mon, 5 Jun 00 12:59:17 +1000
+Received: (from mpslon01@localhost)
+	by msuacad.morehead-st.edu (8.10.1/8.10.1) id e552uX729468
+	for agora-official@gecko.serc.rmit.edu.au; Sun, 4 Jun 2000 22:56:33 -0400 (EDT)
+From: Michael Slone <mpslon01@morehead-st.edu>
+Message-Id: <200006050256.e552uX729468@msuacad.morehead-st.edu>
+Subject: OFF: CFJ 1226 Judged FALSE
+To: agora-official@gecko.serc.rmit.edu.au (agora-official)
+Date: Sun, 04 Jun 2000 22:56:32 EDT
+X-Mailer: Elm [revision: 212.4]
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: sjm65s.n3l.37kbi14
+
+
+==============================  CFJ 1226  ==============================
+
+    The Transfer Orders which Peekee issued in the email identified
+    by Message-ID: <20000524113533.52162.qmail@hotmail.com>
+    satisfied the Stem Payment Orders as mentioned in the same
+    email.                                                          
+
+========================================================================
+
+Called by:                     Peekee                                  
+
+Judge:                         Kelly                                   
+Judgement:                     FALSE                                   
+
+Judge selection:
+
+Eligible:                      Chuck, Crito, Elysion, Kelly, Sherlock,
+                               Steve, Taral, Wes, harvel, lee, t       
+
+Not eligible:
+Caller:                        Peekee                                  
+Barred:                        -                                       
+Had eir turn:                  Murphy, Palnatoke                       
+Already served:                -                                       
+Defaulted:                     Harlequin                               
+By request:                    Blob, Michael                           
+On Hold:                       -                                       
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Peekee               29 May 2000 16:10:26 BST                
+Assigned to Kelly:             29 May 2000 10:49:33 +0000              
+Judged FALSE by Kelly:         04 Jun 2000 21:45:56 -0500              
+Judgement published:           As of this message                      
+
+========================================================================
+
+Caller's Arguments:
+
+See the given message.
+
+========================================================================
+
+Caller's Evidence:
+
+See the given message.
+
+========================================================================
+
+Judge Kelly's Arguments:
+
+It has already been determined by Judge Palnatoke in CFJ 1225 that the
+Transfer Orders in the message described in the Statement were
+improperly or invalidly executed.  Given this, I am forced to conclude 
+that they did not have the effect of satisfying any Payment Order, and 
+thus necessarily rule this CFJ FALSE.  
+
+Judgment of FALSE is entered.
+
+========================================================================
+
+Judge Kelly's Evidence:
+
+<none>
+
+========================================================================
+
+Clerk of the Courts harvel
+--
+Michael Slone 

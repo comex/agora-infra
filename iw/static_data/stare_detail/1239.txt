@@ -1,0 +1,126 @@
+From - Thu Aug  3 12:01:16 2000
+Status: R
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by osgood.mail.mindspring.net (Mindspring Mail Service) with ESMTP id sohrai.kgt.30ahi43
+	for <elysion@mindspring.com>; Wed, 2 Aug 2000 23:56:00 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id DAA24337
+	for agora-official-list; Thu, 3 Aug 2000 03:53:09 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id DAA24334
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 3 Aug 2000 03:53:07 GMT
+From: magika@aracnet.com
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id NAA29707
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 3 Aug 2000 13:54:35 +1000 (EST)
+Received: from mail3.aracnet.com(216.99.193.38) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma029705; Thu, 3 Aug 00 13:54:27 +1000
+Received: from shell1.aracnet.com (shell1.aracnet.com [216.99.193.21])
+	by mail3.aracnet.com (8.9.3/8.9.3) with ESMTP id UAA09519
+	for <agora-official@gecko.serc.rmit.edu.au.>; Wed, 2 Aug 2000 20:52:25 -0700
+Received: by shell1.aracnet.com (8.9.3)  id UAA19626; Wed, 2 Aug 2000 20:52:23 -0700
+Message-Id: <200008030352.UAA19626@shell1.aracnet.com>
+Subject: OFF: CFJ 1239 Judged TRUE
+To: agora-official@gecko.serc.rmit.edu.au (agora-off)
+Date: Wed, 2 Aug 2000 20:52:23 -0700 (PDT)
+X-Mailer: ELM [version 2.5 PL1]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: sohrai.kgt.30ahi43
+
+
+
+==============================  CFJ 1239  ==============================
+
+    Taral objected to both the making of the Proposal "Secret, Unknown 
+    and Hidden Proposals 2.1" disinterested and objected to the making 
+    of the Proposal "Respect for the dead" disinterested in eir message 
+    dated "Mon, 31 Jul 2000 11:33:18 -0500 (CDT)", subject "Re: BUS: 
+    disinterested".
+
+========================================================================
+
+Called by:                 Peekee
+
+Judge:                     Steve
+Judgement:                 TRUE
+
+Judge selection:
+
+Eligible:                  Steve, t, Taral, Wes
+
+Not eligible:
+Caller:                    Peekee
+Barred:                    -                                       
+Had eir turn:              Blob, Chuck, Elysion, Kelly, lee, Murphy,
+                           Oerjan
+Already served:            -
+Defaulted:                 -
+Previously Defaulted:      Harlequin, Sherlock
+By request:                Crito, harvel, Michael
+On Hold:                   Palnatoke
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Peekee:              01 Aug 2000 11:03:58 BST
+Assigned to Steve:             01 Aug 2000 14:26:33 -0700
+Judged TRUE by Steve:          02 Aug 2000 11:41:23 +1000
+Judgement Distributed:         01 Aug 2000 21:31:32 -0700
+
+========================================================================
+
+Caller's Arguments:
+
+Just wondering if e needs to state the Objection a little more clearly.  
+This CFJ should clear it up.
+
+========================================================================
+
+Caller's Evidence:
+
+>From: Taral <taral@taral.net>
+>Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+>To: agora-business@gecko.serc.rmit.edu.au
+>Subject: Re: BUS: disinterested
+>Date: Mon, 31 Jul 2000 11:33:18 -0500 (CDT)
+>
+>On Mon, 31 Jul 2000, Alan Riddell wrote:
+>
+> > I hereby announce my intent to make both of my Proposals "Respect for 
+>the
+> > dead" and "Secret, Unknown and Hidden Proposals 2.1" disinterested.
+>
+>I Object. These are non-trivial changes to the Ruleset and deserve closer
+>examination.
+>
+>--
+>Taral <taral@taral.net>
+>
+
+========================================================================
+
+Judge's Arguments:
+
+I Judge the Statement to be TRUE. Since Taral referred to both changes
+as being non-trivial, it is clear from the context that e meant "I
+Object to both of these Notices of Intent." I see nothing in the Rules
+which prevents multiple objections from being phrased in this way.
+
+========================================================================
+
+Judge's Evidence:
+
+<none>
+
+========================================================================
+

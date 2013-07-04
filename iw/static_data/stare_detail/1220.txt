@@ -1,0 +1,134 @@
+From - Tue May 23 15:20:49 2000
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by day.mail.mindspring.net (Mindspring Mail Service) with ESMTP id sil2a7.jis.37kbi66
+	for <elysion@mindspring.com>; Tue, 23 May 2000 09:36:07 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id NAA07114
+	for agora-official-list; Tue, 23 May 2000 13:22:30 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id NAA07111
+	for <agora-official@gecko.serc.rmit.edu.au>; Tue, 23 May 2000 13:22:28 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id XAA74701
+	for <agora-official@gecko.serc.rmit.edu.au>; Tue, 23 May 2000 23:29:15 +1000 (EST)
+Received: from msuacad.morehead-st.edu(147.133.1.1) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma074699; Tue, 23 May 00 23:29:10 +1000
+Received: (from mpslon01@localhost) by msuacad.morehead-st.edu (8.7.1/8.7.1) id JAA20171 for agora-official@gecko.serc.rmit.edu.au; Tue, 23 May 2000 09:27:03 -0400 (EDT)
+From: Michael Slone <mpslon01@msuacad.morehead-st.edu>
+Message-Id: <200005231327.JAA20171@msuacad.morehead-st.edu>
+Subject: OFF: CFJ 1220 Judged FALSE
+To: agora-official@gecko.serc.rmit.edu.au (agora-official)
+Date: Tue, 23 May 2000 9:27:02 EDT
+X-Mailer: Elm [revision: 212.4]
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: sil2a7.jis.37kbi66
+
+
+==============================  CFJ 1220  ==============================
+
+    Blob is currently eligible to Judge CFJs concerning conditional
+    statements.                                                     
+
+========================================================================
+
+Called by:                     Palnatoke                               
+
+Judge:                         harvel                                  
+Judgement:                     FALSE                                   
+
+Judge selection:
+
+Eligible:                      Crito, Peekee, Sherlock, Wes, harvel    
+
+Not eligible:
+Caller:                        Palnatoke                               
+Barred:                        -                                       
+Had eir turn:                  Chuck, Elysion, Kelly, Murphy,
+                               Palnatoke, Steve, Taral, lee, t         
+Already served:                -                                       
+Defaulted:                     Harlequin                               
+By request:                    Blob, Michael                           
+On Hold:                       -                                       
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Palnatoke            22 May 2000 10:12:49 +0200              
+Assigned to harvel:            22 May 2000 18:05:41 -0400              
+Judged FALSE by harvel:        22 May 2000 18:56:51 -0400              
+Judgement published:           As of this message                      
+
+========================================================================
+
+Caller's Arguments:
+
+<none>
+
+========================================================================
+
+Caller's Evidence:
+
+<none>
+
+========================================================================
+
+Judge harvel's Arguments:
+
+At 22 May 2000 14:06:25 +1000, Blob became ineligible to Judge any CFJs
+until further notice, and the Clerk of the Courts has not received further
+notice from Blob.  CFJ 1220 was called several hours later.  Thus, at the
+time the CFJ was called, Blob was ineligible to Judge any CFJs and therefore
+inelgible in particular to Judge CFJs concerning conditional statements.
+
+I therefore enter a Judgement of FALSE.
+
+========================================================================
+
+Judge harvel's Evidence:
+
+>From malcolmr@cse.unsw.edu.au Mon May 22 00:04:47 EDT 2000
+Received: from note.orchestra.cse.unsw.EDU.AU ([129.94.242.29]) by msuacad.morehead-st.edu with SMTP (8.7.1/8.7.1) id AAA05756 for <mpslon01@msuacad.morehead-st.edu>; Mon, 22 May 2000 00:04:43 -0400 (EDT)
+Received: From holst With LocalMail ; Mon, 22 May 2000 14:06:25 +1000 
+From: Malcolm Ryan <malcolmr@cse.unsw.edu.au>
+To: Michael Slone <mpslon01@msuacad.morehead-st.edu>
+Date: Mon, 22 May 2000 14:06:25 +1000
+Subject: Re: Agora: want to be ineligible?
+Message-ID: <20000522140624.G9927@cse.unsw.edu.au>
+Reply-To: malcolmr@cse.unsw.edu.au
+References: <200005201405.KAA24000@msuacad.morehead-st.edu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+X-Mailer: Mutt 1.0.1i
+In-Reply-To: <200005201405.KAA24000@msuacad.morehead-st.edu>; from mpslon01@msuacad.morehead-st.edu on Sat, May 20, 2000 at 10:05:03AM -0400
+Status: RO
+
+On Sat, May 20, 2000 at 10:05:03AM -0400, Michael Slone wrote:
+> Blob,
+> 
+> Do you want to be made ineligible to Judge CFJs for the time being?  If
+> so, please let me know.
+
+Yes, that would be a good thing. Thanks for thinking of it.
+
+Malcolm
+
+-- 
+Malcolm Ryan - malcolmr@cse.unsw.edu.au - http://www.cse.unsw.edu.au/~malcolmr/
+  AI Dept, CSE, UNSW, Australia, Phone: +61 2 9385-3988 Fax: +61 2 9385-1814
+
+                    "Just as we are. At a total loss.
+          Jesus is for losers. Broken at the foot of the cross." 
+                                                               - Steve Taylor
+
+========================================================================
+
+Clerk of the Courts harvel
+--
+Michael Slone 

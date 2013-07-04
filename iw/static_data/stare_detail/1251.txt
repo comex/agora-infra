@@ -1,0 +1,95 @@
+From - Sun Jan  7 11:06:43 2001
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by hazard.mail.mindspring.net (Mindspring Mail Service) with ESMTP id t5fm5f.gc1.37kb01i
+	for <elysion@mindspring.com>; Sat, 6 Jan 2001 21:47:10 -0500 (EST)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id CAA28046
+	for agora-official-list; Sun, 7 Jan 2001 02:16:45 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id CAA28043
+	for <agora-official@gecko.serc.rmit.edu.au>; Sun, 7 Jan 2001 02:16:42 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id NAA12464
+	for <agora-official@gecko.serc.rmit.edu.au>; Sun, 7 Jan 2001 13:48:17 +1100 (EST)
+Received: from rfx-64-6-196-132.users.reflexcom.com(64.6.196.132) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma012462; Sun, 7 Jan 01 13:48:05 +1100
+Received: (from wesc@localhost)
+	by fozzie.antitribu.com (8.9.3/8.9.3) id TAA04883
+	for agora-official@gecko.serc.rmit.edu.au; Sat, 6 Jan 2001 19:18:02 -0800 (PST)
+	(envelope-from wesc)
+From: Wes Contreras <wesc@fozzie.antitribu.com>
+Message-Id: <200101070318.TAA04883@fozzie.antitribu.com>
+Subject: OFF: CFJ 1251 DISMISSED
+To: agora-official@gecko.serc.rmit.edu.au (agora-off)
+Date: Sat, 6 Jan 2001 19:18:02 -0800 (PST)
+X-Mailer: ELM [version 2.5 PL3]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: t5fm5f.gc1.37kb01i
+
+
+Clerk's Note: Being distributed again just in case Blob's second
+dismissal was the effective one.
+
+
+======================================================================
+
+CFJ 1251
+
+      Kelly has failed to select a Judge for the CFJ called
+      by Peekee on November 11, and Kelly is not the CotC.
+
+======================================================================
+
+Called by:          Elysion
+
+Judge:              Blob
+Judgement:          DISMISSED
+
+======================================================================
+
+Judge selection:
+
+Eligible:           Blob, lee, Murphy, pTang, Steve, Wes
+
+Not eligible:
+
+Caller:             Elysion
+Barred:             Kelly
+Had eir turn:       t, Peekee, Crito
+Already served:
+Defaulted:
+By request:         harvel, Michael, Palnatoke, Taral
+On Hold:            Oerjan, Michael
+Zombie:             Anthony, Harlequin, Novalis, Schneidster
+
+======================================================================
+
+History:
+
+Called by Elysion:                  Fri, 15 Dec 2000 17:56 GMT 
+                                    (filed with Justiciar per R1831?)
+Assigned to Blob:                   
+DISMISSED by Blob:                  
+
+(official history timestamps to be sorted out later)
+
+======================================================================
+
+Caller's Arguments
+
+<none>
+
+======================================================================
+
+Judge's Arguments
+
+======================================================================
+

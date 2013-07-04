@@ -1,0 +1,111 @@
+From - Mon May  8 17:41:41 2000
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by mx6.mindspring.com (Mindspring Mail Service) with ESMTP id sh2pll.t6.37kbi14
+	for <elysion@mindspring.com>; Thu, 4 May 2000 08:01:56 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id LAA09093
+	for agora-official-list; Thu, 4 May 2000 11:53:25 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id LAA09090
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 4 May 2000 11:53:23 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id WAA16125
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 4 May 2000 22:13:35 +1000 (EST)
+Received: from msuacad.morehead-st.edu(147.133.1.1) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma016119; Thu, 4 May 00 22:13:33 +1000
+Received: (from mpslon01@localhost) by msuacad.morehead-st.edu (8.7.1/8.7.1) id HAA27555 for agora-official@gecko.serc.rmit.edu.au; Thu, 4 May 2000 07:55:59 -0400 (EDT)
+From: Michael Slone <mpslon01@msuacad.morehead-st.edu>
+Message-Id: <200005041155.HAA27555@msuacad.morehead-st.edu>
+Subject: OFF: CFJ 1211 DISMISSED
+To: agora-official@gecko.serc.rmit.edu.au (agora-official)
+Date: Thu, 04 May 2000 7:55:59 EDT
+X-Mailer: Elm [revision: 212.4]
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: sh2pll.t6.37kbi14
+
+
+==============================  CFJ 1211  ==============================
+
+    The announcement required by Rule 1927 must contain the number
+    of new units of Currency the Executor intends to Mint.          
+
+========================================================================
+
+Called by:                     Taral                                   
+
+Judge:                         Kelly                                   
+Judgement:                     DISMISS                                 
+
+Judge selection:
+
+Eligible:                      Kelly, Peekee                           
+
+Not eligible:
+Caller:                        Taral                                   
+Barred:                        -                                       
+Had eir turn:                  Blob, Chuck, Crito, Elysion, Murphy,
+                               Palnatoke, Sherlock, Steve, Taral, Wes,
+                               else...if, harvel, lee, t               
+Already served:                -                                       
+Defaulted:                     Harlequin                               
+By request:                    Michael                                 
+On Hold:                       Novalis                                 
+Zombie:                        Anthony, Harlequin, Schneidster         
+
+========================================================================
+
+History:
+
+Called by Taral                02 May 2000 14:50:30 -0500              
+Assigned to Kelly:             02 May 2000 17:52:10 -0400              
+Dismissed by Kelly:            03 May 2000 21:40:45 -0500              
+Judgement published:           As of this message                      
+
+========================================================================
+
+Caller's Arguments:
+
+<none>
+
+========================================================================
+
+Caller's Evidence:
+
+<none>
+
+========================================================================
+
+Judge Kelly's Arguments:
+
+The question presented is fundamentally flawed, because Rule 1927 does
+not actually require any announcement.  Under no circumstance is any
+Player ever required by Rule 1927 to make an announcement.  An
+announcement of the sort described by Rule 1927 is merely a
+precondition that must be satisfied before the Executor of the Mintor
+of a Bank Currency may exercise the power to create units of a Bank
+Currency granted em by Rule 1927.
+
+Because the statement to be judged is a statement about something
+which does not exist, I rule that it is logically not capable of being
+either true or false, and therefore DISMISS this CFJ under the
+authority of Rule 1565(ii).  It is so ordered.
+
+========================================================================
+
+Judge Kelly's Evidence:
+
+<none>
+
+========================================================================
+
+Clerk of the Courts harvel
+--
+Michael Slone 
+We could really cut down on unnecessary duplication by having the
+Speaker do everything. :)
+		-- Kelly, in agora-discussion

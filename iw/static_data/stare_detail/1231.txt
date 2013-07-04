@@ -1,0 +1,185 @@
+From - Sat Jun 24 13:11:18 2000
+Status: R
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by farley.mail.mindspring.net (Mindspring Mail Service) with ESMTP id sl3fc9.103a.37kbi1c
+	for <elysion@mindspring.com>; Thu, 22 Jun 2000 03:17:28 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id GAA19882
+	for agora-official-list; Thu, 22 Jun 2000 06:59:27 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id GAA19879
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 22 Jun 2000 06:59:25 GMT
+From: magika@aracnet.com
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id RAA75618
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 22 Jun 2000 17:09:30 +1000 (EST)
+Received: from mail3.aracnet.com(216.99.193.38) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma075616; Thu, 22 Jun 00 17:09:11 +1000
+Received: from shell1.aracnet.com (shell1.aracnet.com [216.99.193.21])
+	by mail3.aracnet.com (8.9.3/8.9.3) with ESMTP id AAA01513
+	for <agora-official@gecko.serc.rmit.edu.au.>; Thu, 22 Jun 2000 00:08:09 -0700
+Received: by shell1.aracnet.com (8.9.3)  id AAA04808; Thu, 22 Jun 2000 00:08:04 -0700
+Message-Id: <200006220708.AAA04808@shell1.aracnet.com>
+Subject: OFF: CFJ 1231 Judged TRUE by Peekee
+To: agora-official@gecko.serc.rmit.edu.au (agora-off)
+Date: Thu, 22 Jun 2000 00:08:04 -0700 (PDT)
+X-Mailer: ELM [version 2.5 PL1]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: sl3fc9.103a.37kbi1c
+
+
+
+==============================  CFJ 1231  ==============================
+
+    t, acting as Executor of the Zombie Novalis, caused Novalis to
+    cast four votes AGAINST Proposal 4018.
+
+========================================================================
+
+Called by:                     Steve
+
+Judge:                         Peekee
+Judgement:                     TRUE
+
+Judge selection:
+
+Eligible:                      Peekee, Taral, Wes
+
+Not eligible:
+Caller:                        Steve
+Barred:                        Kelly, lee
+Had eir turn:                  Chuck, Elysion, harvel, Kelly, Murphy,
+                               Palnatoke, Sherlock, Steve, t
+Already served:                -
+Defaulted:                     -
+Previously Defaulted:          Harlequin, Sherlock
+By request:                    Blob, Crito, Michael
+On Hold:                       Palnatoke
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Steve:               20 Jun 2000 10:15:59 +1000
+Assigned to Peekee:            20 Jun 2000 18:44:18 -0700
+Judged TRUE by Peekee:         21 Jun 2000 21:28:32 BST
+Judgement Distributed:         As of this message
+
+========================================================================
+
+Caller's Arguments:
+
+Instead of offerring arguments for a particular Judgement, I'll restrict
+myself to presenting facts and evidence, and let the Judge reach eir own
+conclusions. The facts are these:
+
+1. Novalis is a Zombie.
+2. Novalis' Master is t.
+3. The Voting Period of Proposal 4018 concluded at Sun, 18 Jun 2000
+   13:11:44 (escribe time, I believe GMT+0500.) See Evidence 1.
+4. t attempted to cause Novalis to cast four votes AGAINST P4018 on
+   Sunday, 18 Jun 2000 12:06:57 (again, escribe time). See Evidence 2.
+
+The point at issue is how the requirements of R1478 are to be
+interpreted. R1478 requires that a Player who acts on behalf of another
+Player must "make it clear" that e is doing so. See Evidence 3.
+
+========================================================================
+
+Caller's Evidence:
+
+----- 1. Taral's distribution of Proposal 4018, dated Sun, 11 Jun 2000
+13:11:44 (escribe time). (Excerpt)
+
+[Still moving...]
+
+This Week's Current Batch, as set at the beginning of this Nomic Week,
+consists of the following Proposals, which are hereby distributed:
+
+#4017: [Elysion] Taral's Work for All, Again (AI=2, Democratic)
+#4018: [Kelly] Property and Democracy (AI=2, Democratic)
+#4019: [t] Fix Wins (Ordinary)
+
+-----------------------------------------------------------------------
+
+----- 2. t's voting message, dated Sun, 18 Jun 2000 12:06:57 (escribe time).
+
+
+Novalis votes four times AGAINST 4018.
+
+   tttttttttttttttttttttttttttttttttttttttttttttttttteemu korkiakangas
+                           http://www.iki.fi/scurra/
+TTTTTT scurra@iki.fi
+
+
+----- 3. Rule 1478/4
+
+Executors
+
+      The Executor of an entity is a Player who is empowered by the
+      Rules to act on behalf of that entity, as if e were that entity.
+
+      Except when the Rules stipulate otherwise, a Player is eir own
+      Executor.  Any other entity has an Executor only when the Rules
+      specify either a Player or a means to designate a Player to be
+      the Executor of that entity.
+
+      Whenever a Player is acting on behalf of some entity of which e
+      is the Executor other than emself, e must make it clear that e
+      is doing so.  If such a Player fails to clearly indicate that e
+      is acting as the Executor of some other entity, it shall be
+      presumed that e is acting on eir own behalf.
+
+      Only a person or an entity with a Player Executor may perform
+      actions.
+
+========================================================================
+
+Judge's Arguments:
+
+>----- 2. t's voting message, dated Sun, 18 Jun 2000 12:06:57 (escribe 
+>time).
+>
+>
+>Novalis votes four times AGAINST 4018.
+>
+>    tttttttttttttttttttttttttttttttttttttttttttttttttteemu korkiakangas
+>                            http://www.iki.fi/scurra/
+>TTTTTT scurra@iki.fi
+>
+>
+>----- 3. Rule 1478/4
+>
+>Executors
+>
+>       The Executor of an entity is a Player who is empowered by the
+>       Rules to act on behalf of that entity, as if e were that entity.
+
+T acted as if e was Novalis.
+
+>
+>       Except when the Rules stipulate otherwise, a Player is eir own
+>       Executor.  Any other entity has an Executor only when the Rules
+>       specify either a Player or a means to designate a Player to be
+>       the Executor of that entity.
+>
+>       Whenever a Player is acting on behalf of some entity of which e
+>       is the Executor other than emself, e must make it clear that e
+>       is doing so.  If such a Player fails to clearly indicate that e
+>       is acting as the Executor of some other entity, it shall be
+>       presumed that e is acting on eir own behalf.
+
+In the message it is clear that T is acting on behalf of Novalis and not for 
+emself.  There fore this should be Judged TRUE.
+
+========================================================================
+

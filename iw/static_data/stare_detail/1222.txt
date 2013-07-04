@@ -1,0 +1,148 @@
+From - Wed May 31 21:30:18 2000
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by fb04.eng00.mindspring.net (Mindspring Mail Service) with ESMTP id sjbcb7.c8u.37kbi5a
+	for <elysion@mindspring.com>; Wed, 31 May 2000 20:42:11 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id AAA31930
+	for agora-official-list; Thu, 1 Jun 2000 00:26:03 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id AAA31924
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 1 Jun 2000 00:26:00 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id KAA02610
+	for <agora-official@gecko.serc.rmit.edu.au>; Thu, 1 Jun 2000 10:34:31 +1000 (EST)
+Received: from msuacad.morehead-st.edu(147.133.1.1) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma002608; Thu, 1 Jun 00 10:34:18 +1000
+Received: (from mpslon01@localhost)
+	by msuacad.morehead-st.edu (8.10.1/8.10.1) id e510Vfh15442
+	for agora-official@gecko.serc.rmit.edu.au; Wed, 31 May 2000 20:31:41 -0400 (EDT)
+From: Michael Slone <mpslon01@morehead-st.edu>
+Message-Id: <200006010031.e510Vfh15442@msuacad.morehead-st.edu>
+Subject: OFF: CFJ 1222 Judged FALSE
+To: agora-official@gecko.serc.rmit.edu.au (agora-official)
+Date: Wed, 31 May 2000 20:31:40 EDT
+X-Mailer: Elm [revision: 212.4]
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: sjbcb7.c8u.37kbi5a
+
+
+==============================  CFJ 1222  ==============================
+
+    The message sent to the Business List by Elysion containing the
+    text 'The Bank pays all its outstanding IAT POs' did not cause
+    any Transfer Orders to be exectuted.                            
+
+========================================================================
+
+Called by:                     Kelly                                   
+
+Judge:                         Crito                                   
+Judgement:                     FALSE                                   
+
+Judge selection:
+
+Eligible:                      Chuck, Crito, Peekee, Sherlock, Steve,
+                               Taral, Wes, harvel, lee, t              
+
+Not eligible:
+Caller:                        Kelly                                   
+Barred:                        Elysion                                 
+Had eir turn:                  Murphy, Palnatoke                       
+Already served:                -                                       
+Defaulted:                     Harlequin                               
+By request:                    Blob, Michael                           
+On Hold:                       -                                       
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Kelly                24 May 2000 22:12:56 -0500              
+Assigned to Crito:             25 May 2000 8:23:04 -0400               
+Judged FALSE by Crito:         31 May 2000 14:33:39 -0400              
+Judgement published:           As of this message                      
+
+========================================================================
+
+Caller's Arguments:
+
+As argument I ask that the Judge consider the recent extensive debate
+on what constitutes a message sufficient to convey the information
+required to specify things like Votes, much of which will transfer to
+the execution of Transfer Orders.
+
+========================================================================
+
+Caller's Evidence:
+
+<none>
+
+========================================================================
+
+Judge Crito's Arguments:
+
+First of all, I can dismiss the trivial case that there were no outstanding IAT PO's at the time
+of this message, since Elysion has provided me evidence that there was at least one.
+This brings us to the definition of a TO:
+
+Rule 1598/8 (Power=1)
+Transfer Orders
+
+      A Transfer Order is an Order requiring the Recordkeepor of a
+      Currency to note the transfer of units of that Currency from one
+      entity to another.  A valid Transfer Order specifies exactly one
+      source entity, exactly one destination entity, exactly one
+      Currency, and a number of units of that Currency which is a
+      positive multiple of that Currency's MUQ.
+
+At first glance, this seems to indicate that a TO message must explicitly
+contain all of these elements.  However, the word "specify" leaves room
+for interpretation.  Does "specify" mean explicitly stated or does an
+indirect reference qualify as a specification?  We have much game custom
+to support the interpretation allowing indirect specification.  "I pay ..."
+has become a well entrenched synonym for "I execute a Transfer Order ...".
+In particular, references to specific Payment Orders in this context have
+consistently been taken to mean a Transfer Order that satisfies the specified
+Payment Order.  In other words, because a Payment Order itself specifies
+a source, destination and number of units in a specific Currency, any reference
+to that Payment Order is considered a specification of those things required
+by R1598.  This is unproblematic in the following situations:
+
+1.  Player presents a quote of an issued PO and states "I pay this".  The message
+itself contains the required information (in the quote) and might even be viewed
+as a direct specification.
+
+2.  Player states "I pay PO X", where X is an accepted, unambiguous reference to
+a specific PO.  Here the message does not explicitly contain the required information,
+but the specification of a particular PO which does specify it can reasonably be
+interpreted as having satisfied R1598.
+
+This brings us to the case at hand.  Does a statement of the form "The Bank pays all
+outstanding POs" also satisfy R1598?  First, does it succeed in making unambiguous
+references to specific POs?  Well, I would have to say "yes".  "All outstanding POs"
+is a well-defined set of specific POs.  There is no ambiguity here.  The fact that
+the Player making the statement may not have knowledge of the members of this set
+is irrelevant to whether or not e has specified the set.  E has referred to a
+specific, unambiguous set of POs, each member of which speficies exactly the
+information required by R1598.  If we are to allow cases 1 and 2 above, then,
+absent legislation specifically preventing it, we must also allow the case
+in question.  IMO, game custom strongly supports the acceptance of 1 and 2,
+therefore I am inclined to judge the CFJ FALSE.
+
+========================================================================
+
+Judge Crito's Evidence:
+
+<none>
+
+========================================================================
+
+Clerk of the Courts harvel
+--
+Michael Slone 

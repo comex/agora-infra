@@ -1,0 +1,153 @@
+From - Mon Jan 15 11:22:53 2001
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by osgood.mail.mindspring.net (Mindspring Mail Service) with ESMTP id t657fk.10s.30ahi43
+	for <elysion@mindspring.com>; Mon, 15 Jan 2001 01:51:31 -0500 (EST)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id GAA11081
+	for agora-official-list; Mon, 15 Jan 2001 06:48:42 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id GAA11078
+	for <agora-official@gecko.serc.rmit.edu.au>; Mon, 15 Jan 2001 06:48:40 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id RAA31396
+	for <agora-official@gecko.serc.rmit.edu.au>; Mon, 15 Jan 2001 17:56:04 +1100 (EST)
+Received: from rfx-64-6-196-132.users.reflexcom.com(64.6.196.132) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma031394; Mon, 15 Jan 01 17:55:53 +1100
+Received: (from wesc@localhost)
+	by fozzie.antitribu.com (8.9.3/8.9.3) id XAA16855
+	for agora-official@gecko.serc.rmit.edu.au; Sun, 14 Jan 2001 23:27:55 -0800 (PST)
+	(envelope-from wesc)
+From: Wes Contreras <wesc@fozzie.antitribu.com>
+Message-Id: <200101150727.XAA16855@fozzie.antitribu.com>
+Subject: OFF: CFJ 1252 Judged FALSE
+To: agora-official@gecko.serc.rmit.edu.au (agora-off)
+Date: Sun, 14 Jan 2001 23:27:54 -0800 (PST)
+X-Mailer: ELM [version 2.5 PL3]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: t657fk.10s.30ahi43
+
+
+==============================  CFJ 1252  ==============================
+
+    Peekee has a Will.
+
+========================================================================
+
+Called by:                 Peekee
+
+Judge:                     Chuck
+Judgement:                 FALSE
+
+Judge selection:
+
+Eligible:                  Chuck, Crito, David, Elysion, Kelly, lee,
+                           Murphy, pTang, Steve
+
+Not eligible:
+Caller:                    Peekee
+Barred:                    -                                       
+Had eir turn:              Blob, t, Peekee, Wes
+Already served:            -
+Defaulted:                 -
+Previously Defaulted:      Harlequin, Sherlock
+By request:                harvel, Michael, Palnatoke, Taral
+On Hold:                   Palnatoke
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Peekee:              ??
+Assigned to Chuck:             06 Jan 2001 19:18:50 -0800
+Judged FALSE by Chuck:         13 Jan 2001 17:57:08 -0600 
+Judgement Distributed:         As of this message
+
+========================================================================
+
+Caller's Arguments:
+
+I want to know if these old Wills still count, despite the fact that 
+the report I just posted supposes they don't.
+
+========================================================================
+
+Caller's Evidence:
+
+I hereby submit the following Application to create a Will.
+Signed Peekee.
+
+----
+Peekee's Will.
+
+Peekee's sole Heir will be the Agoran Carnival.
+----
+
+Alan "Peekee" Riddell
+Email:
+<A.Riddell-1@sms.ed.ac.uk>
+<pkpeekee@hotmail.com>
+UK Telephone: 0131 667 6000, Extension 36007
+
+========================================================================
+
+Judge's Arguments:
+
+All mention of Wills was removed by the Ruleset upon the adoption
+of Proposal 4018, on June 21 2000.  Thus, all Wills which had existed
+at that point ceased to exist upon the adoption of Proposal 4018.
+
+Wills were added to the Ruleset upon the adoption of Proposal 4082, on
+October 30 2000, but there was no provision in the Rules for reinstating
+any previous Wills.  Thus, while it was possible to create Wills once
+Proposal 4082 was adopted, no Wills sprang into being immediately upon
+the adoption of Proposal 4082.
+
+Furthermore, I can find no evidence that Peekee created a Will between
+the adoption of Proposal 4082, and the time this CFJ was made on
+November 7, 2000.  Thus, Peekee had no Will when this CFJ was made.
+
+
+[Note: All dates listed in this argument and in the evidence below
+are those given by the eScribe archives.]
+
+========================================================================
+
+Judge's Evidence:
+
+Short Logical Ruleset, June 18 2000
+http://www.escribe.com/games/agora-official/m186.html
+
+Assessor's Report for Proposals 4017-4019, June 21 2000
+http://www.escribe.com/games/agora-official/m196.html
+
+Short Logical Ruleset, June 23 2000
+http://www.escribe.com/games/agora-official/m208.html
+
+[I will not list every SLR published in this interim, but a
+search of the eScribe archives confirms that Wills are not
+mentioned in any of them.]
+
+Short Logical Ruleset, October 26 2000
+http://www.escribe.com/games/agora-official/m690.html
+
+Assessor's Report for Proposals 4079-4083, October 30 2000
+http://www.escribe.com/games/agora-official/m698.html
+
+Short Logical Ruleset, November 2 2000
+http://www.escribe.com/games/agora-official/m717.html
+
+Peekee's Call for Judgement, November 7 2000
+(CotC, please note for your records)
+http://www.escribe.com/games/agora-business/m1818.html
+
+========================================================================
+

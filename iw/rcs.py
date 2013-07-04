@@ -11,7 +11,19 @@ class RCSFile:
         return text[1:-1].replace('@@', '@')
 
     @staticmethod
-    def apply_diff(text, diff):
+    def make_indirect(lines, indirect):
+        if indirect is not None:
+            offsets = []
+            for line in lines:
+                offsets.append(indirect.tell())
+                indirect.write(line)
+                indirect.write('\n')
+            return offsets
+        else:
+            return lines
+
+    @classmethod
+    def apply_diff(cls, text, diff, indirect):
         # Note that this avoids iterating over each line in the original document.
         text = text[:]
         line_offset = 0
@@ -29,11 +41,12 @@ class RCSFile:
             else:
                 lines = diff[i:i + count]
                 i += count
+                lines = cls.make_indirect(lines, indirect)
                 text[at+1:at+1] = lines
                 line_offset -= count
         return text
 
-    def parse(self, mode):
+    def parse(self, mode, indirect):
         tokens = re.finditer(self.tok_re, self.text)
         it = iter(tokens)
         text = None
@@ -57,18 +70,18 @@ class RCSFile:
             diff = diff.split('\n')
 
             if text is None:
-                text = diff
+                text = self.make_indirect(diff, indirect)
             else:
-                text = self.apply_diff(text, diff)
+                text = self.apply_diff(text, diff, indirect)
             rev['text'] = text
             revs.append(rev)
         return revs
 
-    def get_revisions(self):
-        return self.parse(0)
+    def get_revisions(self, indirect=None):
+        return self.parse(0, indirect)
 
     def get_last_revision(self):
-        return self.parse(1)
+        return self.parse(1, None)
 
 if __name__ == '__main__':
     import sys

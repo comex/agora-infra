@@ -1,0 +1,268 @@
+From - Sat Jun 24 13:15:36 2000
+Received: from maynard.mail.mindspring.net (maynard.mail.mindspring.net [207.69.200.243])
+	by pilot021.cl.msu.edu (8.9.3/8.9.1) with ESMTP id KAA74310
+	for <boehmejo@pilot.msu.edu>; Fri, 23 Jun 2000 10:02:20 -0400
+Received: from fb04.eng00.mindspring.net (fb04.eng00.mindspring.net [207.69.200.170])
+	by maynard.mail.mindspring.net (8.9.3/8.8.5) with SMTP id KAA12108
+	for <boehmejo@pilot.msu.edu>; Fri, 23 Jun 2000 10:02:20 -0400 (EDT)
+X-MindSpring-Loop: elysion@mindspring.com
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by fb04.eng00.mindspring.net (Mindspring Mail Service) with ESMTP id sl6raf.dac.37kbi5a
+	for <elysion@mindspring.com>; Fri, 23 Jun 2000 09:59:42 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id NAA30517
+	for agora-official-list; Fri, 23 Jun 2000 13:44:23 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id NAA30514
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 23 Jun 2000 13:44:21 GMT
+From: magika@aracnet.com
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id XAA79240
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 23 Jun 2000 23:54:39 +1000 (EST)
+Received: from mail2.aracnet.com(216.99.193.35) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma079238; Fri, 23 Jun 00 23:54:36 +1000
+Received: from shell1.aracnet.com (shell1.aracnet.com [216.99.193.21])
+	by mail2.aracnet.com (8.9.3/8.9.3) with ESMTP id GAA28901
+	for <agora-official@gecko.serc.rmit.edu.au.>; Fri, 23 Jun 2000 06:53:35 -0700
+Received: by shell1.aracnet.com (8.9.3)  id GAA15137; Fri, 23 Jun 2000 06:53:31 -0700
+Message-Id: <200006231353.GAA15137@shell1.aracnet.com>
+Subject: OFF: CFJ 1224 OVERTURNED (with Arguments)
+To: agora-official@gecko.serc.rmit.edu.au (agora-off)
+Date: Fri, 23 Jun 2000 06:53:31 -0700 (PDT)
+X-Mailer: ELM [version 2.5 PL1]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+Status: RO
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: 3954c93a0000001e
+
+
+
+==============================  CFJ 1224  ==============================
+
+    Elysions's message of 11 April 2000, reading in part, 'The Bank
+    pays all its outstanding IAT POs (50 to Michael and 75 to
+    Chuck)', did not have the effect of executing a Transfer Order
+    which would satisfy the Payment Order executed by lee in eir
+    message dated 11 March 2000, reading in part, 'I order the Bank
+    to pay Murphy 130 IATs.'                                        
+
+========================================================================
+
+Called by:                     Kelly                                   
+
+Judge:                         Chuck                                   
+Judgement:                     TRUE
+
+Justices:                      Wes (C), Taral (J), lee (S)
+Appeals Ruling:                OVERTURN to FALSE
+
+Judge selection:
+
+Eligible:                      Chuck, Crito, Elysion, Peekee, Steve,
+                               Taral, Wes, harvel, lee                 
+
+Not eligible:
+Caller:                        Kelly                                   
+Barred:                        -                                       
+Had eir turn:                  Kelly, Murphy, Palnatoke, t             
+Already served:                Sherlock                                
+Defaulted:                     Harlequin, Sherlock                     
+By request:                    Blob, Michael                           
+On Hold:                       -                                       
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Kelly                26 May 2000 16:04:33 -0500              
+Assigned to Sherlock:          29 May 2000 10:06:10 +0000              
+Sherlock defaulted:            08 Jun 2000 14:13:54 -0400              
+Reassigned to Chuck:           09 Jun 2000 8:52:44 -0400               
+Judged by Chuck:               15 Jun 2000 11:14:15 -0500
+Appealed by Wes:               15 Jun 2000 11:03:41 -0700
+Appealed by Crito:             15 Jun 2000 14:06:44 -0400A
+Appealed by Steve:             16 Jun 2000 10:10:34 +1000
+Judgement Distributed:         18 Jun 2000 16:35:17 -0700
+Appeal assigned:               18 Jun 2000 16:35:17 -0700
+Justice's Arguments posted:    22 Jun 2000 21:49:26 -070
+Justice Wes OVERTURNS:         22 Jun 2000 22:02:11 -0700
+Justice Taral OVERTURNS:       23 Jun 2000 00:03:43 -0500
+Justice lee OVERTURNS:         23 Jun 2000 07:56:48 -0500
+Appeals decision distributed:  As of this message
+
+========================================================================
+
+Caller's Arguments:
+
+Payroll Clerk lee's message was delayed two and a half months by a
+malfunction in the mail server which services one of the Public Fora.
+As a result, this message, while sent on March 11, was not generally
+received by the Players until May 23.  Elysion, however, has claimed
+that eir message, dated April 11, a month and a half before any Player
+other than lee was aware of this Order, had the effect of executing a
+Transfer Order for a Payment Order of which e had no knowledge.  If
+Elsyion is correct, e is claiming to have executed a Transfer Order
+without knowing that e had done so, and in fact did not realize that e
+had done so until some time after May 23, when lee's Payment Order was
+distributed to the Players.  Elysion's message parenthetically listed
+the POs to be paid; there is no mention of lee's PO to be paid to
+Murphy.  It seems clear that Elysion had no intention that eir message
+was intended to satisfy this wayward Payment Order.
+
+It stretches credibility to the extreme to believe that this
+constitutes a Transfer Order as required by Rule 1598.  A Transfer
+Order must specify a source entity, a destination entity, a Currency,
+and some number of units.  While it has been held that these can be
+specified implicitly, this situation takes "implicitly" too far.  At
+the time this message was sent, the only person who was even possibly
+aware that this Order existed was lee, and I suspect that even lee had
+forgotten about it.  If this message specifies a Transfer Order with
+deferred specification, then it should also be legal for a Player to
+state "I execute a Transfer Order, for an amount of Currency to be
+named later, to an entity to be named later" and then name the amount
+and payee at some future time.  I do not think that anyone will accept 
+this as a valid specification of a Transfer Order -- and neither
+should we accept Elysion's specification as a valid specification of a 
+Transfer Order, either.
+
+I request that this CFJ be known as the "Case of the Wayward Payment
+Order". 
+
+========================================================================
+
+Caller's Evidence:
+
+<none>
+
+========================================================================
+
+Judge's Arguments:
+
+In discussions on this issue, both Kelly and Elysion make the assumption
+that the Payment Order in question cam into existence when it was sent.
+However, this assumption is worth questioning.
+
+Rule 1793 states, "An Order is a command, executed by a Player..."
+That is, a collection of text which could potentially be an Order
+must be "executed" for it to actually be an Order.  A command which 
+is not executed is not an Order.
+
+What does it mean for a command to be executed?  The term is not defined
+in the Rules.  Where there is a significant delay between the time the
+command is sent, and the time when it is received, at which time was
+the command executed?  The Rules provide no guidance on this issue, nor
+does the m-w.com definition of "execute," which defines it as "to
+carry out fully : put completely into effect."  Even with this
+definition of "execute", a case for either interpretation could be
+made.
+
+I find that it is not in the best interests of the game to require
+a Player to abide by a command which e has not received.  A command
+is not "executed" if it has not been received by the Player required
+to abide by it.  Thus, the command for the Bank to pay Murphy 130 IATs
+did not become a Payment Order until it was received by the Bank's
+Executor on May 23.  
+
+Since the Payment Order did not exist as such on April 11, Elysion's
+message of that date that the Bank paid its outstanding IAT POs
+naturally did not satisfy that Payment Order.  I find the statement
+to be TRUE.
+
+On an additional note, I would remind readers that the principle
+that a Player can not be required to abide by an Order which e
+has not received is based on the best interests of the game, and
+thus applies *only* when the Rules are unclear.  Note that Rule
+1793 also provides that when the holder of an Office changes,
+and an unfulfilled Order is directed at that Office, the responsibility
+to abide by that Order attaches to the new holder of the Office.
+One might imagine a case where an Order is delivered privately
+to the holder of an Office, and is received by em (thus the Order
+is already properly executed), and then the Officer changes, with
+the new Officer being unaware of the Order.  In this case, R1793
+is quite clear that the responsibility dicated by the Order transfers
+to the new Officer.  Although it may be highly undesirable that
+the Officer is required to abide by an Order of which e is unaware,
+R1793 is quite clear on the matter, and thus my argument from
+the best interests of the game cannot be applied in such a case.
+
+========================================================================
+
+Judge's Evidence:
+
+<none>
+
+========================================================================
+
+Justice's Combined Arguments:
+
+Having discussed this issue together, we Justices provide the following 
+Arguments:
+
+The first determination to make is whether or not the PO refered to
+even existed. The Rules require that Administrative Orders (including
+the PO executed by lee on 11 March) be "published in the Public Forum".
+To "publish" is defined as "1 a : to make generally known b : to make public
+announcement of 2 a : to disseminate to the public". It is our decision
+that sending a message to a Public Forum with a reasonable expectation
+that it would be forwarded to all Players is sufficient action to 
+"make a public announcement" or to "disseminate to the public". Since
+Rule 1808 goes on to say that an Administrative Order does "take effect 
+upon publication", it is our opinion that the PO in question did indeed
+exist at the time it was sent to the Public Forum. Specifically, it
+existed on March 11. 
+
+The second determination is whether Elysion's blanket statement on 
+April 11 was successful at all. CFJ's 1214 and 1215 seem to form a
+certain consensus on conditional statements which would also seem to
+apply to blanket statements. Specifically, it is the opinion of this
+tribunal that such statements based upon information legally available 
+at the time within the context of the Game are successful. Thus, the
+blanket statement in question is generally successful. 
+
+The third determination is whether said blanket statement would apply
+specifically to the PO which came into existence on March 11, even
+though the Recordkeepor required to act upon the information was not
+privy to that bit of information at the time. After great deliberation,
+it was determined that the key point is not whether the Recordkeepor knew, 
+but whether the Recordkeepor should have known. In this case, since the 
+PO was distributed to a Public Forum, the Recordkeepor was *legally* aware
+of the PO whether or not e was actually aware of it. The Rules do not make 
+that distinction, and we do not feel empowered to make that distinction 
+either. The Rules only address actual game state rather than any misguided 
+or incorrect perception of said game state. Thus, the blanket statement 
+does indeed include the PO made on March 11. 
+
+What about the comment Elysion makes after the actual action which
+specifies a couple of PO's? It is the opinion of this court that such
+comments, while perhaps interesting, do not have legal significance. 
+
+In summary: 
+   (a) the PO did indeed exist as of March 11
+   (b) the blanket statement was effective in addressing all PO's, as 
+       determined by actual game state rather than imperfect perception
+   (c) thus the blanket statement did satisfy the PO in question
+
+
+It was a sore temptation to Rule that the perceived game state was of 
+greater importance due to the apparent availability of the information. 
+The pitfalls of such an approach are many, although the drawbacks are not 
+immediately obvious. In general, the conclusion was that any actual
+actions based solely upon perception would be unwise. 
+
+Also, due to the potential for abuse, we strongly recommend legislation
+to ban the intentional tampering with the delivery of email. 
+
+
+Taral, Lead Justice
+lee, Justice
+Wes, Justice
+
+========================================================================
+

@@ -1,0 +1,110 @@
+From - Fri Feb  2 20:44:00 2001
+Status:  U
+Return-Path: <owner-agora-official@gecko.serc.rmit.edu.au>
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by hazard.mail.mindspring.net (Earthlink Mail Service) with ESMTP id t7k57b.c4t.37kb01i
+	for <elysion@mindspring.com>; Thu, 1 Feb 2001 21:01:13 -0500 (EST)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id BAA20885
+	for agora-official-list; Fri, 2 Feb 2001 01:55:45 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id BAA20882
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 2 Feb 2001 01:55:42 GMT
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id MAA16083
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 2 Feb 2001 12:57:57 +1100 (EST)
+Received: from rfx-64-6-196-132.users.reflexcom.com(64.6.196.132) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma016081; Fri, 2 Feb 01 12:57:51 +1100
+Received: (from wesc@localhost)
+	by fozzie.antitribu.com (8.9.3/8.9.3) id SAA05315
+	for agora-official@gecko.serc.rmit.edu.au; Thu, 1 Feb 2001 18:28:39 -0800 (PST)
+	(envelope-from wesc)
+From: Wes Contreras <wesc@fozzie.antitribu.com>
+Message-Id: <200102020228.SAA05315@fozzie.antitribu.com>
+Subject: OFF: CFJ 1259 DISMISSED
+To: agora-official@gecko.serc.rmit.edu.au (agora-off)
+Date: Thu, 1 Feb 2001 18:28:39 -0800 (PST)
+X-Mailer: ELM [version 2.5 PL3]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: t7k57c.c4t.37kb01i
+
+
+==============================  CFJ 1259  ==============================
+
+    If this statement is true, Peekee is owed 100 Stems
+
+========================================================================
+
+Called by:                 Peekee
+
+Judge:                     Murphy
+Judgement:                 DISMISSED
+
+Judge selection:
+
+Eligible:                  Murphy, Steve, Ziggy
+
+Not eligible:
+Caller:                    Peekee
+Barred:                    -                                       
+Had eir turn:              Blob, Chuck, Crito, Elysion, Kelly, lee, 
+                           Murphy, Peekee, pTang, t, Wes
+Already served:            -
+Defaulted:                 -
+Previously Defaulted:      Harlequin, Sherlock
+By request:                harvel, Michael, Palnatoke, t, Taral
+On Hold:                   Blob, Michael, Oerjan
+Zombie:                    Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Peekee:              18 Jan 2001 22:06:33 -0000
+Assigned to Murphy:            18 Jan 2001 17:28:03 -0800
+DISMISSED by Murphy:           28 Jan 2001 15:38:52 -0800
+Judgement distributed:         As of this message
+
+========================================================================
+
+Caller's Arguments:
+
+Note: the statement is a material conditional.  For it to be false the antecdent "this statement is true" has to be true and the conclusion false.  But clearly this is a contradiction, so the CFJ should be judged TRUE.
+ 
+If the above is objected becasue I am not owed 100 Stems consider the following.  Let theabove statement be S and Peekee is owed 100 Stems P.  
+ 
+Clearly if S is true then P follows.  This depends only on the fact that S is true, so using Modus Ponendo Ponens we can deduce P only depending on the fact that S is true.  Then using conditional proof we get the statement  "If S is True, then P" which has no dependency (in other words is true).
+ 
+At this point it should be noted that the above statement says exactly what th origional does, thus we can deduce from it firstly that S is true and secondly that P also must be true.
+
+========================================================================
+
+Caller's Evidence:
+
+<none>
+
+========================================================================
+
+Judge's Arguments:
+
+I cannot find the Statement of CFJ 1259 to be TRUE, because that would
+imply the untrue statement "Peekee was owed 100 Stems when CFJ 1259 was
+called".  I cannot find the Statement of CFJ 1259 to be FALSE, because
+that would be self-contradictory.  Therefore, according to Rule 1563
+as well as clause ii) of Rule 1565, I dismiss CFJ 1259.
+
+========================================================================
+
+Judge's Evidence:
+
+<none>
+
+========================================================================
+

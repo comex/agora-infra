@@ -1,0 +1,206 @@
+From - Sat Jun 24 13:14:01 2000
+Received: from blount.mail.mindspring.net (blount.mail.mindspring.net [207.69.200.226])
+	by pilot022.cl.msu.edu (8.9.3/8.9.1) with ESMTP id BAA49804
+	for <boehmejo@pilot.msu.edu>; Fri, 23 Jun 2000 01:00:49 -0400
+Received: from runyon.mail.mindspring.net (runyon.mail.mindspring.net [207.69.200.239])
+	by blount.mail.mindspring.net (8.9.3/8.8.5) with SMTP id BAA10703
+	for <boehmejo@pilot.msu.edu>; Fri, 23 Jun 2000 01:00:50 -0400 (EDT)
+X-MindSpring-Loop: elysion@mindspring.com
+Received: from gecko.serc.rmit.edu.au ([131.170.42.16])
+	by runyon.mail.mindspring.net (Mindspring Mail Service) with ESMTP id sl5rnu.f0a.37kbi7f
+	for <elysion@mindspring.com>; Fri, 23 Jun 2000 01:00:45 -0400 (EDT)
+Received: (from majordomo@localhost)
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) id EAA28640
+	for agora-official-list; Fri, 23 Jun 2000 04:45:43 GMT
+Received: from fw.serc.rmit.edu.au (fw-in.serc.rmit.edu.au [131.170.42.1])
+	by gecko.serc.rmit.edu.au (8.8.5/8.8.5) with ESMTP id EAA28637
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 23 Jun 2000 04:45:41 GMT
+From: magika@aracnet.com
+Received: (from mail@localhost)
+	by fw.serc.rmit.edu.au (8.9.3/8.9.1) id OAA78397
+	for <agora-official@gecko.serc.rmit.edu.au>; Fri, 23 Jun 2000 14:55:57 +1000 (EST)
+Received: from mail3.aracnet.com(216.99.193.38) by fw.serc.rmit.edu.au via smap (V2.1)
+	id xma078395; Fri, 23 Jun 00 14:55:33 +1000
+Received: from shell1.aracnet.com (shell1.aracnet.com [216.99.193.21])
+	by mail3.aracnet.com (8.9.3/8.9.3) with ESMTP id VAA10217
+	for <agora-official@gecko.serc.rmit.edu.au.>; Thu, 22 Jun 2000 21:54:31 -0700
+Received: by shell1.aracnet.com (8.9.3)  id VAA27361; Thu, 22 Jun 2000 21:54:29 -0700
+Message-Id: <200006230454.VAA27361@shell1.aracnet.com>
+Subject: OFF: CFJ 1232 Judged FALSE by lee
+To: agora-official@gecko.serc.rmit.edu.au (agora-off)
+Date: Thu, 22 Jun 2000 21:54:29 -0700 (PDT)
+X-Mailer: ELM [version 2.5 PL1]
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Sender: owner-agora-official@gecko.serc.rmit.edu.au
+Precedence: bulk
+Reply-To: agora-discussion@gecko.serc.rmit.edu.au
+Status: RO
+X-Mozilla-Status: 8001
+X-Mozilla-Status2: 00000000
+X-UIDL: 3954c93a00000016
+
+
+
+==============================  CFJ 1232  ==============================
+
+    Taral currently has at least 3 Blots.
+
+========================================================================
+
+Called by:                     Taral
+
+Judge:                         lee
+Judgement:                     FALSE
+
+Judge selection:
+
+Eligible:                      lee, Wes
+
+Not eligible:
+Caller:                        Taral
+Barred:                        -                                       
+Had eir turn:                  Chuck, Harlequin, harvel, Kelly, Murphy,
+                               Palnatoke, Peekee, Sherlock, Steve, t
+Already served:                -
+Defaulted:                     -
+Previously Defaulted:          Harlequin, Sherlock
+By request:                    Blob, Crito, Michael
+On Hold:                       Palnatoke
+Zombie:                        Anthony, Harlequin, Novalis, Schneidster
+
+========================================================================
+
+History:
+
+Called by Taral:               22 Jun 2000 13:03:16 -0500
+Assigned to lee:               22 Jun 2000 18:45:12 -0700
+Judged FALSE by lee:           22 Jun 2000 21:55:07 -0500
+Judgement Distributed:         As of this message
+
+========================================================================
+
+Caller's Arguments:
+
+<none>
+
+========================================================================
+
+Caller's Evidence:
+
+<none>
+
+========================================================================
+
+Judge's Arguments:
+
+Taral was blot free in the June 12 Report.
+Kelly blotted em for tardiness which is only a .5 infraction.
+Then Kelly blotted, or at least tried to blot em for Promotor
+Misrepresentation.
+That is a Crime.
+Penalties for Crimes are only applied by Sentencing Orders which in turn
+are only issued by judges.
+Kelly was not a judge.
+Taral was not blotted for Promotor Misrepresentation.
+By my count e only has .5 blots.
+I judge the statement false.
+
+========================================================================
+
+Judge's Evidence:
+
+It is my informed belief that Promotor Taral committed the Infraction
+of Promotor Tardiness when e failed to distribute any Proposals during 
+the Nomic Week beginning May 29th.  Taral is therefore hereby
+penalized 0.5 Blot.
+
+Kelly
+>
+It is my informed belief that Promotor Taral committed three acts of
+Promotor Misrepresentation when e incorrectly distributed the
+Proposals labeled as Proposals 4017, 4018, and 4019.  Taral is hereby
+penalized one Blot each for each of these Infractions, for a total of
+three Blots.  Authority for this Infraction flows from Rule 1770.
+
+I hereby claim that the Proposals distributed as Proposals 4017, 4018,
+and 4019 were part of this week's Batch, since there were three
+undistributed Proposals all of which had higher Priority at the start
+of this Nomic Week.
+
+Kelly
+
+Rule 1770/11 (Power=1)
+Distributing Proposals
+
+      The Current Batch for a given Week is a subset of the Proposal
+      Queue.  Its contents shall be calculated at the beginning of
+      that Week.  It shall contain every Disinterested Proposal then
+      in the Proposal Queue, as well as:
+
+          * all Interested Proposals in the Proposal Queue with
+            Priority greater than zero, if their number is not
+            greater than the Batch Size; or
+
+          * a set of Interested Proposals in the Proposal Queue
+            with the highest positive Priority the cardinality
+            of which is equal to the Batch Size.  Ties for
+            highest Priority shall be broken in favor of those
+            Proposals which have been in the Queue the longest.
+
+      During a Week, the Promotor must distribute all and only
+      Proposals in that Week's Current Batch.  Failure to Distribute
+      all Proposals in that Current Batch during that Week is the
+      Class 0.5 Infraction of Promotor Tardiness.  All Players are
+      authorized to detect and report this Infraction.  Knowingly and
+      willfully distributing a Proposal (or text purporting to be a
+      Proposal) not in the Current Batch is the Class 2 Crime of
+      Promotor Misrepresentation.  All Players are authorized to
+      detect and report this Crime.
+
+      A Player may make a Claim of Error stating that a distributed
+      Proposal was not in the Current Batch at the time it was
+      distributed.  If this is admitted, then:
+
+          * the Voting Period for that Proposal shall immediately
+            end;
+          * all Votes cast on that Proposal shall be cancelled;
+            and
+          * the Promotor shall add the Proposal to the Proposal
+            Queue.
+
+      Once a Proposal is distributed, it is removed from the Proposal
+      Queue.
+
+      The Promotor shall distribute each proposal in the batch to the
+      Public Forum, accompanied by its number, the identity of its
+      Proposing Entity, and an indication of whether the Proposal is
+      Ordinary or Democratic.
+
+      The failure of the Promotor to distribute any of the above
+      accompaniments with a Proposal does not deprive the
+      distribution of the Proposal of any legal effect.
+
+      A Proposal is only considered to be legally distributed if it
+      is explicitly marked as such. The Promotor is permitted to
+      publish the text of undistributed Proposals without necessarily
+      distributing them.
+
+      Immediately after all Proposals in the Current Batch have
+      been distributed the Promotor shall reduce the Priority of all
+      Proposals remaining in the Queue to half of their previous
+      values, rounding fractions down.
+
+Rule 1503/4 (Power=1)
+Crimes and Infractions
+
+      Any entity who performs an action defined by the Rules to be a
+      Crime, or fails to perform an action where such failure is
+      defined by the Rules to be a Crime, shall be subject to whatever
+      penalty the Rules prescribe for that Crime upon the execution of
+      a Sentencing Order executed consequent to a judicial finding
+      that e did in fact commit that Crime.
+
+========================================================================
+
