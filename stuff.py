@@ -1,4 +1,5 @@
 import re, textwrap
+from email.utils import parsedate_tz
 
 def andify(strs):
     strs = tuple(strs)
@@ -16,7 +17,7 @@ def rangeify(nums):
     def end_range():
         s, e = str(start), str(expected - 1)
         if s[:2] == e[:2]: e = e[2:]
-        ranges.append('%s-%s' % (s, e))
+        ranges.append(s if s == e else '%s-%s' % (s, e))
     for num in nums:
         if num != expected:
             if expected is not None: end_range()
@@ -24,6 +25,9 @@ def rangeify(nums):
         expected += 1
     end_range()
     return andify(ranges)
+
+def lblrangeify(nums, label):
+    return '%s%s %s' % (label, 's' if len(nums) > 1 else '', rangeify(nums))
 
 def unrangeify(text):
     nums = []

@@ -1,16 +1,5 @@
 from types import FunctionType
-import sys, os, argparse, time
-
-class classmethod_mc(type):
-    def __new__(mcs, name, bases, dct):
-        for k, v in dct.iteritems():
-            if isinstance(v, FunctionType):
-                dct[k] = classmethod(v)#staticmethod(lambda *args: v(ret, *args))
-        ret = type.__new__(mcs, name, bases, dct)
-        if hasattr(ret, '__init__') and ret.__init__ is not object.__init__: ret.__init__()
-        return ret
-class singleton(object):
-    __metaclass__ = classmethod_mc
+import sys, os, argparse, time, mmap
 
 mydir = os.path.dirname(__file__)
 
@@ -142,3 +131,11 @@ if __name__ == '__main__':
         print list(cursor.execute('SELECT * FROM foo'))
         print list(cursor.execute('SELECT * FROM foo WHERE id = 400'))
 
+# subclassing doesn't work
+class MmapWrapper(mmap.mmap):
+    pass
+def fnmmap(path):
+    fp = open(path, 'rb')
+    mm = MmapWrapper(fp.fileno(), 0, access=mmap.ACCESS_READ)
+    mm._fp = fp
+    return mm

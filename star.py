@@ -8,7 +8,7 @@ Subject: [Promotor] %s's %s for %s %s
 
 Hi!  I'm a bot owned by the Promotor.  You are receiving this message because you're listed as an active player of Agora Nomic, and the voting %s of %s in the Star Chamber %s just started.  The Star Chamber (R2409) is designed for secret voting: to cast a vote on a proposal, you must use your code for that proposal in the %s listed below, which I will publicly post at the end of the voting period to allow votes to be verified.
 
-I have publicly posted the SHA-1 %s of each Codebook, which you may use to verify that I have honestly reported yours in this message.  Hashes are to be computed without trailing newlines.  An online SHA-1 calculator may be found at:
+I have publicly posted the SHA-1 %s of each Codebook, which you may use to verify that I have honestly reported yours in this message.  Hashes are to be computed without leading or trailing newlines.  An online SHA-1 calculator may be found at:
 http://www.movable-type.co.uk/scripts/sha1.html
 '''
 def getmailboiler(name, email, nums):
@@ -17,6 +17,17 @@ def getmailboiler(name, email, nums):
         return mailboiler % (name, email, name, 'Codebook', 'Proposal', nums[0], 'period', 'a proposal', 'has', 'Codebook', 'hash')
     else:
         return mailboiler % (name, email, name, 'Codebooks', 'Proposals', stuff.rangeify(nums), 'periods', '%d proposals' % n, 'have', 'Codebooks', 'hashes')
+
+resultboiler = '''CODEBOOKS FOR %s
+
+You can verify the accuracy of this document by checking the SHA-1
+hash of each Codebook against the one listed in the distribution.
+Hashes are to be computed without leading or trailing newlines.
+A simple suggested Perl script for doing so is at:
+http://agora.qoid.us/cbverify.pl
+
+==================================================================
+'''
 
 def readplayers(fn):
     on = False
@@ -95,6 +106,20 @@ elif mode == 'email':
     else:
         if just is not None:
             print >> sys.stderr, 'not found'
+elif mode == 'results':
+    nums, = sys.argv[2:]
+    nums = stuff.unrangeify(nums)
+    message = resultboiler % stuff.lblrangeify(nums, 'Proposal').upper()
+    for num in nums:
+        message += '\nFor Proposal %s:\n\n' % num
+        path = '../starchamber/%s' % num
+        for fn in os.listdir(path):
+            if not fn.endswith('.codebook'): continue
+            name = fn[:-9]
+            message += '%s:\n{\n' % name
+            message += open(os.path.join(path, fn)).read()
+            message += '\n}\n'
+    sys.stdout.write(message)
 
 else:
     print '???'

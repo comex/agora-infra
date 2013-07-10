@@ -2,6 +2,7 @@ my %data = ();
 my @proposals = ();
 my @skipped = ();
 my $have_control;
+my $is_control;
 my $mi = 1000;
 
 my $proptext = qr/Create|Amend|Repeal/i;
@@ -54,6 +55,7 @@ while(<>) {
     $have_control = 0;
     $bracket++ if(/^\[/);
     unless(/^ / || s/^\^\^// || $bracket) { # exempt rule text
+        $is_control = 0;
         if(/(AI|adoption index)\W+([0-9\.]+)/i) {
             control();
             $data{"AI"} = $2;
@@ -65,10 +67,6 @@ while(<>) {
         if(/disi/i) {
             control();
             #$data{"interest"} = 0;
-        }
-        if(/Democratic/i) {
-            control();
-            $data{"chamber"} = "Democratic";
         }
         #if(/titled? ['"{]\s*(.*?)\s*['"}]/i) {
         #    control();
@@ -106,13 +104,22 @@ while(<>) {
            (!$data{"title"} || $data{"text"}) && (
             /(^\s*|submit.*)proposal.*"([^"]*)"/i ||
             /^\s*proposal(,|.*?:)[\s:,]*"?([^\(":]+[^\s\(":])/i ||
-            /^{ (([^\(]*)) \(/i ||
-            /submit.*proposal,\s*(([^,]+)),\s*AI/i ||
-            /submit.*proposal(.*["{](.*?)["}])?/i)) {
+            /^{ (([^\(,]*))( \(|, )/i ||
+            /^(([^\(,]*))( \(|, )(ai|disi|pf)/i ||
+            ((/submit.*proposal,\s*(([^,]+)),\s*AI/i ||
+              /submit.*proposal(.*["{](.*?)["}])?/i) &&
+             !/submit proposals/i))) {
             control();
             if($1) {
                 $data{"title"} = $2;
                 $data{"title"} =~ s/,\s*(AI|co[a-]).*$//;
+            }
+        }
+        if($is_control) {
+            for $chamber ("Democratic", "Ordinary", "Gerontocratic", "Star") {
+                if(index($_, $chamber) != -1) {
+                    $data{"chamber"} = $chamber;
+                }
             }
         }
     }
@@ -152,20 +159,20 @@ Distributability).
 
 $author_len = max(max(map {length($_->{"author_etc"})} @proposals) + 2, 12);
 
-print 'NUM  AI  PF C I AUTHOR' . " " x ($author_len - 6) . "TITLE\n\n";
+print 'NUM  AI  PF C AUTHOR' . " " x ($author_len - 6) . "TITLE\n\n";
 
 for(@proposals) {
-    printf "%-5s%-3s%3s %.1s %s %-${author_len}s", $_->{"ID"}, $_->{"AI"}, $_->{"PF"}, $_->{"chamber"}, $_->{"interest"} ? " " : "D", $_->{"author_etc"};
-    $Text::Wrap::columns=70 - ($author_len + 9);
+    printf "%-5s%-3s%3s %.1s %-${author_len}s", $_->{"ID"}, $_->{"AI"}, $_->{"PF"}, $_->{"chamber"}, $_->{"author_etc"};
+    $Text::Wrap::columns=70 - ($author_len + 14);
     $title = wrap("", "", $_->{"title"});
-    $spaces = "." x 6 . " " x ($author_len + 16 - 6);
+    $spaces = "." x 6 . " " x ($author_len + 14 - 6);
     $title =~ s/\n/\n$spaces/g;
     print "$title\n";
 }
 
 for(@proposals) {
     print "\n}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{\n\n";
-    printf "Proposal %s (AI=%s, PF=Y%d, %s, %s) by %s", $_->{"ID"}, $_->{"AI"}, $_->{"PF"}, $_->{"chamber"}, $_->{"interest"} ? "Interested" : "Disinterested", $_->{"author"};
+    printf "Proposal %s (AI=%s, PF=Y%d, %s) by %s", $_->{"ID"}, $_->{"AI"}, $_->{"PF"}, $_->{"chamber"}, $_->{"author"};
     for(@{$_->{"co-authors"}}) { print ", $_"; }
     printf "\n%s\n\n%s\n", $_->{"title"}, $_->{"text"};
 }

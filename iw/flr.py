@@ -49,8 +49,7 @@ if __name__ == '__main__':
 
 class RulesDatasource(Datasource):
     name = 'rules'
-    def download(cls, verbose=False):
-        return FLRDatasource.download(verbose)
-    name = 'rules'
     cachefiles = ['rules.sqlite']
+    def download(cls, verbose=False):
+        return FLRDatasource().download(verbose)
 

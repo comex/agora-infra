@@ -1,43 +1,55 @@
-from pystuff import singleton, mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, dict_execute
+from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, dict_execute
 import argparse, subprocess, traceback, os, urllib, sys, hashlib, apsw, re
 
-class Datasource(singleton):
+class Datasource():
     depends = []
 
-    def __init__(cls):
-        cls.did_download = set()
-        if hasattr(cls, 'urls'):
-            cls.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in cls.urls]
-        if hasattr(cls, 'cachefiles'):
-            cls.cachefiles = [os.path.join(mydir, 'cache', cf) for cf in cls.cachefiles]
+    def __init__(self):
+        self.did_download = set()
+        if hasattr(self, 'urls'):
+            self.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in self.urls]
+        if hasattr(self, 'cachefiles'):
+            self.cachefiles = [os.path.join(mydir, 'cache', cf) for cf in self.cachefiles]
 
-    def download(cls, verbose=False, url_filter=None, cont=False):
-        for url, filename in cls.urls:
+    def download(self, verbose=False, url_filter=None, use_cont=False):
+        for url, filename in self.urls:
+            if use_cont:
+                try:
+                    cont = os.path.getsize(filename)
+                except OSError: cont = None
+            if url is None: continue
             if url_filter is not None and not re.search(url_filter, url): continue
-            if url in cls.did_download: continue
+            if url in self.did_download: continue
             mkdir_if_absent(os.path.join(mydir, 'downloads'))
             if verbose:
                 print >> sys.stderr, 'Downloading %s...' % url
-            text = subprocess.check_output(
-                ['curl', '-L', '-k', url] +
-                (['-s'] if not verbose else []) +
-                (['-C', '-'] if cont else []))
-            text = cls.preprocess(text)
-            rcs = filename + ',v'
-            if os.path.exists(rcs):
-                subprocess.check_call(['rcs', '-q', '-l', rcs])
-                remove_if_present(filename)
-            open(filename, 'wb').write(text)
-            with chdir(os.path.dirname(rcs)):
-                subprocess.check_call(remove_none(['ci', '-q' if not verbose else None, '-u', '-mupdate', '-t-iw download', rcs]))
-            cls.did_download.add(url)
+            try:
+                text = subprocess.check_output(
+                    ['curl', '--compressed', '-L', '-k', url] +
+                    (['-s'] if not verbose else []) +
+                    (['-C', str(cont)] if cont is not None else []))
+            except subprocess.CalledProcessError as e:
+                if e.returncode == 33:
+                    # curl thinks byte ranges aren't supported; actually there is nothing new
+                    continue
+            text = self.preprocess(text)
+            if not use_cont:
+                rcs = filename + ',v'
+                if os.path.exists(rcs):
+                    subprocess.check_call(['rcs', '-q', '-l', rcs])
+                    remove_if_present(filename)
+            open(filename, 'ab' if cont is not None else 'wb').write(text)
+            if not use_cont:
+                with chdir(os.path.dirname(rcs)):
+                    subprocess.check_call(remove_none(['ci', '-q' if not verbose else None, '-u', '-mupdate', '-t-iw download', rcs]))
+            self.did_download.add(url)
 
-    def cache(cls, verbose=False):
+    def cache(self, verbose=False):
         mkdir_if_absent(os.path.join(mydir, 'cache'))
         # maybe prevent duplicate caching
-        cls._cache(verbose)
+        self._cache(verbose)
 
-    def preprocess(cls, text): return text
+    def preprocess(self, text): return text
 
 class DB(object):
     version = 0
@@ -83,4 +95,4 @@ def all_sources():
     from cotc import CotCDatasource
     from flr import FLRDatasource, RulesDatasource
     from messages import MessagesDatasource
-    return [CotCDatasource, FLRDatasource, RulesDatasource, MessagesDatasource]
+    return [CotCDatasource(), FLRDatasource(), RulesDatasource(), MessagesDatasource()]
