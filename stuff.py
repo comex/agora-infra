@@ -1,5 +1,4 @@
 import re, textwrap
-from email.utils import parsedate_tz
 
 def andify(strs):
     strs = tuple(strs)
@@ -61,3 +60,4 @@ def faildecode(text):
         return text.decode('utf-8')
     except:
         return text.decode('ISO-8859-2')
+

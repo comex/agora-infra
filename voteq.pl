@@ -14,6 +14,8 @@ while(<>) {
     if($pn) {
         if(/^(AGAINST|FOR|PRESENT)/) {
             $v .= substr($1, 0, 1) . "\t";
+        } elsif(/^PASS$/) {
+            $v .= "\t";
         } else {
             $v .= "?\t";
         }

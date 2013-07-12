@@ -132,10 +132,8 @@ if __name__ == '__main__':
         print list(cursor.execute('SELECT * FROM foo WHERE id = 400'))
 
 # subclassing doesn't work
-class MmapWrapper(mmap.mmap):
-    pass
 def fnmmap(path):
     fp = open(path, 'rb')
-    mm = MmapWrapper(fp.fileno(), 0, access=mmap.ACCESS_READ)
-    mm._fp = fp
+    mm = mmap.mmap(fp.fileno(), 0, access=mmap.ACCESS_READ)
+    fp.close()
     return mm

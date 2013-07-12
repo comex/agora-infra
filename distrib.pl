@@ -124,7 +124,7 @@ while(<>) {
         }
     }
 
-    $bracket-- if($bracket && /\]$/);
+    $bracket-- if($bracket && /\]/);
 
     if(!$data{"text"} &&
         /^[-=\s]*$/) {
