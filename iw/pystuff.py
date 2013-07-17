@@ -1,5 +1,5 @@
 from types import FunctionType
-import sys, os, argparse, time, mmap
+import sys, os, argparse, time, mmap, dbhash, bsddb, shelve, UserDict
 
 mydir = os.path.dirname(__file__)
 
@@ -137,6 +137,12 @@ def fnmmap(path):
     mm = mmap.mmap(fp.fileno(), 0, access=mmap.ACCESS_READ)
     fp.close()
     return mm
+
+# we need concurrency support
+dbm = dbhash
+
+def shelf(fn, mode, *args, **kwargs):
+    return shelve.BsdDbShelf(bsddb.hashopen(fn, mode), *args, **kwargs)
 
 import config_default
 try:

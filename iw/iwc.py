@@ -1,5 +1,5 @@
 import argparse
-import datasource, pystuff, cotc
+import datasource, pystuff
 
 all_sources = datasource.all_sources()
 parser = argparse.ArgumentParser(description='Agora database.')
@@ -32,8 +32,6 @@ for source in all_sources:
 parser.add_argument('--download', '-d', action=pystuff.action(lambda: map(download, sources)))
 parser.add_argument('--cache', '-c', action=pystuff.action(lambda: map(cache, sources)))
 parser.add_argument('--update', '-u', action=pystuff.action(lambda: map(update, sources)))
-
-parser.add_argument('--cfj-rematch', action=pystuff.action(lambda: cotc.CFJDB().rematch()))
 
 parser.add_argument('--quiet', '-q', action='store_true', dest='quiet')
 

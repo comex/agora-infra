@@ -1,5 +1,6 @@
-from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, dict_execute
-import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shelf
+import argparse, subprocess, traceback, os, urllib, sys, hashlib, re
+from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, dict_execute, shelf
+import pystuff
 
 class Datasource():
     depends = []
@@ -47,16 +48,26 @@ class Datasource():
 
     def add_cli_options(self, parser): pass
 
+    def cli_print_document(self, num, DB):
+        document = DB.instance().get(num)
+        if document is None:
+            print >> sys.stderr, 'No such document:', num
+            return
+        print document
+
+    def cli_add_print_document(self, parser, name, DB):
+        parser.add_argument('--%s' % name, action=pystuff.action(lambda num: self.cli_print_document(num, DB), nargs=1))
+
 class DB(object):
     version = 0
     def get_path(self, ext):
         mkdir_if_absent(os.path.join(mydir, 'cache'))
-        return os.path.join(mydir, 'cache', self.path) + '.' + ext
+        return os.path.join(mydir, 'cache', self.base_path) + '.' + ext
     def __init__(self, create=False, **kwargs):
         self.new = True
         meta_path = self.get_path('meta')
         exists = os.path.exists(meta_path)
-        self.meta = shelve.open(meta_path, 'c' if create else 'r', -1)
+        self.meta = shelf(meta_path, 'c' if create else 'r', -1)
         if exists:
             version = self.meta.get('version', 0)
             if version == self.version:
@@ -67,14 +78,27 @@ class DB(object):
         else:
             if not create:
                 raise Exception('no such file: %s' % meta_path)
+        if create:
+            self.meta['version'] = self.version
         # delete any other files
         cdir = os.path.join(mydir, 'cache')
-        for fn in os.path.listdir(cdir):
-            if fn.startswith(self.path + '.') and fn != self.path + '.meta':
-                os.path.remove(os.path.join(cdir, fn))
+        for fn in os.listdir(cdir):
+            if fn.startswith(self.base_path + '.') and fn != self.base_path + '.meta':
+                os.remove(os.path.join(cdir, fn))
+    def begin(self):
+        pass
+    def commit(self):
+        pass
+
+    _instance = None
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
 
 def all_sources():
-    from cotc import CotCDatasource
+    from cfjs import CFJDatasource
     from flr import FLRDatasource, RulesDatasource
     from messages import MessagesDatasource
-    return [CotCDatasource(), FLRDatasource(), RulesDatasource(), MessagesDatasource()]
+    return [CFJDatasource(), FLRDatasource(), RulesDatasource(), MessagesDatasource()]
