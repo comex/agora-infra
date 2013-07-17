@@ -1,5 +1,5 @@
 from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, dict_execute
-import argparse, subprocess, traceback, os, urllib, sys, hashlib, apsw, re
+import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shelf
 
 class Datasource():
     depends = []
@@ -49,46 +49,29 @@ class Datasource():
 
 class DB(object):
     version = 0
-    def full_path(self):
+    def get_path(self, ext):
         mkdir_if_absent(os.path.join(mydir, 'cache'))
-        return os.path.join(mydir, 'cache', self.path)
+        return os.path.join(mydir, 'cache', self.path) + '.' + ext
     def __init__(self, create=False, **kwargs):
-        self.conn = apsw.Connection(self.full_path())
-        self.cursor = self.conn.cursor()
-        self.new = False
-        try:
-            version, = next(self.cursor.execute('SELECT version FROM version'))
-        except apsw.SQLError:
+        self.new = True
+        meta_path = self.get_path('meta')
+        exists = os.path.exists(meta_path)
+        self.meta = shelve.open(meta_path, 'c' if create else 'r', -1)
+        if exists:
+            version = self.meta.get('version', 0)
+            if version == self.version:
+                self.new = False
+                return
             if not create:
-                raise
-            self.cursor.execute('CREATE TABLE version(version int); INSERT INTO version VALUES(?)', (self.version,))
-            self.new = True
-            version = self.version
-        if version != self.version:
+                raise Exception('old version: %s' % meta_path)
+        else:
             if not create:
-                raise Exception('bad version')
-            else:
-                os.remove(path)
-                return self.__init__(path, create)
-        if 0: # log queries
-            self.cursor = CursorWrapper(self.cursor)
-
-    def begin(self):
-        self.cursor.execute('BEGIN')
-
-    def commit(self):
-        self.cursor.execute('COMMIT')
-
-    def meta(self, name):
-        return next(self.cursor.execute('SELECT %s FROM meta' % name))[0]
-
-    def set_meta(self, name, value):
-        self.cursor.execute('UPDATE meta SET %s = ?' % name, (value,))
-
-    def document(self, **kwargs):
-        assert len(kwargs) == 1
-        k, v = kwargs.items()[0]
-        return dict_execute(self.cursor, 'SELECT * FROM documents WHERE %s = ?' % k, (v,))
+                raise Exception('no such file: %s' % meta_path)
+        # delete any other files
+        cdir = os.path.join(mydir, 'cache')
+        for fn in os.path.listdir(cdir):
+            if fn.startswith(self.path + '.') and fn != self.path + '.meta':
+                os.path.remove(os.path.join(cdir, fn))
 
 def all_sources():
     from cotc import CotCDatasource
