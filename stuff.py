@@ -15,8 +15,8 @@ def rangeify(nums):
     expected = None
     def end_range():
         s, e = str(start), str(expected - 1)
-        if s[:2] == e[:2]: e = e[2:]
-        ranges.append(s if s == e else '%s-%s' % (s, e))
+        ae = e[2:] if s[:2] == e[:2] else e
+        ranges.append(s if s == e else '%s-%s' % (s, ae))
     for num in nums:
         if num != expected:
             if expected is not None: end_range()

@@ -102,6 +102,39 @@ def split_query(tree, operators):
     #kind, *args = tree
     #if kind == 'and':
 
+def fix_trigrams(text):
+    # encoding is a waste of space, custom tokenizer is REALLY ugly, custom index is annoying, so do this
+    return re.sub('[^a-zA-Z0-9_]', 'z', text)
+
+def get_trigrams(text):
+    #text = fix_trigrams(text)
+    #return ' '.join(set(text[i:i+3] for i in xrange(len(text) - 3)))
+    text = text.encode('utf-8')
+    return set(text[i:i+3] for i in xrange(len(text) - 3))
+
+import anydbm, struct
+class Index:
+    def __init__(self, path, create=False):
+        self.db = anydbm.open(path, 'c' if create else 'w')
+        #self.fp = open(path + '.docs', 'a' if create else 'r')
+
+    def begin(self):
+        self.additions = {}
+
+    def cache(self, docid, words):
+        for word in set(words):
+            self.additions.setdefault(word, []).append(docid)
+
+    def commit(self):
+        for word, docids in self.additions.iteritems():
+            docids = struct.pack('>' + 'I' * len(docids), *docids)
+            self.db[word] = self.db.get(word, '') + docids
+
+
+    def search(self, word):
+        words = self.db.get(word, '')
+        return struct.unpack('>' + 'I' * len(words), words)
+
 if __name__ == '__main__':
     operators = {'foo': None}
     for example in [

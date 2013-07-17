@@ -32,7 +32,7 @@ class FLRDatasource(Datasource):
     urls = [('https://www.eecs.berkeley.edu/~charles/agora/current_flr.txt_comma_v', 'current_flr.txt,v')]
     cachefiles = ['flr_revs.pickle']
 
-    def _cache(cls, verbose):
+    def cache(cls, verbose):
         indirect = StringIO()
         revs = rcs.RCSFile(open(cls.urls[0][1]).read()).get_revisions(indirect)
         for rev in revs:

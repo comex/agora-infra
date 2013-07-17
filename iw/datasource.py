@@ -8,15 +8,14 @@ class Datasource():
         self.did_download = set()
         if hasattr(self, 'urls'):
             self.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in self.urls]
-        if hasattr(self, 'cachefiles'):
-            self.cachefiles = [os.path.join(mydir, 'cache', cf) for cf in self.cachefiles]
 
     def download(self, verbose=False, url_filter=None, use_cont=False):
         for url, filename in self.urls:
+            cont = None
             if use_cont:
                 try:
                     cont = os.path.getsize(filename)
-                except OSError: cont = None
+                except OSError: pass
             if url is None: continue
             if url_filter is not None and not re.search(url_filter, url): continue
             if url in self.did_download: continue
@@ -32,7 +31,7 @@ class Datasource():
                 if e.returncode == 33:
                     # curl thinks byte ranges aren't supported; actually there is nothing new
                     continue
-            text = self.preprocess(text)
+            text = self.preprocess_download(text)
             if not use_cont:
                 rcs = filename + ',v'
                 if os.path.exists(rcs):
@@ -44,17 +43,17 @@ class Datasource():
                     subprocess.check_call(remove_none(['ci', '-q' if not verbose else None, '-u', '-mupdate', '-t-iw download', rcs]))
             self.did_download.add(url)
 
-    def cache(self, verbose=False):
-        mkdir_if_absent(os.path.join(mydir, 'cache'))
-        # maybe prevent duplicate caching
-        self._cache(verbose)
+    def preprocess_download(self, text): return text
 
-    def preprocess(self, text): return text
+    def add_cli_options(self, parser): pass
 
 class DB(object):
     version = 0
+    def full_path(self):
+        mkdir_if_absent(os.path.join(mydir, 'cache'))
+        return os.path.join(mydir, 'cache', self.path)
     def __init__(self, create=False, **kwargs):
-        self.conn = apsw.Connection(self.path(**kwargs))
+        self.conn = apsw.Connection(self.full_path())
         self.cursor = self.conn.cursor()
         self.new = False
         try:
@@ -71,7 +70,7 @@ class DB(object):
             else:
                 os.remove(path)
                 return self.__init__(path, create)
-        if 0:
+        if 0: # log queries
             self.cursor = CursorWrapper(self.cursor)
 
     def begin(self):

@@ -1,7 +1,8 @@
-quorum = 5
+quorum = 6
 
 import sys, re
 from collections import OrderedDict
+notes = []
 props = []
 pbn = {}
 players = set()
@@ -9,6 +10,9 @@ stuff = sys.stdin.read().split('\n--\n')
 for line in stuff[0].split('\n'):
     line = line.rstrip()
     if not line: continue
+    if line.startswith('* '):
+        notes.append(line[2:])
+        continue
     line = line.split('\t')
     if line[0] == '':
         for num in line[1:-1]:
@@ -40,10 +44,13 @@ for line in stuff[0].split('\n'):
                 vlist += [vote[0]] * count
             vlist[vl:] = []
 
-for line, num in re.findall('^(([0-9]+) .*?)\s*$', stuff[1], re.M):
+for line, num in re.findall('^(([0-9]{4}) .*?)\s*$', stuff[1], re.M):
     prop = pbn[int(num)]
     prop['line'] = line
 
+m = re.search('Quorum is ([0-9]+)\.', stuff[1][:stuff[1].find('}{}{')])
+if m:
+    quorum = m.group(1)
 
 for text, num, ai, pf, authors in re.findall('\n(}{}{}[^\n]*\n\nProposal ([0-9]+) \(AI=([^,]*), PF=Y([^,]*)[^\)]*\) by ([^\n]*).*?)(?=\n(?:\n*$|}{}{}))', stuff[1], re.S):
     prop = pbn[int(num)]
@@ -65,7 +72,7 @@ for prop in props:
                 prop['f'] += 1
             elif vote == 'A':
                 prop['a'] += 1
-        prop['n'] += 1
+        if votes: prop['n'] += 1
     prop['vi'] = None if prop['a'] == 0 else (float(prop['f']) / prop['a'])
     if prop['n'] < quorum:
         prop['result'] = '!'
@@ -169,6 +176,10 @@ def print_awards(xs, is_yaks):
         plen = max(len(who) for who, num in xs)
         for who, num in xs:
             print '  %-*s  %s%s' % (plen, who, 'Y' if is_yaks else '', num)
+
+if notes:
+    print
+    for note in notes: print note
 
 print
 print 'Yak awards:'

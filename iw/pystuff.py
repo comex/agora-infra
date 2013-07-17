@@ -137,3 +137,13 @@ def fnmmap(path):
     mm = mmap.mmap(fp.fileno(), 0, access=mmap.ACCESS_READ)
     fp.close()
     return mm
+
+import config_default
+try:
+    import config
+except ImportError:
+    config = config_default
+else:
+    for key in dir(config_default):
+        if not key.startswith('_') and not hasattr(config, key):
+            setattr(config, key, getattr(config_default, key))
