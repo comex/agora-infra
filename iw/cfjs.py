@@ -1,7 +1,7 @@
 import gzip, re, apsw, sys, datetime, time, multiprocessing, os, tarfile, traceback, itertools
 import cStringIO, StringIO
 from datasource import Datasource, DB
-from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, dbm, shelf
+from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, dbm, shelf, mydir, mkdir_if_absent
 import stuff, pystuff
 
 def try_execute(cursor, stmt):
@@ -383,7 +383,7 @@ class CFJDB(DB):
         if num.startswith('_'): return None
         return self.cfjs.get(num)
 
-    def all_nums(self):
+    def keys(self):
         return [num for num in self.cfjs.keys() if not num.startswith('_')]
 
 class CFJDatasource(Datasource):
@@ -412,7 +412,7 @@ class CFJDatasource(Datasource):
                 cfj.begin()
                 cfj.insert(num, stuff.faildecode(open(fn).read().rstrip().replace('\r', '')))
                 cfj.commit()
-        nums = (set(co.all_nums()) - set(cfj.all_nums())) | set(co.nums_since(cfj.meta['last_date']))
+        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta['last_date']))
 
         if verbose:
             print >> sys.stderr, 'Formatting %s new cases...' % len(nums)
@@ -447,8 +447,18 @@ class CFJDatasource(Datasource):
         co.import_(self.urls[0][1], verbose)
         return co
 
+    def export(self):
+        db = CFJDB.instance()
+        base = os.path.join(mydir, 'export')
+        mkdir_if_absent(base)
+        base = os.path.join(base, 'cfj')
+        mkdir_if_absent(base)
+        for num in db.keys():
+            open(os.path.join(base, '%s.txt' % num), 'w').write(db.get(num).encode('utf-8'))
+
     def add_cli_options(self, parser):
         self.cli_add_print_document(parser, 'cfj', CFJDB)
+        parser.add_argument('--export-cfjs', action=pystuff.action(self.export))
 
 if __name__ == '__main__':
     co = CFJDatasource().prepare_cotcdb(False)

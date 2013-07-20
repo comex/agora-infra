@@ -48,9 +48,9 @@ for line, num in re.findall('^(([0-9]{4}) .*?)\s*$', stuff[1], re.M):
     prop = pbn[int(num)]
     prop['line'] = line
 
-m = re.search('Quorum is ([0-9]+)\.', stuff[1][:stuff[1].find('}{}{')])
+m = re.search('Quorum is ([0-9]+)', stuff[1][:stuff[1].find('}{}{')])
 if m:
-    quorum = m.group(1)
+    quorum = int(m.group(1))
 
 for text, num, ai, pf, authors in re.findall('\n(}{}{}[^\n]*\n\nProposal ([0-9]+) \(AI=([^,]*), PF=Y([^,]*)[^\)]*\) by ([^\n]*).*?)(?=\n(?:\n*$|}{}{}))', stuff[1], re.S):
     prop = pbn[int(num)]

@@ -1,4 +1,4 @@
-import argparse, subprocess, traceback, os, urllib, sys, hashlib, re
+import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil
 from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, dict_execute, shelf
 import pystuff
 
@@ -84,7 +84,12 @@ class DB(object):
         cdir = os.path.join(mydir, 'cache')
         for fn in os.listdir(cdir):
             if fn.startswith(self.base_path + '.') and fn != self.base_path + '.meta':
-                os.remove(os.path.join(cdir, fn))
+                path = os.path.join(cdir, fn)
+                if os.path.isdir(path):
+                    assert path.endswith('.index') # better not delete anything important
+                    shutil.rmtree(path)
+                else:
+                    os.remove(path)
     def begin(self):
         pass
     def commit(self):
