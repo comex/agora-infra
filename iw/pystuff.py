@@ -45,42 +45,30 @@ def grab_lines_until(it, end, include=False):
             return lst
         lst.append(line)
 
+class CursorWrapper:
+    def __init__(self, cursor):
+        self.cursor = cursor
+    def __getattr__(self, x):
+        return getattr(self.cursor, x)
+    def execute(self, *args):
+        a = time.time()
+        ret = self.cursor.execute(*args)
+        b = time.time()
+        print >> sys.stderr, 'executing', args, 'took', (b - a)
+        return ret
+
+def dict_execute(cursor, *args, **kwargs):
+    result = cursor.execute(*args, **kwargs)
+    desc = cursor.getdescription()
+    for row in result:
+        yield dict(zip(desc, row))
+
 # subclassing doesn't work
 def fnmmap(path):
     fp = open(path, 'rb')
     mm = mmap.mmap(fp.fileno(), 0, access=mmap.ACCESS_READ)
     fp.close()
     return mm
-
-def read_file(path, mode='r'):
-    fp = open(path, mode)
-    ret = fp.read()
-    fp.close()
-    return ret
-
-def write_file(path, content, mode='w'):
-    fp = open(path, mode)
-    fp.write(content)
-    fp.close()
-
-class JSONStore(dict):
-    def __init__(self, path, rw=False):
-        self.rw = rw
-        self.load()
-        dict.__init__(self)
-
-    def load(self):
-        self.clear()
-        try:
-            self.update(json.load(open(path)))
-        except IOError:
-            if not self.rw:
-                raise
-
-    def save(self):
-        if not self.rw:
-            raise Exception("can't save a read-only JSONStore")
-        json.dump(self, open(path, 'w'))
 
 import config_default
 try:

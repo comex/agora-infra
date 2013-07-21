@@ -1,4 +1,4 @@
-import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil
+import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil, apsw
 from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config
 import pystuff
 
@@ -50,22 +50,21 @@ class Datasource():
         for DB in self.dbs:
             DB(create=True).reindex()
 
-    def add_cli_options(self, parser, args):
-        def download():
-            self.download(not args.quiet, args.url_filter)
-        def cache():
-            self.cache(not args.quiet)))
-        def update():
-            download()
-            cache()
+    def cli_download(self, args):
+        self.download(not args.quiet, args.url_filter)
+    def cli_cache(self, args):
+        self.cache(not args.quiet)
+    def cli_update(self, args):
+        self.cli_download(args)
+        self.cli_cache(args)
+
+    def add_cli_options(self, parser, argsf):
         if hasattr(self, 'download'):
-            parser.add_argument('--download-' + self.name, action=pystuff.action(download))
-        parser.add_argument('--cache-' + self.name, action=pystuff.action(cache)
+            parser.add_argument('--download-' + self.name, action=pystuff.action(lambda: self.cli_download(argsf())))
+        parser.add_argument('--cache-' + self.name, action=pystuff.action(lambda: self.cli_cache(argsf())))
         # download and cache
         if hasattr(self, 'download'):
-            parser.add_argument('--update-' + self.name, action=pystuff.action(update))
-        if config.use_search and hasattr(self, 'dbs'):
-            parser.add_argument('--reindex-' + self.name, action=pystuff.action(self.reindex)
+            parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())))
 
     def cli_print_document(self, num, DB):
         document = DB.instance().get(num)
@@ -77,63 +76,47 @@ class Datasource():
     def cli_add_print_document(self, parser, name, DB):
         parser.add_argument('--%s' % name, action=pystuff.action(lambda num: self.cli_print_document(num, DB), nargs=1))
 
+
 class DB(object):
-    def get_path(self, ext):
+    def full_path(self):
         mkdir_if_absent(os.path.join(mydir, 'cache'))
-        return os.path.join(mydir, 'cache', self.base_path) + '.' + ext
+        return os.path.join(mydir, 'cache', self.path)
     def __init__(self, create=False, **kwargs):
-        self.new = True
-        meta_path = self.get_path('meta')
-        exists = os.path.exists(meta_path)
-        self.meta = JSONStore(meta_path, create)
-        if exists:
-            version = self.meta.get('version', 0)
-            if version == self.version:
-                self.new = False
-            elif not create:
-                raise Exception('old version: %s' % meta_path)
-        else:
-            assert create
-            self.meta['version'] = self.version
-            self.meta.save()
+        self.conn = apsw.Connection(self.full_path())
+        self.cursor = self.conn.cursor()
+        self.new = False
+        try:
+            version, = next(self.cursor.execute('SELECT version FROM version'))
+        except apsw.SQLError:
+            if not create:
+                raise
+            self.cursor.execute('CREATE TABLE version(version int); INSERT INTO version VALUES(?)', (self.version,))
+            self.new = True
+            version = self.version
+        if version != self.version:
+            if not create:
+                raise Exception('bad version')
+            else:
+                os.remove(path)
+                return self.__init__(path, create)
+        if 0: # log queries
+            self.cursor = CursorWrapper(self.cursor)
 
-        if self.new:
-            # delete any other files
-            cdir = os.path.join(mydir, 'cache')
-            for fn in os.listdir(cdir):
-                if fn.startswith(self.base_path + '.') and fn != self.base_path + '.meta':
-                    path = os.path.join(cdir, fn)
-                    if os.path.isdir(path):
-                        assert path.endswith('.index') # better not delete anything important
-                        shutil.rmtree(path)
-                    else:
-                        os.remove(path)
+    def begin(self):
+        self.cursor.execute('BEGIN')
 
-        if config.use_search:
-            self.open_index(create)
+    def commit(self):
+        self.cursor.execute('COMMIT')
 
-    def open_index(self, create):
-        pass
+    def meta(self, name):
+        return next(self.cursor.execute('SELECT %s FROM meta' % name))[0]
 
-    def index(self, key, data, transaction=False):
-        if transaction: self.idx.begin()
-        self.idx.insert(self.index_info(key, data))
-        if transaction: self.idx.commit()
-
-    def reindex(self):
-        if config.use_search:
-            path = self.get_path('index')
-            if os.path.exists(path):
-                shutil.rmtree(path)
-            self.open_index(True)
-            self.idx.begin()
-            for key in self.keys():
-                self.index(w, key, self.get(key))
-            self.idx.commit()
+    def set_meta(self, name, value):
+        self.cursor.execute('UPDATE meta SET %s = ?' % name, (value,))
 
     _instance = None
     @classmethod
-    ef instance(cls):
+    def instance(cls):
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance

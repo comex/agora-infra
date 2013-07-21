@@ -1,7 +1,7 @@
 import gzip, re, apsw, sys, datetime, time, multiprocessing, os, tarfile, traceback, itertools
 import cStringIO, StringIO
 from datasource import Datasource, DB
-from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, dbm, mydir, mkdir_if_absent, read_file, write_file, config, search
+from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, mydir, mkdir_if_absent, config, search
 import stuff, pystuff
 
 def try_execute(cursor, stmt):
@@ -338,72 +338,72 @@ class CotCDB:
                     fn(cells)
                 fn = getattr(self, 'post_' + tbl, None)
                 if fn is not None: fn()
-
 class CFJDB(DB):
-    base_path = 'cfjs'
+    path = 'cfjs.sqlite'
     version = 1
 
     def __init__(self, create=False):
         DB.__init__(self, create)
-        self.dir = self.get_path('text')
-        if create:
-            mkdir_if_absent(self.dir)
+        self.cursor.execute('''
+            CREATE TABLE IF NOT EXISTS cfjs(
+                id integer primary key,
+                number blob,
+                text blob,
+                judges blob,
+                outcome blob,
+                caller blob
+            );
+            CREATE TABLE IF NOT EXISTS meta(
+                id integer primary key,
+                last_date integer default 0,
+                update_date integer default 0
+            );
+            INSERT OR IGNORE INTO meta(id) VALUES(0);
+        ''')
 
     def finalize(self, last_date, verbose=False):
-        self.meta['last_date'] = last_date
-        self.meta['update_date'] = time.time()
-        self.meta.save()
+        self.cursor.execute('''
+            CREATE INDEX IF NOT EXISTS cfjs_number ON cfjs(number);
+            CREATE INDEX IF NOT EXISTS cfjs_outcome ON cfjs(outcome);
+            CREATE INDEX IF NOT EXISTS cfjs_caller ON cfjs(caller);
+        ''')
+        self.set_meta('last_date', last_date)
+        self.set_meta('update_date', time.time())
         self.rematch(verbose)
 
-    def open_index(self, create):
-        self.idx = search.Index({
-            'num': search.field.name,
-            'text': search.field.text(stored=True),
-            'judges': search.field.comma_sep, 
-            'outcome': search.field.text,
-            'caller': search.field.text,
-        }, self.get_path('index'), create)
-
-    def index_info(self, num, fmt):
-        data = {}
-        data['num'] = num
-        data['text'] = fmt
-        data['judges'] = ','.join(re.findall('^\s*(?:Judge|Panelist):\s*(.*?)\s*$', fmt, re.M))
-        outcomes = re.findall('^\s*(?:Judgement|Decision):\s*(.*?)\s*$', text, re.M)
-        if outcomes:
-            data['outcome'] = outcomes[-1]
-        else:
-            data['outcome'] = ''
-        m = re.search('^(?:Caller|Called by):\s*(.*)$', text, re.M)
-        if m:
-            data['caller'] = m.group(1)
-        else:
-            data['caller'] = ''
-        data['text'] = fmt
-        return data
-
-    def cfj_path(self, num):
-        return os.path.join(self.dir, num + '.txt')
+    def rematch(self, verbose=False):
+        if verbose:
+            print >> sys.stderr, 'rematch...'
+        self.begin()
+        updates = []
+        for id, text in self.items():
+            judges = '|%s|' % '|'.join(set(re.findall('^\s*(?:Judge|Panelist):\s*(.*?)\s*$', text, re.M)))
+            outcomes = re.findall('^\s*(?:Judgement|Decision):\s*(.*?)\s*$', text, re.M)
+            outcome = outcomes[-1] if outcomes else ''
+            m = re.search('^(?:Caller|Called by):\s*(.*)$', text, re.M)
+            caller = m.group(1) if m else ''
+            updates.append((judges, outcome, caller, id))
+        self.cursor.executemany('UPDATE cfjs SET judges = ?, outcome = ?, caller = ? WHERE id = ?', updates)
+        self.commit()
 
     def insert(self, num, fmt):
-        write_file(self.cfj_path(num), fmt)
-        if config.use_search:
-            self.index(num, fmt, True)
-
-    def get(self, num):
-        path = self.cfj_path(num)
-        try:
-            return read_file(path)
-        except IOError:
-            return None
+        self.cursor.execute('INSERT INTO cfjs(number, text) VALUES(?, ?)', (num, fmt))
 
     def keys(self):
-        return [fn[:-4] for fn in os.listdir(self.dir) if re.match('[0-9].*\.txt$', fn)]
+        return [num for num, in self.cursor.execute('SELECT number FROM cfjs ORDER BY number')]
+
+    def items(self):
+        return self.cursor.execute('SELECT id, text FROM cfjs')
+
+    def get(self, num):
+        try:
+            return next(self.cursor.execute('SELECT text FROM cfjs WHERE number = ?', (num,)))[0]
+        except StopIteration:
+            return None
 
 class CFJDatasource(Datasource):
     name = 'cfjs'
     urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
-    dbs = [CFJDB]
     def preprocess_download(self, text):
         data = gzip.GzipFile(fileobj=cStringIO.StringIO(text)).read()
         try:
@@ -425,7 +425,7 @@ class CFJDatasource(Datasource):
                 num = fn.replace('.txt', '').lstrip('0')
                 fn = os.path.join(sd, fn)
                 cfj.insert(num, stuff.faildecode(open(fn).read().rstrip().replace('\r', '')))
-        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta['last_date']))
+        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta('last_date')))
 
         if verbose:
             print >> sys.stderr, 'Formatting %s new cases...' % len(nums)
