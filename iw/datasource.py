@@ -9,6 +9,7 @@ class Datasource():
         self.did_download = set()
         if hasattr(self, 'urls'):
             self.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in self.urls]
+        self.operators = {None: self}
 
     def download(self, verbose=False, url_filter=None, use_cont=False):
         for url, filename in self.urls:
@@ -50,6 +51,15 @@ class Datasource():
         for DB in self.dbs:
             DB(create=True).reindex()
 
+    def search(self, expr, start=):
+        l = search.lex_query(expr)
+        ok, p = search.parse_query(l, self.operators)
+        if ok != 'ok':
+            return (ok, p)
+        o = search.optimize_query(p)
+        it = iter(search.run_query(o, self.operators))
+        results = []
+
     def cli_download(self, args):
         self.download(not args.quiet, args.url_filter)
     def cli_cache(self, args):
@@ -57,6 +67,8 @@ class Datasource():
     def cli_update(self, args):
         self.cli_download(args)
         self.cli_cache(args)
+    def cli_search(self, args, expr):
+        print self.search(expr)
 
     def add_cli_options(self, parser, argsf):
         if hasattr(self, 'download'):
@@ -65,6 +77,8 @@ class Datasource():
         # download and cache
         if hasattr(self, 'download'):
             parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())))
+
+        parser.add_Argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1))
 
     def cli_print_document(self, num, DB):
         document = DB.instance().get(num)

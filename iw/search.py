@@ -1,4 +1,5 @@
-import re, sre_parse, sre_constants, collections
+import re, sre_parse, sre_constants, collections, time, operator
+from collections import namedtuple
 from pystuff import config, mkdir_if_absent
 
 def lex_query(text):
@@ -66,6 +67,9 @@ def parse_query(tokens, operators):
                 errors.append('Regex error: %s' % e.message)
                 continue
             trigrams = re_trigrams(regex, flags)
+            if trigrams is None:
+                errors.append('Regex un-indexable')
+                continue
             tree = ('regex', r, trigrams)
         if inverted: tree = ('not', tree)
         if is_or:
@@ -89,145 +93,206 @@ def parse_query(tokens, operators):
         errors.append('Mismatched (')
     if errors:
         return ('errors', errors)
-    return ('ok', existing)
+    elif not existing:
+        return ('empty', None)
+    else:
+        return ('ok', existing)
 
 def pprint(tree, indent=''):
     if isinstance(tree, tuple):
-        print indent + tree[0]
+        print indent + str(tree[0])
         for sub in tree[1:]:
             pprint(sub, indent + '  ')
     else:
         print indent + str(tree)
 
-def split_query(tree, operators):
-    pass
-    #kind, *args = tree
-    #if kind == 'and':
+def optimize_query(tree):
+    if tree[0] == 'and' or tree[0] == 'or':
+        kind = tree[0]
+        args = []
+        lits = []
 
-def get_trigrams(text):
-    #text = fix_trigrams(text)
-    #return ' '.join(set(text[i:i+3] for i in xrange(len(text) - 3)))
-    text = text.encode('utf-8')
-    return set(text[i:i+3] for i in xrange(len(text) - 3))
+        def add_arg(r):
+            if r[0] == 'lit':
+                lits.append(r[1])
+            else:
+                args.append(r)
 
-# http://swtch.com/~rsc/regexp/regexp4.html
-PatternInfo = collections.namedtuple('PatternInfo', ['emptyable', 'exact', 'prefix', 'suffix', 'match'])
-
-class MakePatternInfo:
-    @staticmethod
-    def str_union(a, b):
-        i = 0
-        for i in xrange(min(len(a), len(b))):
-            if a[i] != b[i]:
-                break
-        return a[:i]
-
-    # these are sets or None
-    @staticmethod
-    def match_and(a, b):
-        if a is None: return b
-        if b is None: return a
-        return a & b
-
-    @staticmethod
-    def match_or(a, b):
-        if a is None or b is None: return None
-        return a | b
-
-    def _any(self, none): # .
-        return PatternInfo(False, None, '', '', None)
-    # ANY_ALL unused
-    def _assert(self, (dir, sp)):
-        # like an empty string
-        return None
-    _assert_not = _assert
-    def _at(self, where):
-        return None
-    def _category(self, cat):
-        return self._any(None)
-    def _groupref(self):
-        # same as .*
-        return PatternInfo(False, None, '', '', None)
-    def _groupref_exists(self, (group, yes, no)):
-        return self._in([yes, no])
-    def _in(self, subs):
-        pi = subs[0]
-        for opi in subs[1:]:
-            pi = PatternInfo(
-                pi.emptyable or opi.emptayble,
-                pi.exact or opi.exact,
-                self.str_union(pi.prefix, opi.prefix),
-                self.str_union(pi.suffix, opi.suffix),
-                self.match_or(pi.match, opi.match)
-            )
-        return pi
-
-    def _literal(self, val):
-        val = chr(val).lower()
-        return PatternInfo(False, val, val, val, None)
-    def _not_literal(self, val):
-        return self._any(None)
-    def _max_repeat(self, (min, max, item)):
-        if min >= 1:
-            return self.go_sub(item)._replace(exact=None)
+        for subtree in [tree[1], tree[2]]:
+            r = optimize_query(subtree)
+            if r[0] == tree[0]:
+                map(add_arg, r[1:])
+            else:
+                add_arg(r)
+        if lits:
+            if len(lits) == 1:
+                args.append(('lit', lits[0]))
+            else:
+                args.append(('lit', (kind,) + tuple(lits)))
+        if len(args) == 1:
+            return args[0]
         else:
-            return PatternInfo(True, None, '', '', None)
-    def _min_repeat(self, tup):
-        # e.g. x*?
-        return self._max_repeat(tup)
-    def _range(self, arg):
-        return self._any(None)
-    def _subpattern(self, (num, sp)):
-        return self.go_sub(sp)
+            return (kind,) + tuple(args)
+    else:
+        return tree
 
-    def go_sub(self, p):
-        pi = PatternInfo(True, '', '', '', None)
-        for kind, arg in p:
-            wpi = getattr(self, '_' + kind)(arg)
-            if wpi is None:
-                # this is effectively nothing
+class QueryTimeoutException(Exception): pass
+
+def run_query(tree, operators, deadline):
+    if deadline is None:
+        deadline = time.time() + 2.5
+    if time.time() > deadline:
+        raise QueryTimeoutException
+    if tree[0] == 'or':
+        def func():
+            already = set()
+            for subtree in tree[1:]:
+                results = run_query(subtree, operators, deadline)
+                for result in results:
+                    if result in already: continue
+                    yield result
+                    already.add(result)
+        return func()
+    elif tree[0] == 'and':
+        def func():
+            subits = [iter(run_query(subtree, operators, deadline))
+                      for subtree in tree[1:]]
+            subit_count = len(subits)
+            ids = [-1] * (len(subits) - 1)
+            while subit_count > 0:
+                first_id = next(subits[0])
+                for i, id in enumerate(ids):
+                    while id < first_id:
+                        try:
+                            id = next(subits[i+1])
+                        except StopIteration:
+                            return # there is nothing more
+                    ids[i] = id
+                    if id > first_id:
+                        break # not matching
+                else: # all through
+                    yield id
+        return func()
+    elif tree[0] == 'lit':
+        db = operators[None]
+        return db.index.word.search(tree[1])
+    elif tree[0] == 'regex':
+        db = operators[None]
+        r, trigrams = tree[1], tree[2]
+        trigram_hits = db.index.trigram.search(trigrams)
+        results = set()
+
+        def func():
+            for result in trigram_hits:
+                if time.time() > deadline:
+                    raise QueryTimeoutException
+                text = db.get(result)
+                m = r.search(text)
+                if m:
+                    yield result
+        return func()
+    else:
+        raise Exception('bad tree')
+
+# http://swtch.com/~rsc/regexp/regexp4.html but simplified
+# is the simplification appropriate?...
+
+def p_is_dot_star((kind, arg)):
+    # can't use == becaue of hidden SubPattern class
+    if kind is not sre_constants.MAX_REPEAT: return False
+    min, max, sub = arg
+    if min != 0 or max < 4294967295 or len(sub) != 1: return False
+    return sub[0] == (sre_constants.ANY, None)
+
+def p_trigrams(p, litstr=''):
+    sp_stack = []
+    trigrams = []
+    trigrams_set = set()
+    alternates = []
+    it = iter(p)
+
+    # any character
+    any_kinds = (sre_constants.ANY,
+                 sre_constants.NOT_LITERAL,
+                 sre_constants.RANGE,
+                 sre_constants.CATEGORY,
+                 sre_constants.IN)
+    # empty string
+    empty_kinds = (sre_constants.ASSERT,
+                   sre_constants.ASSERT_NOT,
+                   sre_constants.AT)
+    subpattern_kinds = (sre_constants.SUBPATTERN,
+                        sre_constants.MAX_REPEAT)
+    branch_kinds = (sre_constants.BRANCH,
+                    sre_constants.GROUPREF_EXISTS)
+    while True:
+        try:
+            kind, arg = next(it)
+        except StopIteration:
+            if sp_stack:
+                it = sp_stack.pop()
                 continue
-            if pi is None:
-                pi = wpi
-                continue
-            # concatenation
-            pi = PatternInfo(
-                pi.emptyable and wpi.emptyable,
-                (pi.exact + wpi.exact)
-                    if pi.exact is not None and wpi.exact is not None
-                    else None,
-                (pi.exact + wpi.prefix) if pi.exact is not None
-                    else self.str_union(pi.prefix, wpi.prefix) if pi.emptyable
-                    else pi.prefix,
-                (pi.suffix + wpi.exact) if wpi.exact is not None
-                    else self.str_union(wpi.suffix, pi.suffix) if wpi.emptyable
-                    else wpi.suffix,
-                self.match_and(pi.match, wpi.match)
-            )
+            else:
+                break
 
-        return pi
+        if kind in any_kinds:
+            litstr = ''
+        elif kind in empty_kinds:
+            pass
+        elif kind in branch_kinds:
+            if kind is sre_constants.GROUPREF_EXISTS:
+                group, yes, no = arg
+                arg = [yes, no]
+            else:
+                something, arg = arg
+            for sp in arg:
+                alt = p_trigrams(sp, litstr)
+                if alt is not None and alternates is not None:
+                    alternates.append(alt)
+                else:
+                    alternates = None # could be anything
+            litstr = ''
+        elif kind is sre_constants.MAX_REPEAT:
+            min, max, sub = arg
+            if min >= 1:
+                # same trigrams as the string itself
+                sp_stack.append(it)
+                it = iter(sub)
+            else:
+                litstr = ''
+        elif kind is sre_constants.SUBPATTERN:
+            sp_stack.append(it)
+            group, sub = arg
+            it = iter(sub)
+        elif kind is sre_constants.LITERAL:
+            litstr = litstr[-2:] + chr(arg).lower()
+            if len(litstr) == 3 and litstr not in trigrams_set:
+                trigrams_set.add(litstr)
+                trigrams.append(litstr)
+        else:
+            raise Exception('unknown kind %s' % kind)
 
-    @staticmethod
-    def is_dot_star((kind, arg)):
-        # can't use == becaue of hidden SubPattern class
-        if kind is not sre_constants.MAX_REPEAT: return False
-        min, max, sub = arg
-        if min != 0 or max < 4294967295 or len(sub) != 1: return False
-        return sub[0] == (sre_constants.ANY, None)
+    if len(trigrams) > 10:
+        trigrams = trigrams[:5] + trigrams[-5:]
 
-    def go(self, p):
-        p = list(p)
-        while p and self.is_dot_star(p[0]):
-            p.pop(0)
-        while p and self.is_dot_star(p[-1]):
-            p.pop()
-        return self.go_sub(p)
-
+    texpr = ('and',) + tuple(trigrams)
+    aexpr = ('or',) + tuple(alternates)
+    if trigrams and alternates:
+        return ('and', texpr, aexpr)
+    elif trigrams:
+        return rexpr
+    elif alternates:
+        return texpr
+    else:
+        return None
 
 def re_trigrams(regex, flags):
-    p = sre_parse.parse(regex, flags)
-    info = MakePatternInfo().go(p)
-    print '!', info
+    p = list(sre_parse.parse(regex, flags))
+    while p and p_is_dot_star(p[0]):
+        p.pop(0)
+    while p and p_is_dot_star(p[-1]):
+        p.pop()
+    return p_trigrams(p)
 
 class Index:
     def __init__(self, name, db):
@@ -235,7 +300,8 @@ class Index:
         self.db = db
         if db.new:
             db.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, content='', text text);' % (name, self.fts_opts))
-        self.insert_stmt = 'INSERT INTO %s(docid, text) VALUES(?, ?)' % self.name
+        self.insert_stmt = 'INSERT INTO %s(docid, text) VALUES(?, ?)' % name
+        self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ?' % name
 
     def begin(self):
         pass
@@ -245,6 +311,23 @@ class Index:
 
     def _insert(self, docid, text):
         self.db.cursor.execute(self.insert_stmt, (docid, text))
+
+    @staticmethod
+    def to_sql(bit):
+        if isinstance(bit, tuple):
+            if bit[0] == 'and':
+                j = ' '
+            else:
+                assert bit[0] == 'or'
+                j = ' OR '
+            return j.join('(%s)' % Index.to_sql(sub) for sub in bit[1:])
+        else:
+            return '"%s"' % bit
+
+    def search(self, query, deadline=None):
+        sql = Index.to_sql(query)
+        result = self.db.cursor.execute(self.search_stmt, (sql,))
+        return (docid for docid, in result)
 
 class WordIndex(Index):
     fts_opts = 'tokenize=porter'
@@ -257,22 +340,22 @@ class TrigramIndex(Index):
         text = str(text).lower().encode('hex')
         self._insert(docid, ' '.join(set(text[i:i+6] for i in xrange(0, len(text) - 6, 2))))
 
-class CombinedIndex(Index):
+class CombinedIndex:
     def __init__(self, name, db):
-        self.widx = WordIndex(name + '_word', db)
-        self.tidx = TrigramIndex(name + '_trigram', db)
+        self.word = WordIndex(name + '_word', db)
+        self.trigram = TrigramIndex(name + '_trigram', db)
 
     def begin(self):
-        self.widx.begin()
-        self.tidx.begin()
+        self.word.begin()
+        self.trigram.begin()
 
     def commit(self):
-        self.widx.commit()
-        self.tidx.commit()
+        self.word.commit()
+        self.trigram.commit()
 
     def insert(self, docid, text):
-        self.widx.insert(docid, text)
-        self.tidx.insert(docid, text)
+        self.word.insert(docid, text)
+        self.trigram.insert(docid, text)
 
 if __name__ == '__main__':
     import sys
@@ -291,9 +374,12 @@ if __name__ == '__main__':
     for example in examples:
         print repr(example)
         l = lex_query(example)
-        print ' -->', l
-        p = parse_query(l, operators)
-        print ' -->'
-        pprint(p)
-        s = split_query(p, operators)
-        print ' -->', s
+        print ' lex:', l
+        ok, p = parse_query(l, operators)
+        if ok == 'ok':
+            o = optimize_query(p)
+            print ' par:', ok
+            pprint(o, indent='   ')
+        else:
+            print ' par:'
+            pprint((ok, p), indent='   ')
