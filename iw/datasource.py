@@ -1,5 +1,5 @@
 import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil
-from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, dict_execute, shelf
+from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config
 import pystuff
 
 class Datasource():
@@ -46,7 +46,26 @@ class Datasource():
 
     def preprocess_download(self, text): return text
 
-    def add_cli_options(self, parser): pass
+    def reindex(self):
+        for DB in self.dbs:
+            DB(create=True).reindex()
+
+    def add_cli_options(self, parser, args):
+        def download():
+            self.download(not args.quiet, args.url_filter)
+        def cache():
+            self.cache(not args.quiet)))
+        def update():
+            download()
+            cache()
+        if hasattr(self, 'download'):
+            parser.add_argument('--download-' + self.name, action=pystuff.action(download))
+        parser.add_argument('--cache-' + self.name, action=pystuff.action(cache)
+        # download and cache
+        if hasattr(self, 'download'):
+            parser.add_argument('--update-' + self.name, action=pystuff.action(update))
+        if config.use_search and hasattr(self, 'dbs'):
+            parser.add_argument('--reindex-' + self.name, action=pystuff.action(self.reindex)
 
     def cli_print_document(self, num, DB):
         document = DB.instance().get(num)
@@ -59,7 +78,6 @@ class Datasource():
         parser.add_argument('--%s' % name, action=pystuff.action(lambda num: self.cli_print_document(num, DB), nargs=1))
 
 class DB(object):
-    version = 0
     def get_path(self, ext):
         mkdir_if_absent(os.path.join(mydir, 'cache'))
         return os.path.join(mydir, 'cache', self.base_path) + '.' + ext
@@ -67,37 +85,55 @@ class DB(object):
         self.new = True
         meta_path = self.get_path('meta')
         exists = os.path.exists(meta_path)
-        self.meta = shelf(meta_path, 'c' if create else 'r', -1)
+        self.meta = JSONStore(meta_path, create)
         if exists:
             version = self.meta.get('version', 0)
             if version == self.version:
                 self.new = False
-                return
-            if not create:
+            elif not create:
                 raise Exception('old version: %s' % meta_path)
         else:
-            if not create:
-                raise Exception('no such file: %s' % meta_path)
-        if create:
+            assert create
             self.meta['version'] = self.version
-        # delete any other files
-        cdir = os.path.join(mydir, 'cache')
-        for fn in os.listdir(cdir):
-            if fn.startswith(self.base_path + '.') and fn != self.base_path + '.meta':
-                path = os.path.join(cdir, fn)
-                if os.path.isdir(path):
-                    assert path.endswith('.index') # better not delete anything important
-                    shutil.rmtree(path)
-                else:
-                    os.remove(path)
-    def begin(self):
+            self.meta.save()
+
+        if self.new:
+            # delete any other files
+            cdir = os.path.join(mydir, 'cache')
+            for fn in os.listdir(cdir):
+                if fn.startswith(self.base_path + '.') and fn != self.base_path + '.meta':
+                    path = os.path.join(cdir, fn)
+                    if os.path.isdir(path):
+                        assert path.endswith('.index') # better not delete anything important
+                        shutil.rmtree(path)
+                    else:
+                        os.remove(path)
+
+        if config.use_search:
+            self.open_index(create)
+
+    def open_index(self, create):
         pass
-    def commit(self):
-        pass
+
+    def index(self, key, data, transaction=False):
+        if transaction: self.idx.begin()
+        self.idx.insert(self.index_info(key, data))
+        if transaction: self.idx.commit()
+
+    def reindex(self):
+        if config.use_search:
+            path = self.get_path('index')
+            if os.path.exists(path):
+                shutil.rmtree(path)
+            self.open_index(True)
+            self.idx.begin()
+            for key in self.keys():
+                self.index(w, key, self.get(key))
+            self.idx.commit()
 
     _instance = None
     @classmethod
-    def instance(cls):
+    ef instance(cls):
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance

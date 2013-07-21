@@ -1,145 +1,106 @@
 import re
 from pystuff import config, mkdir_if_absent
+import whoosh.index, whoosh.fields, whoosh.query, whoosh.qparser, whoosh.qparser.syntax, whoosh.qparser.plugins, whoosh.qparser.dateparse, whoosh.matching
 
-def lex_query(text):
-    # -bar, but foo-bar is one term
-    ms = re.finditer(r'''
-        (?P<or> OR (?= ["/\s()] ) \s* )?
-        (?P<plusminus> [+-] )?
-        (
-            " (?P<quoted> [^"]* ) "
-          | / (?P<regex> (?: [^\\] | \\. )* ) / (?P<regopts> [a-zA-Z]* )
-          | (?P<operator> [a-zA-Z-]+ ) : (?P<operand> [^"/\s\(\)]* )
-          | (?P<parens> [()] )
-          | (?P<simple> [^"/\s()]+ )
-        )
-    ''', text, re.X)
-    return [{k: v for (k, v) in m.groupdict().iteritems() if v is not None} for m in ms]
+class field:
+    string = whoosh.fields.ID
+    name = string
+    date = whoosh.fields.DATETIME
+    text = whoosh.fields.TEXT
+    ngram = whoosh.fields.NGRAM(minsize=3, maxsize=3)
+    comma_sep = whoosh.fields.KEYWORD(commas=True)
 
-def parse_query(tokens, operators):
-    errors = []
-    stack = []
-    def err_if_absent(error):
-        if error not in errors:
-            errors.append(error)
-    existing, was_and = None, False
-    for token in tokens:
-        inverted = token.get('plusminus') == '-'
-        is_or = token.get('or')
-        if 'parens' in token:
-            if token['parens'] == '(':
-                stack.append((existing, inverted, is_or, was_and))
-                existing, was_and = None, False
-                continue
-            else: # )
-                if not stack:
-                    err_if_absent('Mismatched )')
-                    continue
-                else:
-                    tree = existing
-                    existing, inverted, is_or, was_and = stack.pop()
-                    if tree is None: continue
-        elif 'quoted' in token:
-            tree = ('lit', token['quoted'])
-        elif 'simple' in token:
-            if token['simple'] == 'OR':
-                err_if_absent('Bad OR')
-                continue
-            tree = ('lit', token['simple'])
-        elif 'operator' in token:
-            operator, operand = token['operator'], token['operand']
-            if operator not in operators or operator in ('regex', 'lit'):
-                errors.append('No such operator %s' % operator)
-                continue
-            tree = (operator, operand)
-        elif 'regex' in token:
-            regex, regopts = token['regex'], token['regopts']
-            flags = 0
-            for opt in regopts.upper():
-                if opt in 'IMSX':
-                    flags |= getattr(re, opt)
-                else:
-                    err_if_absent('Unknown regex flags')
-            try:
-                r = re.compile(regex, flags)
-            except re.error as e:
-                errors.append('Regex error: %s' % e.message)
-                continue
-            tree = ('regex', r)
-        if inverted: tree = ('not', tree)
-        if is_or:
-            if existing is None:
-                err_if_absent('Bad OR')
-                continue
-            if was_and:
-                existing = ('and', existing[1], ('or', existing[2], tree))
-            else:
-                existing = ('or', existing, tree)
-                was_and = False
-        else:
-            if existing is not None:
-                existing = ('and', existing, tree)
-                was_and = True
-            else:
-                existing = tree
-                was_and = False
+class RegexMatcher(whoosh.matching.WrappingMatcher):
+    def __init__(self, re, searcher, child, boost=1.0):
+        super(RegexMatcher, self).__init__(child, boost)
+        self.re = re
+        self.searcher = searcher
+    def reset(self):
+        self.child.reset()
+        self._find_next()
+    def next(self):
+        self.child.next()
+        self._find_next()
+    def skip_to(self, id):
+        self.child.skip_to(id)
+        self._find_next()
+    def _find_next(self):
+        re = self.re
+        r = False
+        while self.child.is_active() and not self._matches():
+            r = self.child.next() or r
+        return r
+    def _matches(self):
+        fields = self.searcher.stored_fields(self.child.id())
+        print '>>> matches', fields
 
-    if stack:
-        errors.append('Mismatched (')
-    if errors:
-        return ('errors', errors)
-    return ('ok', existing)
 
-def pprint(tree, indent=''):
-    if isinstance(tree, tuple):
-        print indent + tree[0]
-        for sub in tree[1:]:
-            pprint(sub, indent + '  ')
-    else:
-        print indent + str(tree)
+class RegexQuery(whoosh.query.Query):
+    def __init__(self, fieldname, regex):
+        self.fieldname = fieldname
+        self.regex = regex
+        self.term = Term(fieldname + '!trigram', regex) # XXX
+    def estimate_size(self, ixreader):
+        return ixreader.doc_count()
+    def existing_terms(self, ixreader, termset=None, reverse=False, phrases=True, expand=False):
+        return [] # xxx
+    def matcher(self, searcher, context=None):
+        return RegexMatcher(self.re, searcher, self.term.matcher(searcher, context))
 
-def split_query(tree, operators):
-    pass
-    #kind, *args = tree
-    #if kind == 'and':
+class RegexNode(whoosh.qparser.syntax.TextNode):
+    qclass = RegexQuery
 
-def fix_trigrams(text):
-    # encoding is a waste of space, custom tokenizer is REALLY ugly, custom index is annoying, so do this
-    return re.sub('[^a-zA-Z0-9_]', 'z', text)
+    def r(self):
+        print self.__dict__
+        return "Regex %r" % self.regex
 
-def get_trigrams(text):
-    #text = fix_trigrams(text)
-    #return ' '.join(set(text[i:i+3] for i in xrange(len(text) - 3)))
-    text = text.encode('utf-8')
-    return set(text[i:i+3] for i in xrange(len(text) - 3))
 
-if config.use_search:
-    import whoosh.index, whoosh.fields
+class RegexPlugin(whoosh.qparser.plugins.TaggingPlugin):
+    expr = r'/(?P<regex>(?:[^\\]|\\.)*)/(?P<regopts>[a-zA-Z]*)'
+    nodetype = RegexNode
 
 class Index:
-    def __init__(self, path, create=False):
-        schema = whoosh.fields.Schema(words=whoosh.fields.TEXT, ngrams=whoosh.fields.NGRAM(minsize=3, maxsize=3))
+    def __init__(self, schema, path, create=False):
         mkdir_if_absent(path)
+        self.ngrams = []
+        for col, ty in schema.items():
+            if ty is field.text:
+                schema[col + '!trigram'] = field.ngram
+                self.ngrams.append(col)
+        schema = whoosh.fields.Schema(**schema)
         if not whoosh.index.exists_in(path):
-            index = whoosh.index.create_in(path, schema)
+            if not create:
+                raise Exception('no existing index')
+            self.idx = whoosh.index.create_in(path, schema)
+        else:
+            self.idx = whoosh.index.open_dir(path)
+        qp = whoosh.qparser.QueryParser('text', schema)
+        qp.add_plugin(whoosh.qparser.dateparse.DateParserPlugin())
+        qp.add_plugin(RegexPlugin)
+        self.qp = qp
 
+    def begin(self):
+        self.writer = self.idx.writer()
 
+    def insert(self, data):
+        for ng in self.ngrams:
+            data[ng + '!trigram'] = data[ng]
+        self.writer.add_document(**data)
 
+    def commit(self):
+        self.writer.commit()
 
 if __name__ == '__main__':
-    operators = {'foo': None}
-    for example in [
-        'a OR f d OR (g h)',
-        '+test bar -("hi"/test/+x-f) -f',
-        '',
-        '(OR)',
-        '(-)',
-    ]:
-        print repr(example)
-        l = lex_query(example)
-        print ' -->', l
-        p = parse_query(l, operators)
-        print ' -->'
-        pprint(p)
-        s = split_query(p, operators)
-        print ' -->', s
+    import glob, os, stuff
+    try:
+        shutil.rmtree('/tmp/foo.index')
+    except: pass
+    idx = Index({
+        'num': field.name,
+        'text': field.text,
+    }, '/tmp/foo.index', True)
+    idx.begin()
+    for path in glob.glob(os.path.expanduser('~/cfj/cfj/*.txt'))[:100]:
+        print path
+        idx.insert({'num': unicode(path[:-4]), 'text': stuff.faildecode(open(path).read())})
+    idx.commit()

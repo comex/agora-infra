@@ -1,7 +1,7 @@
 import gzip, re, apsw, sys, datetime, time, multiprocessing, os, tarfile, traceback, itertools
 import cStringIO, StringIO
 from datasource import Datasource, DB
-from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, dbm, shelf, mydir, mkdir_if_absent
+from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, dbm, mydir, mkdir_if_absent, read_file, write_file, config, search
 import stuff, pystuff
 
 def try_execute(cursor, stmt):
@@ -345,50 +345,65 @@ class CFJDB(DB):
 
     def __init__(self, create=False):
         DB.__init__(self, create)
-        self.cfjs = shelf(self.get_path('db'), 'c' if create else 'r', -1)
-        if self.new:
-            self.meta['last_date'] = 0
-            self.meta['update_date'] = 0
+        self.dir = self.get_path('text')
+        if create:
+            mkdir_if_absent(self.dir)
 
-    def finalize(self, verbose=False):
+    def finalize(self, last_date, verbose=False):
+        self.meta['last_date'] = last_date
         self.meta['update_date'] = time.time()
+        self.meta.save()
         self.rematch(verbose)
 
-    def rematch(self, verbose=False):
-        if verbose:
-            print >> sys.stderr, 'rematch...'
-        by_judge = {}
-        by_outcome = {}
-        by_caller = {}
-        for num, text in self.cfjs.iteritems():
-            if num.startswith('_'): continue
-            for judge in set(re.findall('^\s*(?:Judge|Panelist):\s*(.*?)\s*$', text, re.M)):
-                by_judge.setdefault(judge, []).append(num)
+    def open_index(self, create):
+        self.idx = search.Index({
+            'num': search.field.name,
+            'text': search.field.text(stored=True),
+            'judges': search.field.comma_sep, 
+            'outcome': search.field.text,
+            'caller': search.field.text,
+        }, self.get_path('index'), create)
 
-            outcomes = re.findall('^\s*(?:Judgement|Decision):\s*(.*?)\s*$', text, re.M)
-            if outcomes:
-                by_outcome.setdefault(outcomes[-1], []).append(num)
-            m = re.search('^(?:Caller|Called by):\s*(.*)$', text, re.M)
-            if m:
-                by_caller.setdefault(m.group(1), []).append(num)
+    def index_info(self, num, fmt):
+        data = {}
+        data['num'] = num
+        data['text'] = fmt
+        data['judges'] = ','.join(re.findall('^\s*(?:Judge|Panelist):\s*(.*?)\s*$', fmt, re.M))
+        outcomes = re.findall('^\s*(?:Judgement|Decision):\s*(.*?)\s*$', text, re.M)
+        if outcomes:
+            data['outcome'] = outcomes[-1]
+        else:
+            data['outcome'] = ''
+        m = re.search('^(?:Caller|Called by):\s*(.*)$', text, re.M)
+        if m:
+            data['caller'] = m.group(1)
+        else:
+            data['caller'] = ''
+        data['text'] = fmt
+        return data
 
-        self.cfjs['_by_judge'] = by_judge
-        self.cfjs['_by_outcome'] = by_outcome
-        self.cfjs['_by_caller'] = by_caller
+    def cfj_path(self, num):
+        return os.path.join(self.dir, num + '.txt')
 
     def insert(self, num, fmt):
-        self.cfjs[num] = fmt
+        write_file(self.cfj_path(num), fmt)
+        if config.use_search:
+            self.index(num, fmt, True)
 
     def get(self, num):
-        if num.startswith('_'): return None
-        return self.cfjs.get(num)
+        path = self.cfj_path(num)
+        try:
+            return read_file(path)
+        except IOError:
+            return None
 
     def keys(self):
-        return [num for num in self.cfjs.keys() if not num.startswith('_')]
+        return [fn[:-4] for fn in os.listdir(self.dir) if re.match('[0-9].*\.txt$', fn)]
 
 class CFJDatasource(Datasource):
     name = 'cfjs'
     urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
+    dbs = [CFJDB]
     def preprocess_download(self, text):
         data = gzip.GzipFile(fileobj=cStringIO.StringIO(text)).read()
         try:
@@ -409,9 +424,7 @@ class CFJDatasource(Datasource):
             for fn in os.listdir(sd):
                 num = fn.replace('.txt', '').lstrip('0')
                 fn = os.path.join(sd, fn)
-                cfj.begin()
                 cfj.insert(num, stuff.faildecode(open(fn).read().rstrip().replace('\r', '')))
-                cfj.commit()
         nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta['last_date']))
 
         if verbose:
@@ -431,34 +444,18 @@ class CFJDatasource(Datasource):
                 raise
         if verbose:
             print >> sys.stderr, 'inserting...'
-        cfj.begin()
         for num, fmt in fmts:
             if fmt is None: fmt = ''
             try:
                 cfj.insert(num, fmt)
             except:
                 print 'failed to insert', num
-        cfj.commit()
-        cfj.meta['last_date'] = co.last_date
-        cfj.finalize(verbose)
+        cfj.finalize(co.last_date, verbose)
 
     def prepare_cotcdb(self, verbose):
         co = CotCDB()
         co.import_(self.urls[0][1], verbose)
         return co
-
-    def export(self):
-        db = CFJDB.instance()
-        base = os.path.join(mydir, 'export')
-        mkdir_if_absent(base)
-        base = os.path.join(base, 'cfj')
-        mkdir_if_absent(base)
-        for num in db.keys():
-            open(os.path.join(base, '%s.txt' % num), 'w').write(db.get(num).encode('utf-8'))
-
-    def add_cli_options(self, parser):
-        self.cli_add_print_document(parser, 'cfj', CFJDB)
-        parser.add_argument('--export-cfjs', action=pystuff.action(self.export))
 
 if __name__ == '__main__':
     co = CFJDatasource().prepare_cotcdb(False)
