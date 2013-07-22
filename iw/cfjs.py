@@ -344,22 +344,27 @@ class CFJDB(DB):
 
     def __init__(self, create=False):
         DB.__init__(self, create)
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS cfjs(
-                id integer primary key,
-                number blob,
-                text blob,
-                judges blob,
-                outcome blob,
-                caller blob
-            );
-            CREATE TABLE IF NOT EXISTS meta(
-                id integer primary key,
-                last_date integer default 0,
-                update_date integer default 0
-            );
-            INSERT OR IGNORE INTO meta(id) VALUES(0);
-        ''')
+
+        if self.new:
+            self.cursor.execute('''
+                CREATE TABLE cfjs(
+                    id integer primary key,
+                    number blob,
+                    text blob,
+                    judges blob,
+                    outcome blob,
+                    caller blob
+                );
+                CREATE TABLE meta(
+                    id integer primary key,
+                    last_date integer default 0,
+                    update_date integer default 0
+                );
+                INSERT OR IGNORE INTO meta(id) VALUES(0);
+            ''')
+
+        if config.use_search:
+            self.idx = search.CombinedIndex('cfjs_search', self)
 
     def finalize(self, last_date, verbose=False):
         self.cursor.execute('''
@@ -388,6 +393,8 @@ class CFJDB(DB):
 
     def insert(self, num, fmt):
         self.cursor.execute('INSERT INTO cfjs(number, text) VALUES(?, ?)', (num, fmt))
+        if config.use_search:
+            self.idx.insert(self.conn.last_insert_rowid(), fmt)
 
     def keys(self):
         return [num for num, in self.cursor.execute('SELECT number FROM cfjs ORDER BY number')]
@@ -401,9 +408,14 @@ class CFJDB(DB):
         except StopIteration:
             return None
 
+    def get_by_id(self, id):
+        return next(self.cursor.execute('SELECT text FROM cfjs WHERE id = ?', (id,)))[0]
+
 class CFJDatasource(Datasource):
     name = 'cfjs'
     urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
+    DB = CFJDB
+
     def preprocess_download(self, text):
         data = gzip.GzipFile(fileobj=cStringIO.StringIO(text)).read()
         try:
@@ -448,8 +460,9 @@ class CFJDatasource(Datasource):
             if fmt is None: fmt = ''
             try:
                 cfj.insert(num, fmt)
-            except:
-                print 'failed to insert', num
+            except Exception, e:
+                if isinstance(e, KeyboardInterrupt): raise
+                print >> sys.stderr, 'failed to insert', num
         cfj.finalize(co.last_date, verbose)
 
     def prepare_cotcdb(self, verbose):

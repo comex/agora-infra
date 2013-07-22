@@ -60,7 +60,7 @@ class Datasource(Singleton):
         self.cli_cache(args)
     def cli_search(self, args, expr):
         db = self.DB.instance()
-        ok, r = self.search(expr, limit=None)
+        ok, r = self.search(expr, limit=args.limit)
         if ok == 'empty':
             print '(empty query)'
         elif ok == 'errors':
@@ -76,7 +76,7 @@ class Datasource(Singleton):
                     print '--'
                 print 'id: %s' % id
                 print
-                print db.get(id)
+                print db.get_by_id(id)
             if first and not args.quiet:
                 print '(no results)'
 
@@ -127,8 +127,10 @@ class DB(Singleton):
 
     def begin(self):
         self.cursor.execute('BEGIN')
+        if hasattr(self, 'idx'): self.idx.begin()
 
     def commit(self):
+        if hasattr(self, 'idx'): self.idx.commit()
         self.cursor.execute('COMMIT')
 
     def meta(self, name):

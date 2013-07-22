@@ -71,6 +71,7 @@ def parse_query(tokens, operators):
         if error not in errors:
             errors.append(error)
     existing, was_and = None, False
+    order = None
     for token in tokens:
         inverted = token.get('plusminus') == '-'
         is_or = bool(token.get('or'))
@@ -96,6 +97,13 @@ def parse_query(tokens, operators):
             tree = ('lit', token['simple'])
         elif 'operator' in token:
             operator, operand = token['operator'], token['operand']
+            if operator == 'order':
+                operand = operand.lower()
+                if operand not in ('asc', 'desc'):
+                    errors.append('Bad order (must be asc or desc)')
+                else:
+                    order = operand
+                continue
             if operator not in operators or operator in ('regex', 'lit'):
                 errors.append('No such operator %s' % operator)
                 continue
@@ -113,11 +121,14 @@ def parse_query(tokens, operators):
             except re.error as e:
                 errors.append('Regex error: %s' % e.message)
                 continue
-            trigrams = re_trigrams(regex, flags)
-            print trigrams
-            if trigrams is None:
-                errors.append('Regex un-indexable')
-                continue
+            db = operators[None]
+            if hasattr(db, 'idx'):
+                trigrams = re_trigrams(regex, flags)
+                if trigrams is None:
+                    errors.append('Regex un-indexable')
+                    continue
+            else:
+                trigrams = None
             tree = ('regex', r, trigrams)
         if inverted: tree = ('not', tree)
         if is_or:
@@ -140,11 +151,11 @@ def parse_query(tokens, operators):
     if stack:
         errors.append('Mismatched (')
     if errors:
-        return ('errors', errors)
+        return ('errors', errors, None)
     elif not existing:
-        return ('empty', None)
+        return ('empty', None, None)
     else:
-        return ('ok', existing)
+        return ('ok', existing, order)
 
 def pprint(tree, indent=''):
     if isinstance(tree, tuple):
@@ -186,33 +197,36 @@ def optimize_query(tree):
 
 class QueryTimeoutException(Exception): pass
 
-def run_query(tree, operators, deadline, limit=None, is_asc=True):
+def run_query(tree, operators, deadline, limit=None, asc=False):
     if time.time() > deadline:
         raise QueryTimeoutException
     if tree[0] == 'or':
         return union_iterables(
             [run_query(subtree, operators, deadline, limit)
              for subtree in tree[1:]],
-            is_asc)
+            asc)
     elif tree[0] == 'and':
         return intersect_iterables(
             [run_query(subtree, operators, deadline, limit)
              for subtree in tree[1:]],
-            is_asc)
+            asc)
     elif tree[0] == 'lit':
         db = operators[None]
-        return db.idx.word.search(tree[1], limit)
+        return db.idx.word.search(tree[1], limit=limit, asc=asc)
     elif tree[0] == 'regex':
         db = operators[None]
         r, trigrams = tree[1], tree[2]
-        trigram_hits = db.idx.trigram.search(trigrams, limit)
+        if trigrams is None: # no index
+            trigram_hits = db.keys()
+        else:
+            trigram_hits = db.idx.trigram.search(trigrams, limit=limit, asc=asc)
         results = set()
 
         def func():
             for result in trigram_hits:
                 if time.time() > deadline:
                     raise QueryTimeoutException
-                text = db.get(result)
+                text = db.get_by_id(result)
                 print (result, len(text))
                 assert text is not None
                 if isinstance(text, dict): text = text['text']
@@ -223,17 +237,19 @@ def run_query(tree, operators, deadline, limit=None, is_asc=True):
     else:
         raise Exception('bad tree')
 
-def do_query(expr, operators, start=0, limit=10, timeout=2.5):
+def do_query(expr, operators, start=0, limit=10, timeout=2.5, asc=False):
     l = lex_query(expr)
-    ok, p = parse_query(l, operators)
+    ok, p, order = parse_query(l, operators)
     if ok != 'ok':
         return (ok, p)
+    if order is not None:
+        asc = order == 'asc'
     o = optimize_query(p)
     if timeout is None:
         deadline = float('inf')
     else:
         deadline = time.time() + 2.5
-    it = iter(run_query(o, operators, deadline, None if limit is None else start + limit))
+    it = iter(run_query(o, operators, deadline, None if limit is None else start + limit, asc))
     for i in xrange(start):
         try:
             next(it)
@@ -358,7 +374,7 @@ class Index:
         if db.new:
             db.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, content='', text text);' % (name, self.fts_opts))
         self.insert_stmt = 'INSERT INTO %s(docid, text) VALUES(?, ?)' % name
-        self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ? LIMIT ?' % name
+        self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ? ORDER BY docid %%s LIMIT ?' % name
         self.cursor = pystuff.CursorWrapper(db.conn.cursor())
 
     def begin(self):
@@ -374,33 +390,38 @@ class Index:
     @staticmethod
     def to_sql(bit):
         if not isinstance(bit, tuple): return bit
-        return {'and': ' ', 'or': ' OR '}[bit[0]].join(s.encode('hex') for s in bit[1:])
+        return {'and': ' ', 'or': ' OR '}[bit[0]].join('"%s"' % s for s in bit[1:])
 
-    def search(self, query, limit=None):
-        if isinstance(query, tuple):
-            tuples = []
-            nontuples = []
-            kind = query[0]
-            for bit in query[1:]:
-                (tuples if isinstance(bit, tuple) else nontuples).append(bit)
-            if tuples:
-                tuples.append((kind,) + tuple(nontuples))
-                subresults = [self.search(subquery, limit if kind == 'and' else None) for subquery in tuples]
-                return (intersect_iterables if kind == 'and' else union_iterables)(subresults)
+    def search(self, query, limit=None, asc=False):
+        if not isinstance(query, tuple): query = ('and', query)
+
+        # deoptimize
+        tuples = []
+        nontuples = []
+        kind = query[0]
+        for bit in query[1:]:
+            (tuples if isinstance(bit, tuple) else nontuples).append(bit)
+        if tuples:
+            tuples.append((kind,) + tuple(nontuples))
+            subresults = [self.search(subquery, limit if kind == 'and' else None) for subquery in tuples]
+            return (intersect_iterables if kind == 'and' else union_iterables)(subresults, asc)
 
         sql = Index.to_sql(query)
-        result = self.db.cursor.execute(self.search_stmt, (sql, 10000000 if limit is None else limit))
+        result = self.db.cursor.execute(self.search_stmt % ('ASC' if asc else 'DESC'), (sql, 10000000 if limit is None else limit))
         return (docid for docid, in result)
 
 class WordIndex(Index):
     fts_opts = 'tokenize=porter'
     insert = Index._insert
 
+def trigram_hexlify(text):
+    return text.encode('ascii', 'replace').lower().encode('hex')
+
 class TrigramIndex(Index):
     fts_opts = 'tokenize=simple'
 
     def insert(self, docid, text):
-        text = str(text).lower().encode('hex')
+        text = trigram_hexlify(text)
         self._insert(docid, ' '.join(set(text[i:i+6] for i in xrange(0, len(text) - 6, 2))))
 
 class CombinedIndex:
@@ -438,10 +459,10 @@ if __name__ == '__main__':
         print repr(example)
         l = lex_query(example)
         print ' lex:', l
-        ok, p = parse_query(l, operators)
+        ok, p, order = parse_query(l, operators)
         if ok == 'ok':
             o = optimize_query(p)
-            print ' par:', ok
+            print ' par:', ok, order
             pprint(o, indent='   ')
         else:
             print ' par:'
