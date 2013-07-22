@@ -1,6 +1,7 @@
 import re, sre_parse, sre_constants, collections, time, operator
 from collections import namedtuple
 from pystuff import config, mkdir_if_absent
+import pystuff
 
 def lex_query(text):
     # -bar, but foo-bar is one term
@@ -67,6 +68,7 @@ def parse_query(tokens, operators):
                 errors.append('Regex error: %s' % e.message)
                 continue
             trigrams = re_trigrams(regex, flags)
+            print trigrams
             if trigrams is None:
                 errors.append('Regex un-indexable')
                 continue
@@ -107,7 +109,12 @@ def pprint(tree, indent=''):
         print indent + str(tree)
 
 def optimize_query(tree):
-    if tree[0] == 'and' or tree[0] == 'or':
+    tree = optimize_1(tree)
+    tree = optimize_2(tree)
+    return tree
+
+def optimize_1(tree):
+    if tree[0] in ('and', 'or'):
         kind = tree[0]
         args = []
         lits = []
@@ -136,30 +143,60 @@ def optimize_query(tree):
     else:
         return tree
 
+def optimize_2(tree):
+    # more like deoptimize literals due to missing parentheses
+    if tree[0] in ('and', 'or'):
+        return (tree[0], optimize_2(tree[1]), optimize_2(tree[2]))
+    elif tree[0] == 'lit':
+        lit = tree[1]
+        if not isinstance(lit, tuple): return tree
+        tuples = []
+        nontuples = []
+        for sub in lit[1:]:
+            (tuples if isinstance(sub, tuple) else nontuples).append(sub)
+        if not tuples:
+            return tree
+        else:
+            return (lit[0], ('lit', (lit[0],) + tuple(nontuples))) + tuple(optimize_2(('lit', t)) for t in tuples)
+    else:
+        return tree
+
 class QueryTimeoutException(Exception): pass
 
-def run_query(tree, operators, deadline):
-    if deadline is None:
-        deadline = time.time() + 2.5
+def run_query(tree, operators, deadline, limit=None):
     if time.time() > deadline:
         raise QueryTimeoutException
     if tree[0] == 'or':
         def func():
-            already = set()
-            for subtree in tree[1:]:
-                results = run_query(subtree, operators, deadline)
-                for result in results:
-                    if result in already: continue
-                    yield result
-                    already.add(result)
+            inf = float('inf')
+            subits = [iter(run_query(subtree, operators, deadline, None))
+                      for subtree in tree[1:]]
+            subit_count = len(subits)
+            ids = [-1] * subit_count
+            while True:
+                min_id = min(ids)
+                if min_id != -1: yield min_id
+                for i, id in enumerate(ids):
+                    if id == min_id: 
+                        try:
+                            ids[i] = next(subits[i])
+                        except StopIteration:
+                            ids[i] = inf
+                            subit_count -= 1
+#            already = set()
+#            for subtree in tree[1:]:
+#                results = run_query(subtree, operators, deadline)
+#                for result in results:
+#                    if result in already: continue
+#                    yield result
+#                    already.add(result)
         return func()
     elif tree[0] == 'and':
         def func():
-            subits = [iter(run_query(subtree, operators, deadline))
+            subits = [iter(run_query(subtree, operators, deadline, limit))
                       for subtree in tree[1:]]
-            subit_count = len(subits)
             ids = [-1] * (len(subits) - 1)
-            while subit_count > 0:
+            while True:
                 first_id = next(subits[0])
                 for i, id in enumerate(ids):
                     while id < first_id:
@@ -175,11 +212,11 @@ def run_query(tree, operators, deadline):
         return func()
     elif tree[0] == 'lit':
         db = operators[None]
-        return db.index.word.search(tree[1])
+        return db.idx.word.search(tree[1], limit)
     elif tree[0] == 'regex':
         db = operators[None]
         r, trigrams = tree[1], tree[2]
-        trigram_hits = db.index.trigram.search(trigrams)
+        trigram_hits = db.idx.trigram.search(trigrams, limit)
         results = set()
 
         def func():
@@ -187,12 +224,40 @@ def run_query(tree, operators, deadline):
                 if time.time() > deadline:
                     raise QueryTimeoutException
                 text = db.get(result)
+                print (result, len(text))
+                assert text is not None
+                if isinstance(text, dict): text = text['text']
                 m = r.search(text)
                 if m:
                     yield result
         return func()
     else:
         raise Exception('bad tree')
+
+def do_query(expr, operators, start=0, limit=10, timeout=2.5):
+    l = lex_query(expr)
+    ok, p = parse_query(l, operators)
+    if ok != 'ok':
+        return (ok, p)
+    o = optimize_query(p)
+    if timeout is None:
+        deadline = float('inf')
+    else:
+        deadline = time.time() + 2.5
+    it = iter(run_query(o, operators, deadline, start + limit))
+    for i in xrange(start):
+        try:
+            next(it)
+        except StopIteration:
+            break
+    results = []
+    for i in xrange(limit):
+        try:
+            results.append(next(it))
+        except StopIteration:
+            break
+    return ('ok', results)
+
 
 # http://swtch.com/~rsc/regexp/regexp4.html but simplified
 # is the simplification appropriate?...
@@ -276,11 +341,11 @@ def p_trigrams(p, litstr=''):
         trigrams = trigrams[:5] + trigrams[-5:]
 
     texpr = ('and',) + tuple(trigrams)
-    aexpr = ('or',) + tuple(alternates)
+    aexpr = None if alternates is None else ('or',) + tuple(alternates)
     if trigrams and alternates:
         return ('and', texpr, aexpr)
     elif trigrams:
-        return rexpr
+        return texpr
     elif alternates:
         return texpr
     else:
@@ -301,7 +366,8 @@ class Index:
         if db.new:
             db.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, content='', text text);' % (name, self.fts_opts))
         self.insert_stmt = 'INSERT INTO %s(docid, text) VALUES(?, ?)' % name
-        self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ?' % name
+        self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ? LIMIT ?' % name
+        self.cursor = pystuff.CursorWrapper(db.conn.cursor())
 
     def begin(self):
         pass
@@ -310,23 +376,16 @@ class Index:
         pass
 
     def _insert(self, docid, text):
-        self.db.cursor.execute(self.insert_stmt, (docid, text))
+        self.cursor.execute(self.insert_stmt, (docid, text))
 
+    # No SQLITE_ENABLE_FTS3_PARENTHESIS means trouble
     @staticmethod
     def to_sql(bit):
-        if isinstance(bit, tuple):
-            if bit[0] == 'and':
-                j = ' '
-            else:
-                assert bit[0] == 'or'
-                j = ' OR '
-            return j.join('(%s)' % Index.to_sql(sub) for sub in bit[1:])
-        else:
-            return '"%s"' % bit
+        return {'and': ' ', 'or': ' OR '}[bit[0]].join(s.encode('hex') for s in bit[1:])
 
-    def search(self, query, deadline=None):
+    def search(self, query, limit=None):
         sql = Index.to_sql(query)
-        result = self.db.cursor.execute(self.search_stmt, (sql,))
+        result = self.db.cursor.execute(self.search_stmt, (sql, 10000000 if limit is None else limit))
         return (docid for docid, in result)
 
 class WordIndex(Index):

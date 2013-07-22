@@ -1,15 +1,15 @@
 import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil, apsw
-from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config
-import pystuff
+from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config, Singleton
+import pystuff, search
 
-class Datasource():
+class Datasource(Singleton):
     depends = []
 
     def __init__(self):
         self.did_download = set()
         if hasattr(self, 'urls'):
             self.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in self.urls]
-        self.operators = {None: self}
+        self.operators = {}
 
     def download(self, verbose=False, url_filter=None, use_cont=False):
         for url, filename in self.urls:
@@ -47,18 +47,9 @@ class Datasource():
 
     def preprocess_download(self, text): return text
 
-    def reindex(self):
-        for DB in self.dbs:
-            DB(create=True).reindex()
-
-    def search(self, expr, start=):
-        l = search.lex_query(expr)
-        ok, p = search.parse_query(l, self.operators)
-        if ok != 'ok':
-            return (ok, p)
-        o = search.optimize_query(p)
-        it = iter(search.run_query(o, self.operators))
-        results = []
+    def search(self, expr, *args, **kwargs):
+        self.operators[None] = self.DB.instance()
+        return search.do_query(expr, self.operators, *args, **kwargs)
 
     def cli_download(self, args):
         self.download(not args.quiet, args.url_filter)
@@ -78,7 +69,8 @@ class Datasource():
         if hasattr(self, 'download'):
             parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())))
 
-        parser.add_Argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1))
+        if config.use_search and hasattr(self, 'DB'):
+            parser.add_argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1))
 
     def cli_print_document(self, num, DB):
         document = DB.instance().get(num)
@@ -91,13 +83,13 @@ class Datasource():
         parser.add_argument('--%s' % name, action=pystuff.action(lambda num: self.cli_print_document(num, DB), nargs=1))
 
 
-class DB(object):
+class DB(Singleton):
     def full_path(self):
         mkdir_if_absent(os.path.join(mydir, 'cache'))
         return os.path.join(mydir, 'cache', self.path)
     def __init__(self, create=False, **kwargs):
         self.conn = apsw.Connection(self.full_path())
-        self.cursor = self.conn.cursor()
+        self.cursor = pystuff.CursorWrapper(self.conn.cursor())
         self.new = False
         try:
             version, = next(self.cursor.execute('SELECT version FROM version'))
@@ -113,8 +105,6 @@ class DB(object):
             else:
                 os.remove(path)
                 return self.__init__(path, create)
-        if 0: # log queries
-            self.cursor = CursorWrapper(self.cursor)
 
     def begin(self):
         self.cursor.execute('BEGIN')
@@ -128,15 +118,8 @@ class DB(object):
     def set_meta(self, name, value):
         self.cursor.execute('UPDATE meta SET %s = ?' % name, (value,))
 
-    _instance = None
-    @classmethod
-    def instance(cls):
-        if cls._instance is None:
-            cls._instance = cls()
-        return cls._instance
-
 def all_sources():
     from cfjs import CFJDatasource
     from flr import FLRDatasource, RulesDatasource
     from messages import MessagesDatasource
-    return [CFJDatasource(), FLRDatasource(), RulesDatasource(), MessagesDatasource()]
+    return [CFJDatasource.instance(), FLRDatasource.instance(), RulesDatasource.instance(), MessagesDatasource.instance()]

@@ -17,6 +17,8 @@ parser.add_argument('--cache', '-c', action=pystuff.action(lambda: [s.cli_cache(
 parser.add_argument('--update', '-u', action=pystuff.action(lambda: [s.cli_update(args) for s in sources]))
 
 parser.add_argument('--quiet', '-q', action='store_true', dest='quiet')
+parser.add_argument('--log-queries', action='store_true', dest='log_queries')
 
 args = parser.parse_args()
+pystuff.log_queries = args.log_queries
 pystuff.run_actions(args)

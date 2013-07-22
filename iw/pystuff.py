@@ -1,5 +1,5 @@
 from types import FunctionType
-import sys, os, argparse, time, mmap, UserDict, json
+import sys, os, argparse, time, mmap, UserDict, json, collections
 
 mydir = os.path.dirname(__file__)
 
@@ -51,6 +51,9 @@ class CursorWrapper:
     def __getattr__(self, x):
         return getattr(self.cursor, x)
     def execute(self, *args):
+        global log_quries
+        if not log_queries:
+            return self.cursor.execute(*args)
         a = time.time()
         ret = self.cursor.execute(*args)
         b = time.time()
@@ -80,8 +83,41 @@ else:
         if not key.startswith('_') and not hasattr(config, key):
             setattr(config, key, getattr(config_default, key))
 
-class LazySearch(object):
-    def __getattribute__(self, at):
-        import search
-        return getattr(search, at)
-search = LazySearch()
+class Singleton(object):
+    _instance = None
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+# modeled on Python 3's functools.lru_cache
+class LRUItem: pass
+class LRUCache:
+    def __init__(self, size):
+        self.map = collections.OrderedDict()
+        self.size = size
+    def __getitem__(self, key):
+        val = self.map[key]
+        self.map[key] = val
+        return val
+    def __setitem__(self, key, val):
+        self.map[key] = val
+        if len(self.map) > self.size:
+            del self.map[next(iter(self.map.iterkeys()))]
+
+def lru_cache(maxsize):
+    cache = LRUCache(maxsize)
+    def f(func):
+        def replacement(*args, **kwargs):
+            info = (args, tuple(kwargs.items()))
+            try:
+                return cache[info]
+            except KeyError:
+                result = func(*args, **kwargs)
+                cache[info] = result
+                return result
+        return replacement
+    return f
+
+log_queries = False # xx

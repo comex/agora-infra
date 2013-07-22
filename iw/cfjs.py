@@ -1,8 +1,8 @@
 import gzip, re, apsw, sys, datetime, time, multiprocessing, os, tarfile, traceback, itertools
 import cStringIO, StringIO
 from datasource import Datasource, DB
-from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, mydir, mkdir_if_absent, config, search
-import stuff, pystuff
+from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, mydir, mkdir_if_absent, config
+import stuff, pystuff, search
 
 def try_execute(cursor, stmt):
     try:
