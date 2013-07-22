@@ -1,5 +1,6 @@
 from types import FunctionType
-import sys, os, argparse, time, mmap, UserDict, json, collections
+import sys, os, argparse, time, mmap, UserDict, json, collections, codecs
+sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 mydir = os.path.dirname(__file__)
 

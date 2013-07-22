@@ -21,7 +21,7 @@ def intersect_iterables(iterables, is_asc):
             if cmp(id, first_id) == -less:
                 break # not matching
         else: # all through
-            yield id
+            yield first_id
 
 def union_iterables(iterables, is_asc):
     subits = map(iter, iterables)
@@ -48,6 +48,21 @@ def union_iterables(iterables, is_asc):
 #                    if result in already: continue
 #                    yield result
 #                    already.add(result)
+
+def subtract_iterables(minuend, subtrahend, is_asc):
+    minval = neginf if is_asc else inf
+    maxval = inf if is_asc else neginf
+    less = -1 if is_asc else 1
+
+    bad = minval
+    for id in minuend:
+        while cmp(bad, id) == less:
+            try:
+                bad = next(subtrahend)
+            except StopIteration:
+                bad = maxval
+        if bad != id:
+            yield id
 
 def lex_query(text):
     # -bar, but foo-bar is one term
@@ -192,6 +207,19 @@ def optimize_query(tree):
             return args[0]
         else:
             return (kind,) + tuple(args)
+    elif tree[0] == 'not':
+        sub = tree[1]
+        negative = True
+        while sub[0] == 'not':
+            negative = not negative
+            sub = sub[1]
+        sub = optimize_query(sub)
+        if not negative: return sub
+        if sub[0] == 'lit' and ' ' not in sub[1]:
+            # can't do -"foo"
+            return ('lit', ('not', sub[1]))
+        else:
+            return tree
     else:
         return tree
 
@@ -206,10 +234,17 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
              for subtree in tree[1:]],
             asc)
     elif tree[0] == 'and':
-        return intersect_iterables(
-            [run_query(subtree, operators, deadline, limit)
-             for subtree in tree[1:]],
-            asc)
+        positive = [run_query(subtree, operators, deadline, None)
+                    for subtree in tree[1:]
+                    if subtree[0] != 'not']
+        negative = [run_query(subtree[1], operators, deadline, None)
+                    for subtree in tree[1:]
+                    if subtree[0] == 'not']
+        itr = intersect_iterables(positive, asc)
+        if negative:
+            return subtract_iterables(itr, union_iterables(negative, asc), asc)
+        else:
+            return positive
     elif tree[0] == 'lit':
         db = operators[None]
         return db.idx.word.search(tree[1], limit=limit, asc=asc)
@@ -227,7 +262,6 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
                 if time.time() > deadline:
                     raise QueryTimeoutException
                 text = db.get_by_id(result)
-                print (result, len(text))
                 assert text is not None
                 if isinstance(text, dict): text = text['text']
                 m = r.search(text)
@@ -375,7 +409,6 @@ class Index:
             db.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, content='', text text);' % (name, self.fts_opts))
         self.insert_stmt = 'INSERT INTO %s(docid, text) VALUES(?, ?)' % name
         self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ? ORDER BY docid %%s LIMIT ?' % name
-        self.cursor = pystuff.CursorWrapper(db.conn.cursor())
 
     def begin(self):
         pass
@@ -390,24 +423,28 @@ class Index:
     @staticmethod
     def to_sql(bit):
         if not isinstance(bit, tuple): return bit
-        return {'and': ' ', 'or': ' OR '}[bit[0]].join('"%s"' % s for s in bit[1:])
+        return {'and': ' ', 'or': ' OR '}[bit[0]].join(
+            ('-%s' % s[1]) if isinstance(s, tuple)
+            else ('"%s"' % s)
+            for s in bit[1:])
 
     def search(self, query, limit=None, asc=False):
-        if not isinstance(query, tuple): query = ('and', query)
+        if not (isinstance(query, tuple) and query[0] != 'not'): query = ('and', query)
 
         # deoptimize
         tuples = []
         nontuples = []
         kind = query[0]
         for bit in query[1:]:
-            (tuples if isinstance(bit, tuple) else nontuples).append(bit)
+            (tuples if isinstance(bit, tuple) and bit[0] != 'not' else nontuples).append(bit)
         if tuples:
             tuples.append((kind,) + tuple(nontuples))
             subresults = [self.search(subquery, limit if kind == 'and' else None) for subquery in tuples]
             return (intersect_iterables if kind == 'and' else union_iterables)(subresults, asc)
 
         sql = Index.to_sql(query)
-        result = self.db.cursor.execute(self.search_stmt % ('ASC' if asc else 'DESC'), (sql, 10000000 if limit is None else limit))
+        cursor = pystuff.CursorWrapper(self.db.conn.cursor())
+        result = cursor.execute(self.search_stmt % ('ASC' if asc else 'DESC'), (sql, 10000000 if limit is None else limit))
         return (docid for docid, in result)
 
 class WordIndex(Index):
