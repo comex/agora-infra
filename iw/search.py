@@ -2,6 +2,52 @@ import re, sre_parse, sre_constants, collections, time, operator
 from collections import namedtuple
 from pystuff import config, mkdir_if_absent
 import pystuff
+inf, neginf = float('inf'), float('-inf')
+
+def intersect_iterables(iterables, is_asc):
+    subits = map(iter, iterables)
+    minval = neginf if is_asc else inf
+    less = -1 if is_asc else 1
+    ids = [minval] * (len(subits) - 1)
+    while True:
+        first_id = next(subits[0])
+        for i, id in enumerate(ids):
+            while cmp(id, first_id) == less:
+                try:
+                    id = next(subits[i+1])
+                except StopIteration:
+                    return # there is nothing more
+            ids[i] = id
+            if cmp(id, first_id) == -less:
+                break # not matching
+        else: # all through
+            yield id
+
+def union_iterables(iterables, is_asc):
+    subits = map(iter, iterables)
+    subit_count = len(subits)
+    minval = neginf if is_asc else inf
+    maxval = inf if is_asc else neginf
+    ids = [minval] * subit_count
+    while subit_count > 0:
+        min_id = min(ids)
+        if min_id != minval:
+            yield min_id
+        for i, id in enumerate(ids):
+            if id == min_id: 
+                try:
+                    ids[i] = next(subits[i])
+                except StopIteration:
+                    ids[i] = maxval
+                    subit_count -= 1
+
+#            already = set()
+#            for subtree in tree[1:]:
+#                results = run_query(subtree, operators, deadline)
+#                for result in results:
+#                    if result in already: continue
+#                    yield result
+#                    already.add(result)
 
 def lex_query(text):
     # -bar, but foo-bar is one term
@@ -109,11 +155,6 @@ def pprint(tree, indent=''):
         print indent + str(tree)
 
 def optimize_query(tree):
-    tree = optimize_1(tree)
-    tree = optimize_2(tree)
-    return tree
-
-def optimize_1(tree):
     if tree[0] in ('and', 'or'):
         kind = tree[0]
         args = []
@@ -143,73 +184,21 @@ def optimize_1(tree):
     else:
         return tree
 
-def optimize_2(tree):
-    # more like deoptimize literals due to missing parentheses
-    if tree[0] in ('and', 'or'):
-        return (tree[0], optimize_2(tree[1]), optimize_2(tree[2]))
-    elif tree[0] == 'lit':
-        lit = tree[1]
-        if not isinstance(lit, tuple): return tree
-        tuples = []
-        nontuples = []
-        for sub in lit[1:]:
-            (tuples if isinstance(sub, tuple) else nontuples).append(sub)
-        if not tuples:
-            return tree
-        else:
-            return (lit[0], ('lit', (lit[0],) + tuple(nontuples))) + tuple(optimize_2(('lit', t)) for t in tuples)
-    else:
-        return tree
-
 class QueryTimeoutException(Exception): pass
 
-def run_query(tree, operators, deadline, limit=None):
+def run_query(tree, operators, deadline, limit=None, is_asc=True):
     if time.time() > deadline:
         raise QueryTimeoutException
     if tree[0] == 'or':
-        def func():
-            inf = float('inf')
-            subits = [iter(run_query(subtree, operators, deadline, None))
-                      for subtree in tree[1:]]
-            subit_count = len(subits)
-            ids = [-1] * subit_count
-            while True:
-                min_id = min(ids)
-                if min_id != -1: yield min_id
-                for i, id in enumerate(ids):
-                    if id == min_id: 
-                        try:
-                            ids[i] = next(subits[i])
-                        except StopIteration:
-                            ids[i] = inf
-                            subit_count -= 1
-#            already = set()
-#            for subtree in tree[1:]:
-#                results = run_query(subtree, operators, deadline)
-#                for result in results:
-#                    if result in already: continue
-#                    yield result
-#                    already.add(result)
-        return func()
+        return union_iterables(
+            [run_query(subtree, operators, deadline, limit)
+             for subtree in tree[1:]],
+            is_asc)
     elif tree[0] == 'and':
-        def func():
-            subits = [iter(run_query(subtree, operators, deadline, limit))
-                      for subtree in tree[1:]]
-            ids = [-1] * (len(subits) - 1)
-            while True:
-                first_id = next(subits[0])
-                for i, id in enumerate(ids):
-                    while id < first_id:
-                        try:
-                            id = next(subits[i+1])
-                        except StopIteration:
-                            return # there is nothing more
-                    ids[i] = id
-                    if id > first_id:
-                        break # not matching
-                else: # all through
-                    yield id
-        return func()
+        return intersect_iterables(
+            [run_query(subtree, operators, deadline, limit)
+             for subtree in tree[1:]],
+            is_asc)
     elif tree[0] == 'lit':
         db = operators[None]
         return db.idx.word.search(tree[1], limit)
@@ -244,18 +233,21 @@ def do_query(expr, operators, start=0, limit=10, timeout=2.5):
         deadline = float('inf')
     else:
         deadline = time.time() + 2.5
-    it = iter(run_query(o, operators, deadline, start + limit))
+    it = iter(run_query(o, operators, deadline, None if limit is None else start + limit))
     for i in xrange(start):
         try:
             next(it)
         except StopIteration:
             break
-    results = []
-    for i in xrange(limit):
-        try:
-            results.append(next(it))
-        except StopIteration:
-            break
+    if limit is None:
+        results = list(it)
+    else:
+        results = []
+        for i in xrange(limit):
+            try:
+                results.append(next(it))
+            except StopIteration:
+                break
     return ('ok', results)
 
 
@@ -381,9 +373,21 @@ class Index:
     # No SQLITE_ENABLE_FTS3_PARENTHESIS means trouble
     @staticmethod
     def to_sql(bit):
+        if not isinstance(bit, tuple): return bit
         return {'and': ' ', 'or': ' OR '}[bit[0]].join(s.encode('hex') for s in bit[1:])
 
     def search(self, query, limit=None):
+        if isinstance(query, tuple):
+            tuples = []
+            nontuples = []
+            kind = query[0]
+            for bit in query[1:]:
+                (tuples if isinstance(bit, tuple) else nontuples).append(bit)
+            if tuples:
+                tuples.append((kind,) + tuple(nontuples))
+                subresults = [self.search(subquery, limit if kind == 'and' else None) for subquery in tuples]
+                return (intersect_iterables if kind == 'and' else union_iterables)(subresults)
+
         sql = Index.to_sql(query)
         result = self.db.cursor.execute(self.search_stmt, (sql, 10000000 if limit is None else limit))
         return (docid for docid, in result)

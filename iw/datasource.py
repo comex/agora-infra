@@ -59,18 +59,37 @@ class Datasource(Singleton):
         self.cli_download(args)
         self.cli_cache(args)
     def cli_search(self, args, expr):
-        print self.search(expr)
+        db = self.DB.instance()
+        ok, r = self.search(expr, limit=None)
+        if ok == 'empty':
+            print '(empty query)'
+        elif ok == 'errors':
+            print 'Errors in search query:'
+            for err in r:
+                print ' ', err
+        elif ok == 'ok':
+            first = True
+            for id in r:
+                if first:
+                    first = False
+                else:
+                    print '--'
+                print 'id: %s' % id
+                print
+                print db.get(id)
+            if first and not args.quiet:
+                print '(no results)'
 
     def add_cli_options(self, parser, argsf):
         if hasattr(self, 'download'):
-            parser.add_argument('--download-' + self.name, action=pystuff.action(lambda: self.cli_download(argsf())))
-        parser.add_argument('--cache-' + self.name, action=pystuff.action(lambda: self.cli_cache(argsf())))
+            parser.add_argument('--download-' + self.name, action=pystuff.action(lambda: self.cli_download(argsf())), help='download %s' % self.name)
+        parser.add_argument('--cache-' + self.name, action=pystuff.action(lambda: self.cli_cache(argsf())), help='cache %s' % self.name)
         # download and cache
         if hasattr(self, 'download'):
-            parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())))
+            parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())), help='download and cache %s' % self.name)
 
         if config.use_search and hasattr(self, 'DB'):
-            parser.add_argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1))
+            parser.add_argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1), help='search %s' % self.name)
 
     def cli_print_document(self, num, DB):
         document = DB.instance().get(num)
