@@ -52,6 +52,7 @@ my $bracket = 0;
 
 lines:
 while(<>) {
+    next if /^\/\//;
     $have_control = 0;
     $bracket++ if(/^\[/);
     unless(/^ / || s/^\^\^// || $bracket) { # exempt rule text

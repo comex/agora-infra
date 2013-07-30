@@ -18,7 +18,7 @@ parser.add_argument('--update', '-u', action=pystuff.action(lambda: [s.cli_updat
 
 parser.add_argument('--quiet', '-q', action='store_true', dest='quiet')
 parser.add_argument('--log-queries', action='store_true', dest='log_queries')
-parser.add_argument('--limit', action='store', dest='limit', help='limit for searches', type=int)
+parser.add_argument('--limit', action='store', dest='limit', help='limit for searches, or 0', type=int, default=10)
 
 args = parser.parse_args()
 pystuff.log_queries = args.log_queries

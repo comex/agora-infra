@@ -1,7 +1,7 @@
 import re, sre_parse, sre_constants, collections, time, operator
 from collections import namedtuple
 from pystuff import config, mkdir_if_absent
-import pystuff
+import pystuff, stuff
 inf, neginf = float('inf'), float('-inf')
 
 def intersect_iterables(iterables, is_asc):
@@ -406,7 +406,7 @@ class Index:
         self.name = name
         self.db = db
         if db.new:
-            db.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, content='', text text);' % (name, self.fts_opts))
+            db.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, order=desc, content='', text text);' % (name, self.fts_opts))
         self.insert_stmt = 'INSERT INTO %s(docid, text) VALUES(?, ?)' % name
         self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ? ORDER BY docid %%s LIMIT ?' % name
 
@@ -417,7 +417,7 @@ class Index:
         pass
 
     def _insert(self, docid, text):
-        self.cursor.execute(self.insert_stmt, (docid, text))
+        self.db.cursor.execute(self.insert_stmt, (docid, text))
 
     # No SQLITE_ENABLE_FTS3_PARENTHESIS means trouble
     @staticmethod
@@ -452,6 +452,8 @@ class WordIndex(Index):
     insert = Index._insert
 
 def trigram_hexlify(text):
+    if not isinstance(text, unicode):
+        text = stuff.faildecode(str(text))
     return text.encode('ascii', 'replace').lower().encode('hex')
 
 class TrigramIndex(Index):

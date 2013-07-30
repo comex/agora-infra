@@ -1,6 +1,6 @@
 import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil, apsw
 from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config, Singleton
-import pystuff, search
+import pystuff, stuff, search
 
 class Datasource(Singleton):
     depends = []
@@ -60,7 +60,7 @@ class Datasource(Singleton):
         self.cli_cache(args)
     def cli_search(self, args, expr):
         db = self.DB.instance()
-        ok, r = self.search(expr, limit=args.limit)
+        ok, r = self.search(expr, limit=args.limit or None)
         if ok == 'empty':
             print '(empty query)'
         elif ok == 'errors':
@@ -76,7 +76,7 @@ class Datasource(Singleton):
                     print '--'
                 print 'id: %s' % id
                 print
-                print db.get_by_id(id)
+                print stuff.faildecode(db.get_by_id(id))
             if first and not args.quiet:
                 print '(no results)'
 
