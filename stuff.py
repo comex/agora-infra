@@ -56,6 +56,7 @@ def twrap(message, width=72, indent=0, subsequent_indent=None):
     return '\n'.join(textwrap.fill(line, width=width, initial_indent=indent, subsequent_indent=indent) for line in message.split('\n'))
 
 def faildecode(text):
+    if isinstance(text, unicode): return text
     try:
         return text.decode('utf-8')
     except:

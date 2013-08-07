@@ -69,14 +69,24 @@ class Datasource(Singleton):
                 print ' ', err
         elif ok == 'ok':
             first = True
-            for id in r:
+            for id, ctxs in r:
                 if first:
                     first = False
                 else:
                     print '--'
                 print 'id: %s' % id
-                print
-                print stuff.faildecode(db.get_by_id(id))
+                text = db.get_by_id(id)
+                if args.full:
+                    if args.color:
+                        print search.highlight_all(text, ctxs).ansi()
+                    else:
+                        print text
+                else:
+                    hl = search.highlight_snippets(text, ctxs)
+                    if args.color:
+                        print hl.ansi()
+                    else:
+                        print hl.plain()
             if first and not args.quiet:
                 print '(no results)'
 
@@ -138,6 +148,28 @@ class DB(Singleton):
 
     def set_meta(self, name, value):
         self.cursor.execute('UPDATE meta SET %s = ?' % name, (value,))
+
+class DocDB(DB):
+    def keys(self):
+        return [rowid for rowid, in self.cursor.execute('SELECT rowid FROM %s' % self.table)]
+
+    def get(self, id):
+        if hasattr(self, 'kcache'):
+            return self.kcache[id]
+        try:
+            text, = next(self.cursor.execute('SELECT text FROM %s WHERE id = ?' % self.table, (id,)))
+        except StopIteration:
+            return None
+        return text
+    get_by_id = get
+
+    def cache_keys(self, keys):
+        self.kcache = {}
+        for id, text in self.cursor.execute('SELECT id, text from %s WHERE id in (%s)' % (self.table, ','.join(map(str, keys)))):
+            self.kcache[id] = text
+
+    def cache_keys_done(self):
+        del self.kcache
 
 def all_sources():
     from cfjs import CFJDatasource

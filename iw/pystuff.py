@@ -121,4 +121,7 @@ def lru_cache(maxsize):
         return replacement
     return f
 
+# debugging options
 log_queries = False # xx
+force_unindexed = False
+print_trigram_hits = False

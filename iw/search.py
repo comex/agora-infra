@@ -1,53 +1,55 @@
-import re, sre_parse, sre_constants, collections, time, operator
+import re, sre_parse, sre_compile, sre_constants, collections, time, operator
 from collections import namedtuple
 from pystuff import config, mkdir_if_absent
 import pystuff, stuff
+import StringIO
 inf, neginf = float('inf'), float('-inf')
 
 def intersect_iterables(iterables, is_asc):
     subits = map(iter, iterables)
     minval = neginf if is_asc else inf
     less = -1 if is_asc else 1
-    ids = [minval] * (len(subits) - 1)
+    ids = [(minval, None)] * (len(subits) - 1)
     while True:
-        first_id = next(subits[0])
-        for i, id in enumerate(ids):
+        first_id, ctxs = next(subits[0])
+        for i, (id, ictxs) in enumerate(ids):
             while cmp(id, first_id) == less:
                 try:
-                    id = next(subits[i+1])
+                    id, ictxs = next(subits[i+1])
                 except StopIteration:
                     return # there is nothing more
-            ids[i] = id
-            if cmp(id, first_id) == -less:
+            ids[i] = (id, ictxs)
+            c = cmp(id, first_id)
+            if c == -less:
                 break # not matching
+            elif c == 0:
+                ctxs += ictxs
         else: # all through
-            yield first_id
+            yield (first_id, ctxs)
 
 def union_iterables(iterables, is_asc):
     subits = map(iter, iterables)
     subit_count = len(subits)
-    minval = neginf if is_asc else inf
-    maxval = inf if is_asc else neginf
-    ids = [minval] * subit_count
+    if is_asc:
+        minval = neginf
+        maxval = inf
+        _min = min
+    else:
+        minval = inf
+        maxval = neginf
+        _min = max
+    ids = [(minval, None)] * subit_count
     while subit_count > 0:
-        min_id = min(ids)
+        min_id, ctxs = _min(ids)
         if min_id != minval:
-            yield min_id
-        for i, id in enumerate(ids):
-            if id == min_id: 
+            yield (min_id, ctxs)
+        for i, (id, ctxs) in enumerate(ids):
+            if id == min_id:
                 try:
                     ids[i] = next(subits[i])
                 except StopIteration:
-                    ids[i] = maxval
+                    ids[i] = (maxval, None)
                     subit_count -= 1
-
-#            already = set()
-#            for subtree in tree[1:]:
-#                results = run_query(subtree, operators, deadline)
-#                for result in results:
-#                    if result in already: continue
-#                    yield result
-#                    already.add(result)
 
 def subtract_iterables(minuend, subtrahend, is_asc):
     minval = neginf if is_asc else inf
@@ -55,14 +57,14 @@ def subtract_iterables(minuend, subtrahend, is_asc):
     less = -1 if is_asc else 1
 
     bad = minval
-    for id in minuend:
+    for id, ctxs in minuend:
         while cmp(bad, id) == less:
             try:
-                bad = next(subtrahend)
+                bad, _ = next(subtrahend)
             except StopIteration:
                 bad = maxval
         if bad != id:
-            yield id
+            yield id, ctxs
 
 def lex_query(text):
     # -bar, but foo-bar is one term
@@ -132,18 +134,21 @@ def parse_query(tokens, operators):
                 else:
                     err_if_absent('Unknown regex flags')
             try:
-                r = re.compile(regex, flags)
+                p = sre_parse.parse(regex, flags)
             except re.error as e:
                 errors.append('Regex error: %s' % e.message)
                 continue
             db = operators[None]
             if hasattr(db, 'idx'):
-                trigrams = re_trigrams(regex, flags)
+                trigrams = p_trigrams(p)
                 if trigrams is None:
                     errors.append('Regex un-indexable')
                     continue
+                trigrams = simplify_trigrams(trigrams)
             else:
                 trigrams = None
+            p_fix_spaces(p)
+            r = sre_compile.compile(p, flags)
             tree = ('regex', r, trigrams)
         if inverted: tree = ('not', tree)
         if is_or:
@@ -251,22 +256,32 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
     elif tree[0] == 'regex':
         db = operators[None]
         r, trigrams = tree[1], tree[2]
-        if trigrams is None: # no index
+        if trigrams is None or pystuff.force_unindexed: # no index
             trigram_hits = db.keys()
+            if not asc: trigram_hits = trigram_hits[::-1]
         else:
-            trigram_hits = db.idx.trigram.search(trigrams, limit=limit, asc=asc)
+            trigram_hits = (result for result, _ in db.idx.trigram.search(trigrams, asc=asc))
+        #list(trigram_hits); import sys; sys.exit(0)
+        #db.cache_keys(trigram_hits)
+        #db.cache_keys_done()
         results = set()
 
         def func():
             for result in trigram_hits:
+                if pystuff.print_trigram_hits: print '?', result
                 if time.time() > deadline:
                     raise QueryTimeoutException
                 text = db.get_by_id(result)
                 assert text is not None
                 if isinstance(text, dict): text = text['text']
-                m = r.search(text)
-                if m:
-                    yield result
+                it = r.finditer(text)
+                #it = re.finditer('^', text)
+                try:
+                    m = next(it)
+                except StopIteration:
+                    pass
+                else:
+                    yield (result, [FoundRegex(m, it)])
         return func()
     else:
         raise Exception('bad tree')
@@ -300,6 +315,87 @@ def do_query(expr, operators, start=0, limit=10, timeout=2.5, asc=False):
                 break
     return ('ok', results)
 
+def m_to_range(m):
+    return (m.start(), m.end())
+
+class FoundLit:
+    def __init__(self, query):
+        self.query = query
+    def ranges(self, text):
+        r = r'\b(%s)\b' % '|'.join(re.escape(q) for q in self.query[1:] if not isinstance(q, tuple))
+        return (m_to_range(m) for m in re.finditer(r, text, re.I))
+
+class FoundRegex:
+    def __init__(self, m, it):
+        self.first = m_to_range(m)
+        self.it = it
+    def ranges(self, text):
+        yield self.first
+        for m in self.it:
+            yield m_to_range(m)
+
+class HighlightedString:
+    def __init__(self, text, ranges):
+        self.text = text
+        self.ranges = ranges
+    def plain(self):
+        return self.text
+    def ansi(self):
+        return self.output('\x1b[7m', '\x1b[27m', lambda text: text)
+    def output(self, enter, exit, transform):
+        text = self.text
+        last_e = 0
+        result = StringIO.StringIO()
+        for s, e in self.ranges:
+            result.write(transform(text[last_e:s]))
+            result.write(enter)
+            result.write(transform(text[s:e]))
+            result.write(exit)
+            last_e = e
+        result.write(transform(text[last_e:]))
+        return result.getvalue()
+
+def fix_ranges(ranges):
+    ranges.sort()
+    result = []
+    last_s, last_e = -1, -1
+    for s, e in ranges:
+        if s < last_e:
+            result[-1] = (last_s, e)
+            last_e = e
+        else:
+            result.append((s, e))
+            last_s, last_e = s, e
+    return result
+
+def get_ranges(text, ctxs):
+    ranges = []
+    for ctx in ctxs:
+        ranges += list(ctx.ranges(text))
+    return fix_ranges(ranges)
+
+def highlight_all(text, ctxs):
+    ranges = get_ranges(text, ctxs)
+    return HighlightedString(text, ranges)
+
+def highlight_snippets(text, ctxs):
+    ranges = get_ranges(text, ctxs)
+    line_ranges = []
+    bad_line_ranges = []
+    for s, e in ranges:
+        lr = (text.rfind('\n', 0, s), text.find('\n', e))
+        (line_ranges if e - s < 100 else bad_line_ranges).append(lr)
+    if not line_ranges:
+        line_ranges = bad_line_ranges
+    line_ranges = fix_ranges(line_ranges)
+    htext = ''
+    hranges = []
+    for ls, le in line_ranges[:3]:
+        adj = + len(htext) - ls
+        htext += text[ls:le]
+        hranges += [(s + adj, e + adj) for (s, e) in ranges if s >= ls and e <= le]
+    return HighlightedString(htext, hranges)
+
 
 # http://swtch.com/~rsc/regexp/regexp4.html but simplified
 # is the simplification appropriate?...
@@ -311,7 +407,11 @@ def p_is_dot_star((kind, arg)):
     if min != 0 or max < 4294967295 or len(sub) != 1: return False
     return sub[0] == (sre_constants.ANY, None)
 
-def p_trigrams(p, litstr=''):
+litmap = []
+for arg in xrange(128):
+    litmap.append(chr(arg).lower().replace('\n', ' ').encode('hex'))
+
+def _p_trigrams(p, litstr=''):
     sp_stack = []
     trigrams = []
     trigrams_set = set()
@@ -328,8 +428,6 @@ def p_trigrams(p, litstr=''):
     empty_kinds = (sre_constants.ASSERT,
                    sre_constants.ASSERT_NOT,
                    sre_constants.AT)
-    subpattern_kinds = (sre_constants.SUBPATTERN,
-                        sre_constants.MAX_REPEAT)
     branch_kinds = (sre_constants.BRANCH,
                     sre_constants.GROUPREF_EXISTS)
     while True:
@@ -353,7 +451,7 @@ def p_trigrams(p, litstr=''):
             else:
                 something, arg = arg
             for sp in arg:
-                alt = p_trigrams(sp, litstr)
+                alt = _p_trigrams(sp, litstr)
                 if alt is not None and alternates is not None:
                     alternates.append(alt)
                 else:
@@ -372,8 +470,9 @@ def p_trigrams(p, litstr=''):
             group, sub = arg
             it = iter(sub)
         elif kind is sre_constants.LITERAL:
-            litstr = litstr[-2:] + chr(arg).lower()
-            if len(litstr) == 3 and litstr not in trigrams_set:
+            c = litmap[arg] if arg < 128 else '3f' # '?'
+            litstr = litstr[-4:] + c
+            if len(litstr) == 6 and litstr not in trigrams_set:
                 trigrams_set.add(litstr)
                 trigrams.append(litstr)
         else:
@@ -389,17 +488,34 @@ def p_trigrams(p, litstr=''):
     elif trigrams:
         return texpr
     elif alternates:
-        return texpr
+        return aexpr
     else:
         return None
 
-def re_trigrams(regex, flags):
-    p = list(sre_parse.parse(regex, flags))
+def p_trigrams(p):
     while p and p_is_dot_star(p[0]):
         p.pop(0)
     while p and p_is_dot_star(p[-1]):
         p.pop()
-    return p_trigrams(p)
+    return _p_trigrams(p)
+
+def p_fix_spaces(p):
+    for i, (kind, arg) in enumerate(p):
+        if kind is sre_constants.LITERAL and arg == 32: # ' '
+            p[i] = (sre_constants.IN, [(sre_constants.LITERAL, 32), (sre_constants.LITERAL, 10)]) # add '\n'
+        elif kind is sre_constants.IN and (sre_constants.LITERAL, 32) in arg and (sre_constants.LITERAL, 10) not in arg:
+            arg.append((sre_constants.LITERAL, 10))
+        elif kind is sre_constants.MAX_REPEAT:
+            p_fix_spaces(arg[2])
+        elif kind is sre_constants.SUBPATTERN:
+            p_fix_spaces(arg[1])
+        elif kind is sre_constants.BRANCH:
+            for sub in arg[1]:
+                p_fix_spaces(sub)
+
+# xxx
+def simplify_trigrams(trigrams):
+    return trigrams
 
 class Index:
     def __init__(self, name, db):
@@ -424,7 +540,7 @@ class Index:
     def to_sql(bit):
         if not isinstance(bit, tuple): return bit
         return {'and': ' ', 'or': ' OR '}[bit[0]].join(
-            ('-%s' % s[1]) if isinstance(s, tuple)
+            ('-%s' % s[1]) if isinstance(s, tuple) # ('not', x)
             else ('"%s"' % s)
             for s in bit[1:])
 
@@ -438,14 +554,14 @@ class Index:
         for bit in query[1:]:
             (tuples if isinstance(bit, tuple) and bit[0] != 'not' else nontuples).append(bit)
         if tuples:
-            tuples.append((kind,) + tuple(nontuples))
-            subresults = [self.search(subquery, limit if kind == 'and' else None) for subquery in tuples]
+            if nontuples: tuples.append((kind,) + tuple(nontuples))
+            subresults = [self.search(subquery, limit if kind == 'and' else None, asc) for subquery in tuples]
             return (intersect_iterables if kind == 'and' else union_iterables)(subresults, asc)
 
         sql = Index.to_sql(query)
         cursor = pystuff.CursorWrapper(self.db.conn.cursor())
         result = cursor.execute(self.search_stmt % ('ASC' if asc else 'DESC'), (sql, 10000000 if limit is None else limit))
-        return (docid for docid, in result)
+        return ((docid, [FoundLit(query)]) for docid, in result)
 
 class WordIndex(Index):
     fts_opts = 'tokenize=porter'
@@ -454,7 +570,7 @@ class WordIndex(Index):
 def trigram_hexlify(text):
     if not isinstance(text, unicode):
         text = stuff.faildecode(str(text))
-    return text.encode('ascii', 'replace').lower().encode('hex')
+    return text.encode('ascii', 'replace').lower().replace('\n', ' ').encode('hex')
 
 class TrigramIndex(Index):
     fts_opts = 'tokenize=simple'
