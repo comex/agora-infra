@@ -1,6 +1,6 @@
 import gzip, re, apsw, sys, datetime, time, multiprocessing, os, tarfile, traceback, itertools
 import cStringIO, StringIO
-from datasource import Datasource, DB
+from datasource import Datasource, DB, DocDB
 from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, mydir, mkdir_if_absent, config
 import stuff, pystuff, search
 
@@ -220,12 +220,12 @@ class CotCDB:
             elif typecode == 'appeal':
                 fmt = 'Appeal %s' % self.cases_by_id[self.get_linked(event, 'open')['matter']]['num']
             elif typecode == 'cfa':
-                fmt = 'Appealed by %s' % player
+                fmt = 'Appealed by %s' % player(event)
             elif typecode == 'distribute':
                 fmt = 'Judgement distributed'
             elif typecode == 'transfer':
                 player2 = self.players[event['link']['player']]
-                fmt = 'Transferred from %s to %s' % (player2, player)
+                fmt = 'Transferred from %s to %s' % (player2, player(event))
             elif typecode == 'recuse':
                 player2 = self.players[event['link']['player']]
                 fmt = '%s recused%s' % (player2, ' (panelist)' if case_typecode == 'Appeal' else '')
@@ -338,7 +338,12 @@ class CotCDB:
                     fn(cells)
                 fn = getattr(self, 'post_' + tbl, None)
                 if fn is not None: fn()
-class CFJDB(DB):
+
+class CFJDB(DocDB):
+    doc_table = 'cfjs'
+    doc_keycol = 'number'
+    doc_textcol = 'text'
+
     path = 'cfjs.sqlite'
     version = 1
 
@@ -395,21 +400,6 @@ class CFJDB(DB):
         self.cursor.execute('INSERT INTO cfjs(number, text) VALUES(?, ?)', (num, fmt))
         if config.use_search:
             self.idx.insert(self.conn.last_insert_rowid(), fmt)
-
-    def keys(self):
-        return [num for num, in self.cursor.execute('SELECT number FROM cfjs ORDER BY number')]
-
-    def items(self):
-        return self.cursor.execute('SELECT id, text FROM cfjs')
-
-    def get(self, num):
-        try:
-            return next(self.cursor.execute('SELECT text FROM cfjs WHERE number = ?', (num,)))[0]
-        except StopIteration:
-            return None
-
-    def get_by_id(self, id):
-        return next(self.cursor.execute('SELECT text FROM cfjs WHERE id = ?', (id,)))[0]
 
 class CFJDatasource(Datasource):
     name = 'cfjs'

@@ -16,9 +16,9 @@ parser.add_argument('--color', '-C', action='store_true')
 parser.add_argument('--full', '-f', action='store_true')
 
 
-parser.add_argument('--download', '-d', action=pystuff.action(lambda: [s.cli_download(args) for s in sources]), help='download everything')
-parser.add_argument('--cache', '-c', action=pystuff.action(lambda: [s.cli_cache(args) for s in sources]), help='cache everything')
-parser.add_argument('--update', '-u', action=pystuff.action(lambda: [s.cli_update(args) for s in sources]), help='update everything')
+parser.add_argument('--download', '-d', action=pystuff.action(lambda: [s.cli_download(args) for s in al_sources]), help='download everything')
+parser.add_argument('--cache', '-c', action=pystuff.action(lambda: [s.cli_cache(args) for s in all_sources]), help='cache everything')
+parser.add_argument('--update', '-u', action=pystuff.action(lambda: [s.cli_update(args) for s in all_sources]), help='update everything')
 
 parser.add_argument('--quiet', '-q', action='store_true')
 parser.add_argument('--log-queries', action='store_true')

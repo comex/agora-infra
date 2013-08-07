@@ -1,4 +1,4 @@
-import re
+import re, datetime
 
 class RCSFile:
     tok_re = re.compile('@.*?[^@]@(?!@)|[^@\s]+', re.S)
@@ -51,17 +51,26 @@ class RCSFile:
         it = iter(tokens)
         text = None
         revs = []
+        dates = {}
         m = next(it)
         assert m.group(0) == 'head'
         while True:
             try:
                 m = next(it)
             except StopIteration: break
-            tok = m.group(0)
-            if not re.match('1\.[0-9]+$', tok): continue
+            num = m.group(0)
+            if not re.match('1\.[0-9]+$', num): continue
+            tok = next(it).group(0)
+            if tok == 'date':
+                date = next(it).group(0)
+                dt = datetime.datetime.strptime(date, '%Y.%m.%d.%H.%M.%S;')
+                dates[num] = dt
+                continue
+            else:
+                assert tok == 'log'
             rev = {}
-            rev['num'] = tok
-            if next(it).group(0) != 'log': continue
+            rev['num'] = num
+            rev['date'] = dates[num]
             rev['log'] = self.unat(next(it).group(0))
             while next(it).group(0) != 'text': pass
             diff = self.unat(next(it).group(0))

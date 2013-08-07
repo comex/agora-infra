@@ -63,8 +63,10 @@ class CursorWrapper:
 
 def dict_execute(cursor, *args, **kwargs):
     result = cursor.execute(*args, **kwargs)
-    desc = cursor.getdescription()
+    desc = None
+    # apsw.ExecutionCompleteError
     for row in result:
+        if desc is None: desc = [col for (col, ty) in cursor.getdescription()]
         yield dict(zip(desc, row))
 
 # subclassing doesn't work

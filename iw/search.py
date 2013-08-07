@@ -141,9 +141,9 @@ def parse_query(tokens, operators):
             db = operators[None]
             if hasattr(db, 'idx'):
                 trigrams = p_trigrams(p)
-                if trigrams is None:
-                    errors.append('Regex un-indexable')
-                    continue
+                #if trigrams is None:
+                #    errors.append('Regex un-indexable')
+                #    continue
                 trigrams = simplify_trigrams(trigrams)
             else:
                 trigrams = None
@@ -249,7 +249,7 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
         if negative:
             return subtract_iterables(itr, union_iterables(negative, asc), asc)
         else:
-            return positive
+            return itr
     elif tree[0] == 'lit':
         db = operators[None]
         return db.idx.word.search(tree[1], limit=limit, asc=asc)
@@ -310,7 +310,8 @@ def do_query(expr, operators, start=0, limit=10, timeout=2.5, asc=False):
         results = []
         for i in xrange(limit):
             try:
-                results.append(next(it))
+                result = next(it)
+                results.append(result)
             except StopIteration:
                 break
     return ('ok', results)
@@ -383,7 +384,8 @@ def highlight_snippets(text, ctxs):
     line_ranges = []
     bad_line_ranges = []
     for s, e in ranges:
-        lr = (text.rfind('\n', 0, s), text.find('\n', e))
+        prev_nl, next_nl = text.rfind('\n', 0, s), text.find('\n', e)
+        lr = (prev_nl + 1, len(text) if next_nl == -1 else next_nl)
         (line_ranges if e - s < 100 else bad_line_ranges).append(lr)
     if not line_ranges:
         line_ranges = bad_line_ranges

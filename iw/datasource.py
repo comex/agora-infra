@@ -1,6 +1,8 @@
 import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil, apsw
-from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config, Singleton
+from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config, Singleton, dict_execute
 import pystuff, stuff, search
+
+class DSLookupError(Exception): pass
 
 class Datasource(Singleton):
     depends = []
@@ -74,14 +76,15 @@ class Datasource(Singleton):
                     first = False
                 else:
                     print '--'
-                print 'id: %s' % id
-                text = db.get_by_id(id)
+                row = db.get_by_id(id)
+                text = row['text']
                 if args.full:
                     if args.color:
                         print search.highlight_all(text, ctxs).ansi()
                     else:
                         print text
                 else:
+                    print 'id:', row[db.doc_keycol]
                     hl = search.highlight_snippets(text, ctxs)
                     if args.color:
                         print hl.ansi()
@@ -89,6 +92,13 @@ class Datasource(Singleton):
                         print hl.plain()
             if first and not args.quiet:
                 print '(no results)'
+
+    def cli_show(self, args, key):
+        result = self.DB.instance().get(key)
+        if result is None:
+            print '(not found)'
+        else:
+            print result['text'] if isinstance(result, dict) else result
 
     def add_cli_options(self, parser, argsf):
         if hasattr(self, 'download'):
@@ -98,8 +108,12 @@ class Datasource(Singleton):
         if hasattr(self, 'download'):
             parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())), help='download and cache %s' % self.name)
 
-        if config.use_search and hasattr(self, 'DB'):
+        if config.use_search and hasattr(self, 'DB') and hasattr(self.DB, 'search'):
             parser.add_argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1), help='search %s' % self.name)
+
+        if hasattr(self, 'DB'):
+            singular = self.name.rstrip('s')
+            parser.add_argument('--' + singular, action=pystuff.action(lambda expr: self.cli_show(argsf(), expr), nargs=1), help='show %s by primary key' % singular)
 
     def cli_print_document(self, num, DB):
         document = DB.instance().get(num)
@@ -111,11 +125,13 @@ class Datasource(Singleton):
     def cli_add_print_document(self, parser, name, DB):
         parser.add_argument('--%s' % name, action=pystuff.action(lambda num: self.cli_print_document(num, DB), nargs=1))
 
-
-class DB(Singleton):
-    def full_path(self):
+class BaseDB(Singleton):
+    @classmethod
+    def full_path(cls):
         mkdir_if_absent(os.path.join(mydir, 'cache'))
-        return os.path.join(mydir, 'cache', self.path)
+        return os.path.join(mydir, 'cache', cls.path)
+
+class DB(BaseDB):
     def __init__(self, create=False, **kwargs):
         self.conn = apsw.Connection(self.full_path())
         self.cursor = pystuff.CursorWrapper(self.conn.cursor())
@@ -151,22 +167,28 @@ class DB(Singleton):
 
 class DocDB(DB):
     def keys(self):
-        return [rowid for rowid, in self.cursor.execute('SELECT rowid FROM %s' % self.table)]
+        return [id for id, in self.cursor.execute('SELECT id FROM %s' % self.doc_table)]
 
-    def get(self, id):
-        if hasattr(self, 'kcache'):
-            return self.kcache[id]
+    def items(self):
+        return self.cursor.execute('SELECT %s, %s FROM %s' % (self.doc_keycol, self.doc_textcol, self.doc_table))
+
+
+    def get(self, key):
         try:
-            text, = next(self.cursor.execute('SELECT text FROM %s WHERE id = ?' % self.table, (id,)))
+            row = next(dict_execute(self.cursor, 'SELECT * FROM %s WHERE %s = ?' % (self.doc_table, self.doc_keycol), (key,)))
         except StopIteration:
             return None
-        return text
-    get_by_id = get
+        return row
+
+    def get_by_id(self, id):
+        if hasattr(self, 'kcache'):
+            return self.kcache[id]
+        return next(dict_execute(self.cursor, 'SELECT * FROM %s WHERE id = ?' % (self.doc_table), (id,)))
 
     def cache_keys(self, keys):
         self.kcache = {}
-        for id, text in self.cursor.execute('SELECT id, text from %s WHERE id in (%s)' % (self.table, ','.join(map(str, keys)))):
-            self.kcache[id] = text
+        for row in dict_execute(self.cursor, 'SELECT id, %s from %s WHERE id in (%s)' % (self.table, ','.join(map(str, keys)))):
+            self.kcache[row['id']] = row
 
     def cache_keys_done(self):
         del self.kcache
