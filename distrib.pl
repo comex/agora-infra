@@ -55,7 +55,7 @@ while(<>) {
     next if /^\/\//;
     $have_control = 0;
     $bracket++ if(/^\[/);
-    unless(/^ / || s/^\^\^// || $bracket) { # exempt rule text
+    unless(/^ / || /^amend/i|| s/^\^\^// || $bracket) { # exempt rule text
         $is_control = 0;
         if(/(AI|adoption index)\W+([0-9\.]+)/i) {
             control();

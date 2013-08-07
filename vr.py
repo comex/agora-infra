@@ -63,7 +63,6 @@ props.sort(key=lambda prop: prop['num'])
 players = sorted(players, key=lambda p: p.lower())
 
 yaks = {}
-vcs = {}
 for prop in props:
     prop['f'] = prop['a'] = prop['n'] = 0
     for votes in prop['votes'].values():
@@ -82,8 +81,6 @@ for prop in props:
             pf = prop['pf']
             if i >= 1:
                 pf /= 3
-            else:
-                vcs[author] = vcs.get(author, 0) + 1
             if pf:
                 yaks[author] = yaks.get(author, 0) + pf
     else:
@@ -184,10 +181,6 @@ if notes:
 print
 print 'Yak awards:'
 print_awards(yaks, True)
-
-print
-print 'VC awards:'
-print_awards(vcs, False)
 
 print '''
 
