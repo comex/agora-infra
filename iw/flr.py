@@ -14,14 +14,12 @@ class FLRDB(BaseDB):
     def load_pickle(self):
         data = pickle.load(open(self.full_path(), 'rb'))
         self.revs = {}
-        revs_list = []
         for rev in data['revs']:
             ar = array.array('I')
             ar.fromstring(rev['text'])
             rev['text'] = ar
             self.revs[rev['num']] = rev
-            revs_list.append(rev)
-        self.revs_list = revs_list[::-1]
+        self.revs_list = data['revs']
         self.indirect = data['indirect']
 
     def keys(self):
@@ -47,7 +45,7 @@ class FLRDB(BaseDB):
         for rev in self.revs_list:
             if rev['date'] < dt:
                 return self.get(rev['num'])
-        raise DSLookupError('date too early: %s' % dt)
+        raise DSLookupError('date too early: %s; first revision is from %s' % (dt, self.revs_list[-1]['date']))
 
 class FLRDatasource(Datasource):
     name = 'flr'
