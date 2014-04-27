@@ -23,7 +23,8 @@ catas = []
 order = []
 powers = {}
 rules = {}
-for d in data:
+garbage = []
+for d in data[4:]:
     d = d.strip()
     if re.match('^======================================================================', d):
         _, catname, catdesc = d.split('\n', 2)
@@ -31,6 +32,11 @@ for d in data:
         catdesc = aword.aunwrap(catdesc)
         catas.append(catname)
         catdescs[catname] = catdesc
+        in_garbage = catname == 'Garbage Bin'
+    elif d.startswith('END OF THE'):
+        pass
+    elif in_garbage:
+        garbage.append(d)
     else:
         m = re.match('^Rule ([0-9]+)\/[0-9]+ \(Power=([0-9\.]+)\)', d)
         if m:
@@ -41,7 +47,7 @@ for d in data:
 idx_catas = []
 idx_order = []
 idx_both = []
-for line in data[3].split('\n'):
+for line in data[2].split('\n'):
     m = re.match('^      Rule +([0-9]+)', line)
     if m:
         rn = int(m.group(1))
@@ -52,12 +58,14 @@ for line in data[3].split('\n'):
         cname = m.group(1)
         idx_catas.append(cname)
         idx_both.append(('cata', cname))
+idx_catas.append('Garbage Bin')
+idx_both.append(('cata', 'Garbage Bin'))
 #idx_catas = re.findall('^      \* (.*)$', data[3], re.M)
-cidx_catas = re.findall('^      \* (.*)$', data[2], re.M)
+#cidx_catas = re.findall('^      \* (.*)$', data[2], re.M)
 #assert sorted(order) == sorted(idx_order)
 if mode == 'check':
-    assert cidx_catas == idx_catas
-    assert cidx_catas == catas
+    #assert cidx_catas == idx_catas
+    assert idx_catas == catas
     assert order == idx_order
     sys.exit(0)
 elif mode != 'fix':
@@ -73,13 +81,14 @@ for power in sorted(set(pv), reverse=True):
     s += '%s with Power=%s\n' % (str(pv.count(power)).rjust(8), power2str(power))
 newdata.append(s)
 
-s = '\nIndex of Categories\n\n'
-for cata in idx_catas:
-    s += '      * %s\n' % cata
+if 0: # index of categories is gone
+    s = '\nIndex of Categories\n\n'
+    for cata in idx_catas:
+        s += '      * %s\n' % cata
 
-newdata.append(s)
-newdata.append(data[3]) # index of rules
-newdata.append(data[4]) # notes
+    newdata.append(s)
+newdata.append(data[2]) # index of rules
+newdata.append(data[3]) # notes
 for kind, x in idx_both:
     if kind == 'cata':
         s = '\n======================================================================\n%s\n%s' % (x, aword.awrap(catdescs.get(x, '(TODO: description)')))
@@ -87,6 +96,7 @@ for kind, x in idx_both:
 
     elif kind == 'rule':
         newdata.append('\n%s\n' % rules[x])
+newdata.extend('\n%s\n' % g for g in garbage)
 newdata.append(data[-1]) # end of FLR
 print separator.join(newdata).rstrip()
 

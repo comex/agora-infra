@@ -117,7 +117,10 @@ while (<STDIN>) {
         $last = -1;
 	} elsif(/^amended\(([0-9\.]+)\)( by Proposal ([0-9]+))?/mi) {
 		my ($a, $b, $c) = ($1, $2, $3);
-		if($last != -1 && !($a > $last && $a <= $last + 1) && !/\(11\) by Proposal 3968/) {
+		if($last != -1 && !($a > $last && $a <= $last + 1) &&
+            # exceptions
+            !/\(11\) by Proposal 3968/ &&
+            !/\(4\) by Proposal 7462/) {
 			print "Problem with [$1 / $last] $_\n";
 			$return = 1;
 		}
@@ -181,9 +184,11 @@ foreach(keys %mentioned) {
 $return |= compare('category', \@cats_r, \@cats_s);
 $return |= compare('rule no.', \@rnos, \@inos);
 
-my $e; my $equal = keys %rtitles == keys %ititles; $equal &&= $rtitles{$e = $_} eq $ititles{$_} for keys %rtitles;
-if(!$equal) {
-    print "title of rule $e is weird : [$rtitles{$e}] [$ititles{$e}]\n";   
-    $return = 1;
+my %bothtitles = (%rtitles, %ititles);
+for (keys %bothtitles) {
+    if($rtitles{$_} ne $ititles{$_}) {
+        print "title of rule $_ is weird : [$rtitles{$_}] [$ititles{$_}]\n";   
+        $return = 1;
+    }
 }
 exit($return);
