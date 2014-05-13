@@ -118,7 +118,9 @@ def unwrap(input_lines, verbose=False):
 
             if para_indent != -1:
                 if verbose and len(para_lines) > 1 and (para_indent == orig_para_indent < guessed_para_indent):
-                    print 'Misaligned:', para_text
+                    # (a) For situations like
+                    # this.
+                    print 'Badly justified:', para_text
                 if in_right_aligned_group and guessed_para_indent != prev_indents[-1]['guessed']:
                     real_align = prev_indents[-1]['guessed']
                     for i in xrange(len(prev_indents) - 1, -1, -1):
