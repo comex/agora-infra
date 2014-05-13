@@ -1,11 +1,14 @@
 $def with (summaries)
 $var title: CFJs
 $var page: cfjs
-<pre>
+<table style="font-family: monospace">
 $for (number, summary) in summaries:
+    <tr>
+    <td style="white-space: nowrap; vertical-align: top">
     <a href="$fix_link('cfj/%s' % number)">CFJ $number</a>\
     $if summary != '?':
-        : $summary
+        : </td><td>$summary</td>
     $else:
-        $''
-</pre>
+        </td><td></td>
+    </tr>
+</table>

@@ -66,7 +66,7 @@ class CotCDB:
         for left, right in history:
             left += ':'
             if len(left) > 38:
-                print >> f, left + ':'
+                print >> f, left
                 print >> f, ' ' * 40 + right
             else:
                 print >> f, left.ljust(40) + right
@@ -213,7 +213,7 @@ class CotCDB:
                     else:
                         fmt = '%sED on Appeal' % decision
             elif typecode == 'reconsider':
-                fmt = 'Reconsideration requested by %s' % player
+                fmt = 'Reconsideration requested by %s' % player(event)
             elif typecode == 'appeal':
                 fmt = 'Appeal %s' % self.cases_by_id[self.get_linked(event, 'open')['matter']]['num']
             elif typecode == 'cfa':
@@ -237,11 +237,11 @@ class CotCDB:
             elif typecode == 'vacate':
                 fmt = 'Order(s) vacated'
             elif typecode == 'motion':
-                fmt = 'Motion %s.%s by %s' % (num, event['id'], player)
+                fmt = 'Motion %s.%s by %s' % (num, event['id'], player(event))
             elif typecode == 'inform':
-                if player:
-                    fmt = 'Defendant %s informed' % player
-                else:
+                try:
+                    fmt = 'Defendant %s informed' % player(event)
+                except KeyError:
                     fmt = 'Parties informed'
             elif typecode == 'ptend':
                 fmt = 'Pre-trial phase ended'
