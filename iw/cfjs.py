@@ -126,7 +126,7 @@ class CotCDB:
                         yield ('Judgement', dec)
                     yield None
             elif typecode == 'appeal':
-                yield ('Appeal', case['num'])
+                yield ('Appeal', self.cases_by_id[self.get_linked(event, 'open')['matter']]['num'])
                 yield ('Decision', decision(event))
                 yield None
             elif typecode == 'motion':
