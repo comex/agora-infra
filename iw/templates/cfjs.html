@@ -1,0 +1,11 @@
+$def with (summaries)
+$var title: CFJs
+$var page: cfjs
+<pre>
+$for (number, summary) in summaries:
+    <a href="$fix_link('cfj/%s' % number)">CFJ $number</a>\
+    $if summary != '?':
+        : $summary
+    $else:
+        $''
+</pre>

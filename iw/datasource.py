@@ -1,5 +1,5 @@
 import argparse, subprocess, traceback, os, urllib, sys, hashlib, re, shutil, apsw
-from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config, Singleton, dict_execute
+from pystuff import mydir, remove_none, chdir, mkdir_if_absent, remove_if_present, config, Singleton, dict_execute, last
 import pystuff, stuff, search
 
 class DSLookupError(Exception): pass
@@ -108,7 +108,7 @@ class Datasource(Singleton):
         if hasattr(self, 'download'):
             parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())), help='download and cache %s' % self.name)
 
-        if config.use_search and hasattr(self, 'DB') and hasattr(self.DB, 'search'):
+        if config.use_search and hasattr(self, 'search'):
             parser.add_argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1), help='search %s' % self.name)
 
         if hasattr(self, 'DB'):
@@ -175,7 +175,7 @@ class DocDB(DB):
 
     def get(self, key):
         try:
-            row = next(dict_execute(self.cursor, 'SELECT * FROM %s WHERE %s = ?' % (self.doc_table, self.doc_keycol), (key,)))
+            row = last(dict_execute(self.cursor, 'SELECT * FROM %s WHERE %s = ?' % (self.doc_table, self.doc_keycol), (key,)))
         except StopIteration:
             return None
         return row
@@ -183,7 +183,7 @@ class DocDB(DB):
     def get_by_id(self, id):
         if hasattr(self, 'kcache'):
             return self.kcache[id]
-        return next(dict_execute(self.cursor, 'SELECT * FROM %s WHERE id = ?' % (self.doc_table), (id,)))
+        return last(dict_execute(self.cursor, 'SELECT * FROM %s WHERE id = ?' % (self.doc_table), (id,)))
 
     def cache_keys(self, keys):
         self.kcache = {}

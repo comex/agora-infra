@@ -123,6 +123,17 @@ def lru_cache(maxsize):
         return replacement
     return f
 
+# This is not just for debugging.  apsw seems to not unlock cursors until you
+# actually get the StopIteration, not after the last row.
+def last(iterator):
+    val = next(iterator)
+    try:
+        other = next(iterator)
+    except StopIteration:
+        return val
+    except:
+        raise ValueError('last() not last - got %s' % other)
+
 # debugging options
 log_queries = False # xx
 force_unindexed = False

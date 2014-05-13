@@ -1,0 +1,47 @@
+$def with (page)
+
+<html>
+<head>
+<title>$page.title</title>
+<style>
+    #topbar {
+        display: block;
+        background-color: #eef;
+        font-family: monospace;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    #topbar li {
+        display: block;
+        float: left;
+    }
+    #topbar li.right {
+        float: right;
+        margin-left: 5px;
+    }
+    #topbar form {
+        display: inline;
+    }
+    #topbar li * {
+        padding: 0;
+        margin: 0;
+    }
+</style>
+</head>
+<body>
+<ul id="topbar">
+    <!--<li>Text text text text text text text</li>-->
+    $if page.page != 'cfjs':
+        <a href="$fix_link('cfj/')">CFJs</a>
+    $else:
+        CFJs
+    <li class="right">
+        <form action="." method="GET"><input type="text" name="search" value="$page.get('search', '')"><input type="submit" value="Search"></form>
+    </li>
+    $:page.get('topbar_stuff', '')
+    <div style="clear: both"></div>
+</ul>
+$:page
+</body>
+</html>

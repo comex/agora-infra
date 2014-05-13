@@ -4,12 +4,9 @@ from datasource import Datasource, DB, DocDB
 from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, mydir, mkdir_if_absent, config
 import stuff, pystuff, search
 
-def try_execute(cursor, stmt):
-    try:
-        cursor.execute(stmt)
-    except apsw.SQLError:
-        print >> sys.stderr, stmt
-        raise
+def unwrap(x):
+    # temporary
+    return re.sub('\s*\n\s*', ' ', x.strip())
 
 class CotCDB:
     # vaguely ported from Murphy's PHP code
@@ -355,10 +352,12 @@ class CFJDB(DocDB):
                 CREATE TABLE cfjs(
                     id integer primary key,
                     number blob,
+                    number_base integer,
                     text blob,
                     judges blob,
                     outcome blob,
-                    caller blob
+                    caller blob,
+                    summary blob
                 );
                 CREATE TABLE meta(
                     id integer primary key,
@@ -392,14 +391,26 @@ class CFJDB(DocDB):
             outcome = outcomes[-1] if outcomes else ''
             m = re.search('^(?:Caller|Called by):\s*(.*)$', text, re.M)
             caller = m.group(1) if m else ''
-            updates.append((judges, outcome, caller, id))
-        self.cursor.executemany('UPDATE cfjs SET judges = ?, outcome = ?, caller = ? WHERE id = ?', updates)
+            summary = '?'
+            if re.match('^[0-9]+$', id): # no statements for appeals
+                m = re.search('^=======.*$((.|\n)*?)^=======', text, re.M)
+                if m:
+                    summary = m.group(1).strip()
+                    summary = re.sub('^.*CFJ %s\s*\n' % id, '', summary)
+                    summary = unwrap(summary)
+
+            updates.append((judges, outcome, caller, summary, id))
+        self.cursor.executemany('UPDATE cfjs SET judges = ?, outcome = ?, caller = ?, summary = ? WHERE number = ?', updates)
         self.commit()
 
     def insert(self, num, fmt):
-        self.cursor.execute('INSERT INTO cfjs(number, text) VALUES(?, ?)', (num, fmt))
+        base = int(re.match('^[0-9]*', num).group(0))
+        self.cursor.execute('INSERT INTO cfjs(number, number_base, text) VALUES(?, ?, ?)', (num, base, fmt))
         if config.use_search:
             self.idx.insert(self.conn.last_insert_rowid(), fmt)
+
+    def summaries(self):
+        return list(self.cursor.execute('SELECT number, summary FROM cfjs ORDER BY number_base DESC, number'))
 
 class CFJDatasource(Datasource):
     name = 'cfjs'
@@ -453,12 +464,17 @@ class CFJDatasource(Datasource):
             except Exception, e:
                 if isinstance(e, KeyboardInterrupt): raise
                 print >> sys.stderr, 'failed to insert', num
+                traceback.print_exc()
         cfj.finalize(co.last_date, verbose)
 
     def prepare_cotcdb(self, verbose):
         co = CotCDB()
         co.import_(self.urls[0][1], verbose)
         return co
+
+    def add_cli_options(self, parser, argsf):
+        parser.add_argument('--cfj-rematch', action=pystuff.action(lambda: CFJDB.instance().rematch(True)))
+        Datasource.add_cli_options(self, parser, argsf)
 
 if __name__ == '__main__':
     co = CFJDatasource().prepare_cotcdb(False)
