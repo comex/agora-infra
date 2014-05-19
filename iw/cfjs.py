@@ -406,13 +406,15 @@ class CFJDB(DocDB):
 
             updates.append((judges, outcome, caller, summary, id))
         self.cursor.executemany('UPDATE cfjs SET judges = ?, outcome = ?, caller = ?, summary = ? WHERE number = ?', updates)
+
+        self.reindex_if_necessary(verbose)
         self.commit()
 
     def insert(self, num, fmt):
         base = int(re.match('^[0-9]*', num).group(0))
+        self.delete(num)
         self.cursor.execute('INSERT OR REPLACE INTO cfjs(number, number_base, text) VALUES(?, ?, ?)', (num, base, fmt))
-        if config.use_search and self.conn.changes() > 0:
-            self.idx.insert(self.conn.last_insert_rowid(), fmt)
+        # don't index here because values can change
 
     def summaries(self):
         return list(self.cursor.execute('SELECT number, summary FROM cfjs ORDER BY number_base DESC, number'))

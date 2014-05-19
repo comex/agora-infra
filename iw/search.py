@@ -532,8 +532,9 @@ class Index:
     def __init__(self, name, db):
         self.name = name
         self.db = db
+        self.cursor = pystuff.CursorWrapper(self.db.conn.cursor())
         if db.new:
-            db.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, order=desc, content='', text text);' % (name, self.fts_opts))
+            self.clear()
         self.insert_stmt = 'INSERT INTO %s(docid, text) VALUES(?, ?)' % name
         self.search_stmt = 'SELECT docid FROM %s WHERE text MATCH ? ORDER BY docid %%s LIMIT ?' % name
 
@@ -543,8 +544,12 @@ class Index:
     def commit(self):
         pass
 
+    def clear(self):
+        self.cursor.execute('DROP TABLE IF EXISTS %s' % self.name)
+        self.cursor.execute('CREATE VIRTUAL TABLE %s USING fts4(%s, order=desc, content='', text text);' % (self.name, self.fts_opts))
+
     def _insert(self, docid, text):
-        self.db.cursor.execute(self.insert_stmt, (docid, text))
+        self.cursor.execute(self.insert_stmt, (docid, text))
 
     # No SQLITE_ENABLE_FTS3_PARENTHESIS means trouble
     @staticmethod
@@ -606,6 +611,10 @@ class CombinedIndex:
     def insert(self, docid, text):
         self.word.insert(docid, text)
         self.trigram.insert(docid, text)
+
+    def clear(self):
+        self.word.clear()
+        self.trigram.clear()
 
 if __name__ == '__main__':
     import sys

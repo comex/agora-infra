@@ -197,6 +197,16 @@ class DocDB(DB):
     def fix_row(self, row):
         return row
 
+    def reindex_if_necessary(self, verbose=False):
+        # Can't delete from contentless FTS tables.
+        if config.use_search and self.conn.totalchanges() > 0:
+            if verbose:
+                print >> sys.stderr, 'reindexing...'
+            self.idx.clear()
+
+            for id, text in self.cursor.execute('SELECT id, %s FROM %s' % (self.doc_textcol, self.doc_table)):
+                self.idx.insert(id, text)
+
 def all_sources():
     from cfjs import CFJDatasource
     from flr import FLRDatasource, RulesDatasource
