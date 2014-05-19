@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import cfjs, pystuff, search
 import web
+pystuff.fix_web()
 import os, threading, re, __builtin__, urlparse
 
 t_globals = {}

@@ -134,6 +134,15 @@ def last(iterator):
     else:
         raise ValueError('last() not last - got %s' % other)
 
+def fix_web():
+    # web.py includes a bad workaround for a non-bug in lighttpd.
+    import web.application
+    old_load = web.application.load
+    def new_load(self, env):
+        if 'SERVER_SOFTWARE' in env: del env['SERVER_SOFTWARE']
+        return old_load(self, env)
+    web.application.load = new_load
+
 # debugging options
 log_queries = False
 force_unindexed = False
