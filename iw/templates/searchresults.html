@@ -1,0 +1,21 @@
+$def with (query, errors, results)
+$var title: Search Results
+$var page: searchresults
+
+$if errors is not None:
+    Errors:<br>
+    <ul>
+    $for error in errors:
+        <li>$error</li>
+    </ul>
+$else:
+    $if results:
+        <ul class="results">
+            $for title, link, text in results:
+                <li>
+                    <a class="linky" href="$link">$title</a>
+                    <pre>$:text</pre>
+                </li>
+        </ul>
+    $else:
+        No results for <i>$query</i>.
