@@ -412,7 +412,6 @@ class CFJDB(DocDB):
 
     def insert(self, num, fmt):
         base = int(re.match('^[0-9]*', num).group(0))
-        self.delete(num)
         self.cursor.execute('INSERT OR REPLACE INTO cfjs(number, number_base, text) VALUES(?, ?, ?)', (num, base, fmt))
         # don't index here because values can change
 
