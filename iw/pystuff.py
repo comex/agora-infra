@@ -131,10 +131,10 @@ def last(iterator):
         other = next(iterator)
     except StopIteration:
         return val
-    except:
+    else:
         raise ValueError('last() not last - got %s' % other)
 
 # debugging options
-log_queries = False # xx
+log_queries = False
 force_unindexed = False
 print_trigram_hits = False

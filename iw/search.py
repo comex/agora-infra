@@ -1,4 +1,4 @@
-import re, sre_parse, sre_compile, sre_constants, collections, time, operator
+import re, sre_parse, sre_compile, sre_constants, collections, time, operator, itertools
 from collections import namedtuple
 from pystuff import config, mkdir_if_absent
 import pystuff, stuff
@@ -281,7 +281,7 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
                 except StopIteration:
                     pass
                 else:
-                    yield (result, [FoundRegex(m, it)])
+                    yield (result, [FoundRegex(itertools.chain([m], it))])
         return func()
     else:
         raise Exception('bad tree')
@@ -299,22 +299,25 @@ def do_query(expr, operators, start=0, limit=10, timeout=2.5, asc=False):
     else:
         deadline = time.time() + 2.5
     it = iter(run_query(o, operators, deadline, None if limit is None else start + limit, asc))
-    for i in xrange(start):
-        try:
-            next(it)
-        except StopIteration:
-            break
-    if limit is None:
-        results = list(it)
-    else:
-        results = []
-        for i in xrange(limit):
+    try:
+        for i in xrange(start):
             try:
-                result = next(it)
-                results.append(result)
+                next(it)
             except StopIteration:
                 break
-    return ('ok', results)
+        if limit is None:
+            results = list(it)
+        else:
+            results = []
+            for i in xrange(limit):
+                try:
+                    result = next(it)
+                    results.append(result)
+                except StopIteration:
+                    break
+        return ('ok', results)
+    except QueryTimeoutException:
+        return ('timeout', None)
 
 def m_to_range(m):
     return (m.start(), m.end())
@@ -323,15 +326,16 @@ class FoundLit:
     def __init__(self, query):
         self.query = query
     def ranges(self, text):
-        r = r'\b(%s)\b' % '|'.join(re.escape(q) for q in self.query[1:] if not isinstance(q, tuple))
+        bits = [re.escape(q) for q in self.query[1:] if not isinstance(q, tuple)]
+        if not bits:
+            return []
+        r = r'\b(%s)\b' % '|'.join(bits)
         return (m_to_range(m) for m in re.finditer(r, text, re.I))
 
 class FoundRegex:
-    def __init__(self, m, it):
-        self.first = m_to_range(m)
+    def __init__(self, it):
         self.it = it
     def ranges(self, text):
-        yield self.first
         for m in self.it:
             yield m_to_range(m)
 
@@ -343,6 +347,9 @@ class HighlightedString:
         return self.text
     def ansi(self):
         return self.output('\x1b[7m', '\x1b[27m', lambda text: text)
+    def html(self):
+        import web
+        return self.output('<b>', '</b>', lambda text: web.websafe(text))
     def output(self, enter, exit, transform):
         text = self.text
         last_e = 0
@@ -393,6 +400,8 @@ def highlight_snippets(text, ctxs):
     htext = ''
     hranges = []
     for ls, le in line_ranges[:3]:
+        if htext != '':
+            htext += '\n'
         adj = + len(htext) - ls
         htext += text[ls:le]
         hranges += [(s + adj, e + adj) for (s, e) in ranges if s >= ls and e <= le]

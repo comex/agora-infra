@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import cfjs, pystuff
+import cfjs, pystuff, search
 import web
 import threading, re, __builtin__, urlparse
 
@@ -49,7 +49,7 @@ def parse_query():
     q = web.ctx.query
     if q == '':
         return {}
-    return urlparse.parse_qs(q[1:])
+    return urlparse.parse_qs(q[1:], keep_blank_values=True)
 
 class cfj_num:
     def GET(self, num, extension):
@@ -61,16 +61,45 @@ class cfj_num:
             return plaintext(text)
         text = autolink(text, 'cfj')
         return render.doc(
-            title='CFJ %s' % cfj['number'],
+            title=cfj['title'],
             doc=text,
             txt='%s.txt' % (num,),
         )
+
+def cfj_search(expr):
+    cfjdb = cfjs.CFJDB.instance()
+    # should this be on DB?
+    kind, snd = cfjs.CFJDatasource.instance().search(expr, limit=None)
+    errors = results = None
+    if kind == 'empty':
+        return
+    elif kind == 'errors':
+        errors = snd
+    elif kind == 'timeout':
+        errors = ['Query timeout.']
+    elif kind == 'ok':
+        results = []
+        for id, ctxs in snd:
+            row = cfjdb.get_by_id(id)
+            results.append((
+                row['title'],
+                fix_link('cfj/%s' % row['number']),
+                search.highlight_snippets(row['text'], ctxs).html()
+            ))
+    else:
+        assert False
+
+    return render.searchresults(expr, errors, results)
 
 class cfj_main:
     def GET(self):
         query = parse_query()
         if query.has_key('search'):
-            return cfj_search(query['search'])
+            if len(query.get('search', ())) >= 1:
+                result = cfj_search(query['search'][0])
+                if result is not None:
+                    return result
+            return render.searchhelp()
         # just list all CFJs
         summaries = cfjs.CFJDB.instance().summaries()
         return render.cfjs(

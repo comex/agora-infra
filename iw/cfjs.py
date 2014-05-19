@@ -1,4 +1,4 @@
-import gzip, re, apsw, sys, datetime, time, multiprocessing, os, tarfile, traceback, itertools
+import gzip, re, apsw, sys, datetime, time, os, tarfile, traceback, itertools
 import cStringIO, StringIO
 from datasource import Datasource, DB, DocDB
 from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, mydir, mkdir_if_absent, config
@@ -272,6 +272,9 @@ class CotCDB:
                 row['link'] = e2
 
     def import_matters(self, row):
+        if not row['number']:
+            # bad row
+            return
         case = self.cases_by_id.setdefault(row['id'], {})
         case['id'] = row['id']
         case['num'] = row['number']
@@ -287,8 +290,8 @@ class CotCDB:
     def import_exhibits(self, row):
         self.events[row['event']]['exhibits'].append(row)
 
-    def import_(self, path, verbose):
-        it = iter(open(path))
+    def import_(self, fp, verbose):
+        it = iter(fp)
         integer_keys = {}
         while True:
             try:
@@ -339,6 +342,7 @@ class CotCDB:
 class CFJDB(DocDB):
     doc_table = 'cfjs'
     doc_keycol = 'number'
+    doc_ordercol = 'number_base'
     doc_textcol = 'text'
 
     path = 'cfjs.sqlite'
@@ -372,7 +376,8 @@ class CFJDB(DocDB):
 
     def finalize(self, last_date, verbose=False):
         self.cursor.execute('''
-            CREATE INDEX IF NOT EXISTS cfjs_number ON cfjs(number);
+            CREATE UNIQUE INDEX IF NOT EXISTS cfjs_number ON cfjs(number);
+            CREATE INDEX IF NOT EXISTS cfjs_number_base ON cfjs(number_base);
             CREATE INDEX IF NOT EXISTS cfjs_outcome ON cfjs(outcome);
             CREATE INDEX IF NOT EXISTS cfjs_caller ON cfjs(caller);
         ''')
@@ -405,16 +410,21 @@ class CFJDB(DocDB):
 
     def insert(self, num, fmt):
         base = int(re.match('^[0-9]*', num).group(0))
-        self.cursor.execute('INSERT INTO cfjs(number, number_base, text) VALUES(?, ?, ?)', (num, base, fmt))
+        self.cursor.execute('INSERT OR REPLACE INTO cfjs(number, number_base, text) VALUES(?, ?, ?)', (num, base, fmt))
         if config.use_search:
             self.idx.insert(self.conn.last_insert_rowid(), fmt)
 
     def summaries(self):
         return list(self.cursor.execute('SELECT number, summary FROM cfjs ORDER BY number_base DESC, number'))
 
+    def fix_row(self, row):
+        row['title'] = 'CFJ %s' % row['number']
+        return row
+
 class CFJDatasource(Datasource):
     name = 'cfjs'
-    urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
+    # No longer available
+    #urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
     DB = CFJDB
 
     def preprocess_download(self, text):
@@ -469,7 +479,10 @@ class CFJDatasource(Datasource):
 
     def prepare_cotcdb(self, verbose):
         co = CotCDB()
-        co.import_(self.urls[0][1], verbose)
+        #co.import_(self.urls[0][1], verbose)
+        zipped = open(os.path.join(mydir, 'static_data', 'db_dump.tar.gz'), 'rb').read()
+        unzipped = self.preprocess_download(zipped)
+        co.import_(cStringIO.StringIO(unzipped), verbose)
         return co
 
     def add_cli_options(self, parser, argsf):

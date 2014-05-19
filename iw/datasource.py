@@ -69,6 +69,8 @@ class Datasource(Singleton):
             print 'Errors in search query:'
             for err in r:
                 print ' ', err
+        elif ok == 'timeout':
+            print 'Timeout'
         elif ok == 'ok':
             first = True
             for id, ctxs in r:
@@ -101,11 +103,11 @@ class Datasource(Singleton):
             print result['text'] if isinstance(result, dict) else result
 
     def add_cli_options(self, parser, argsf):
-        if hasattr(self, 'download'):
+        if hasattr(self, 'urls'):
             parser.add_argument('--download-' + self.name, action=pystuff.action(lambda: self.cli_download(argsf())), help='download %s' % self.name)
         parser.add_argument('--cache-' + self.name, action=pystuff.action(lambda: self.cli_cache(argsf())), help='cache %s' % self.name)
         # download and cache
-        if hasattr(self, 'download'):
+        if hasattr(self, 'urls'):
             parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())), help='download and cache %s' % self.name)
 
         if config.use_search and hasattr(self, 'search'):
@@ -167,23 +169,22 @@ class DB(BaseDB):
 
 class DocDB(DB):
     def keys(self):
-        return [id for id, in self.cursor.execute('SELECT id FROM %s' % self.doc_table)]
+        return [id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol))]
 
     def items(self):
-        return self.cursor.execute('SELECT %s, %s FROM %s' % (self.doc_keycol, self.doc_textcol, self.doc_table))
-
+        return list(self.cursor.execute('SELECT %s, %s FROM %s' % (self.doc_keycol, self.doc_textcol, self.doc_table)))
 
     def get(self, key):
         try:
             row = last(dict_execute(self.cursor, 'SELECT * FROM %s WHERE %s = ?' % (self.doc_table, self.doc_keycol), (key,)))
         except StopIteration:
             return None
-        return row
+        return self.fix_row(row)
 
     def get_by_id(self, id):
         if hasattr(self, 'kcache'):
             return self.kcache[id]
-        return last(dict_execute(self.cursor, 'SELECT * FROM %s WHERE id = ?' % (self.doc_table), (id,)))
+        return self.fix_row(last(dict_execute(self.cursor, 'SELECT * FROM %s WHERE id = ?' % (self.doc_table), (id,))))
 
     def cache_keys(self, keys):
         self.kcache = {}
@@ -192,6 +193,9 @@ class DocDB(DB):
 
     def cache_keys_done(self):
         del self.kcache
+
+    def fix_row(self, row):
+        return row
 
 def all_sources():
     from cfjs import CFJDatasource
