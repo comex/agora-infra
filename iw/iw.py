@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import cfjs, pystuff, search
 import web
-import threading, re, __builtin__, urlparse
+import os, threading, re, __builtin__, urlparse
 
 t_globals = {}
 t_globals.update(__builtin__.__dict__)
 
-render = web.template.render('templates', base='base', globals=t_globals)
+render = web.template.render(os.path.join(pystuff.mydir, 'templates'), base='base', globals=t_globals)
 
 if pystuff.config.is_qoid_us:
     domains = {
