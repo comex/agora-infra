@@ -53,7 +53,7 @@ def colify(line, colstarts):
 def twrap(message, width=72, indent=0, subsequent_indent=None):
     indent = ' ' * indent
     subsequent_indent = indent if subsequent_indent is None else ' ' * subsequent_indent
-    return '\n'.join(textwrap.fill(line, width=width, initial_indent=indent, subsequent_indent=indent) for line in message.split('\n'))
+    return '\n'.join(textwrap.fill(line, width=width, initial_indent=indent, subsequent_indent=indent, break_on_hyphens=False) for line in message.split('\n'))
 
 def faildecode(text):
     if isinstance(text, unicode): return text
