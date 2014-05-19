@@ -363,6 +363,7 @@ class CFJDB(DocDB):
                     caller blob,
                     summary blob
                 );
+                CREATE UNIQUE INDEX IF NOT EXISTS cfjs_number ON cfjs(number);
                 CREATE TABLE meta(
                     id integer primary key,
                     last_date integer default 0,
@@ -376,7 +377,6 @@ class CFJDB(DocDB):
 
     def finalize(self, last_date, verbose=False):
         self.cursor.execute('''
-            CREATE UNIQUE INDEX IF NOT EXISTS cfjs_number ON cfjs(number);
             CREATE INDEX IF NOT EXISTS cfjs_number_base ON cfjs(number_base);
             CREATE INDEX IF NOT EXISTS cfjs_outcome ON cfjs(outcome);
             CREATE INDEX IF NOT EXISTS cfjs_caller ON cfjs(caller);
@@ -411,7 +411,7 @@ class CFJDB(DocDB):
     def insert(self, num, fmt):
         base = int(re.match('^[0-9]*', num).group(0))
         self.cursor.execute('INSERT OR REPLACE INTO cfjs(number, number_base, text) VALUES(?, ?, ?)', (num, base, fmt))
-        if config.use_search:
+        if config.use_search and self.conn.changes() > 0:
             self.idx.insert(self.conn.last_insert_rowid(), fmt)
 
     def summaries(self):

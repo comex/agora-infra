@@ -118,13 +118,6 @@ urls = [
 ]
 
 
-subdomains = []
-for path, domain in domains.items():
-    durls = sum(((subpath[len(path)+1:], handler) for (subpath, handler) in zip(urls[0::2], urls[1::2]) if subpath.startswith('/' + path)), [])
-    print durls
-    subdomains.extend([domain, web.application(durls, globals())])
-subdomains.extend(['.*', web.application(urls, globals())])
-
 lock = threading.Lock()
 def lock_it(handler):
     with lock:
@@ -132,7 +125,7 @@ def lock_it(handler):
 
 if __name__ == "__main__":
     web.config.debug = True
-    app = web.subdomain_application(subdomains)
+    app = web.application(urls, globals())
     app.add_processor(lock_it)
     app.run()
 
