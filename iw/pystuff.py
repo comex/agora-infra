@@ -1,5 +1,5 @@
 from types import FunctionType
-import sys, os, argparse, time, mmap, UserDict, json, collections, codecs
+import sys, os, argparse, time, mmap, UserDict, json, collections, codecs, signal
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 mydir = os.path.dirname(__file__)
@@ -142,6 +142,10 @@ def fix_web():
         if 'SERVER_SOFTWARE' in env: del env['SERVER_SOFTWARE']
         return old_load(self, env)
     web.application.load = new_load
+
+    # Keep-Alive messes up Ctrl-C
+    import web.wsgiserver
+    web.wsgiserver.HTTPRequest.close_connection = True
 
 # debugging options
 log_queries = False
