@@ -24,9 +24,14 @@ class MessagesDB(DocDB):
     doc_table = 'messages'
     doc_keycol = 'id'
     doc_textcol = 'text'
+    name = 'messages'
     version = 0
-    def __init__(self, create=False):
-        DB.__init__(self, create)
+
+    def datasources(self):
+        return [MessagesDatasource.instance()]
+
+    def __init__(self):
+        DB.__init__(self)
         if self.new:
             self.cursor.execute('''
                 CREATE TABLE messages(
@@ -51,7 +56,7 @@ class MessagesDB(DocDB):
         DB.begin(self)
         self.dates = set(date for date, in self.cursor.execute('SELECT real_date FROM messages'))
 
-    def cache(self, info):
+    def insert(self, info):
         def fd(hdr):
             return stuff.faildecode(info.get(hdr, ''))
         id = info['real_date'] * 1000
@@ -104,7 +109,6 @@ class MessagesDatasource(Datasource):
         ('http://agora:nomic@www.agoranomic.org/archives/agora-discussion.mbox', 'agora-discussion.mbox'),
         ('http://agora:nomic@www.agoranomic.org/archives/agora-official.mbox', 'agora-official.mbox'),
     ]
-    DB = MessagesDB
 
     def __init__(self):
         if config.local_dir:
@@ -119,7 +123,7 @@ class MessagesDatasource(Datasource):
         return Datasource.download(self, *args, **kwargs)
 
     def cache(self, verbose=False):
-        db = MessagesDB(create=True)
+        db = MessagesDB.instance()
         db.begin()
         for list_id, (url, path) in enumerate(self.urls):
             if verbose:
@@ -149,5 +153,5 @@ class MessagesDatasource(Datasource):
                         break
                 else:
                     info['text'] = stuff.faildecode(em.get_payload(decode=True))
-                db.cache(info)
+                db.insert(info)
         db.commit()

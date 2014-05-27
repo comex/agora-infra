@@ -430,7 +430,6 @@ class CotCDatasource(Datasource):
     name = 'cotc'
     # No longer available
     #urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
-    DB = CFJDB
 
     def __init__(self):
         Datasource.__init__(self)
@@ -495,7 +494,6 @@ class CotCDatasource(Datasource):
 
 class StaticCFJDatasource(Datasource):
     name = 'static-cfjs'
-    DB = CFJDB
     def cache(self, verbose):
         cfj = CFJDB.instance()
         nums = cfj.keys()
@@ -510,7 +508,6 @@ class StaticCFJDatasource(Datasource):
 
 class GitCFJDatasource(GitDatasource):
     name = 'git-cfjs'
-    DB = CFJDB
     urls = [('https://github.com/comex/agora-cfjs.git', 'agora-cfjs')]
     def cache(self, verbose):
         cfj = CFJDB.instance()

@@ -93,6 +93,13 @@ class BaseDB(Singleton):
         # download and cache all datasources
         parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())), help='download and cache %s' % self.name)
 
+    def cli_show(self, args, key):
+        result = self.get(key)
+        if result is None:
+            print '(not found)'
+        else:
+            print result['text'] if isinstance(result, dict) else result
+
     def cli_update(self, args):
         for ds in self.datasources():
             if hasattr(ds, 'urls'):
@@ -135,14 +142,6 @@ class BaseDB(Singleton):
                         print hl.plain()
             if first and not args.quiet:
                 print '(no results)'
-
-    def cli_show(self, args, key):
-        result = self.DB.instance().get(key)
-        if result is None:
-            print '(not found)'
-        else:
-            print result['text'] if isinstance(result, dict) else result
-
 
 class DB(BaseDB):
     def __init__(self, **kwargs):
@@ -236,5 +235,6 @@ class DocDB(DB):
 
 def all_dbs():
     from cfjs import CFJDB
-    return [CFJDB.instance()]
+    from messages import MessagesDB
+    return [CFJDB.instance(), MessagesDB.instance()]
 
