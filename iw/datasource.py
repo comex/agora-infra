@@ -156,15 +156,19 @@ class DB(BaseDB):
         except apsw.SQLError:
             if not create:
                 raise
-            self.cursor.execute('CREATE TABLE version(version int); INSERT INTO version VALUES(?)', (self.version,))
+            self.cursor.execute('''
+                CREATE TABLE version(version int);
+                INSERT INTO version VALUES(?);
+                CREATE TABLE meta(key blob primary key, value blob);
+            ''', (self.version,))
             self.new = True
             version = self.version
         if version != self.version:
             if not create:
                 raise Exception('bad version')
             else:
-                os.remove(path)
-                return self.__init__(path, create)
+                os.remove(self.full_path())
+                return self.__init__(**kwargs)
 
     def begin(self):
         self.cursor.execute('BEGIN')
@@ -175,11 +179,18 @@ class DB(BaseDB):
         self.cursor.execute('COMMIT')
         self.dirty = True
 
-    def meta(self, name):
-        return last(self.cursor.execute('SELECT %s FROM meta' % name))[0]
+    ThrowException = object()
+
+    def meta(self, name, default=ThrowException):
+        try:
+            return last(self.cursor.execute('SELECT value FROM meta WHERE key = ?', (name,)))[0]
+        except StopIteration:
+            if default is DB.ThrowException:
+                raise KeyError(name)
+            return default
 
     def set_meta(self, name, value):
-        self.cursor.execute('UPDATE meta SET %s = ?' % name, (value,))
+        self.cursor.execute('REPLACE INTO meta VALUES(?, ?)', (name, value))
 
 class DocDB(DB):
     def keys(self):

@@ -348,7 +348,7 @@ class CFJDB(DocDB):
     doc_textcol = 'text'
 
     path = 'cfjs.sqlite'
-    version = 1
+    version = 2
 
     def datasources(self):
         return [StaticCFJDatasource.instance(), CotCDatasource.instance(), GitCFJDatasource.instance()]
@@ -369,13 +369,6 @@ class CFJDB(DocDB):
                     summary blob
                 );
                 CREATE UNIQUE INDEX IF NOT EXISTS cfjs_number ON cfjs(number);
-                CREATE TABLE meta(
-                    id integer primary key,
-                    cotc_last_date integer default 0,
-                    git_last_date integer default 0,
-                    update_date integer default 0
-                );
-                INSERT OR IGNORE INTO meta(id) VALUES(0);
             ''')
 
         if config.use_search:
@@ -453,7 +446,7 @@ class CotCDatasource(Datasource):
     def cache(self, verbose):
         co = self.prepare_cotcdb(verbose)
         cfj = CFJDB.instance()
-        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta('cotc_last_date')))
+        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(int(cfj.meta('cotc_last_date', 0))))
 
         if verbose:
             print >> sys.stderr, 'Formatting %s new cases...' % len(nums)
@@ -515,7 +508,7 @@ class GitCFJDatasource(GitDatasource):
         cfj = CFJDB.instance()
         nums = cfj.keys()
         fmts = []
-        last_date = cfj.meta('git_last_date')
+        last_date = int(cfj.meta('git_last_date', 0))
         for fn in os.listdir(self.urls[0][1]):
             m = re.match('^([0-9].*)\.yaml', fn)
             if not m:
