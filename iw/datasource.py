@@ -147,6 +147,7 @@ class DB(BaseDB):
     def __init__(self, **kwargs):
         BaseDB.__init__(self)
         self.conn = apsw.Connection(self.full_path())
+        self.conn.setbusytimeout(1000)
         self.cursor = pystuff.CursorWrapper(self.conn.cursor())
         self.new = False
         create = True # xxx
@@ -230,8 +231,14 @@ class DocDB(DB):
                 print >> sys.stderr, 'reindexing...'
             self.idx.clear()
 
+            self.begin()
+            self.idx.begin()
+
             for id, text in self.cursor.execute('SELECT id, %s FROM %s' % (self.doc_textcol, self.doc_table)):
                 self.idx.insert(id, text)
+
+            self.idx.end()
+            self.end()
 
 def all_dbs():
     from cfjs import CFJDB
