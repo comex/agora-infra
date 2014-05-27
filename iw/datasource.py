@@ -11,7 +11,6 @@ class Datasource(Singleton):
         self.did_download = set()
         if hasattr(self, 'urls'):
             self.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in self.urls]
-        self.dirty = False
 
     def download(self, verbose=False, url_filter=None, use_cont=False):
         for url, filename in self.urls:
@@ -71,6 +70,7 @@ class GitDatasource(Datasource):
 class BaseDB(Singleton):
     def __init__(self):
         self.search_operators = {None: self}
+        self.dirty = False
 
     def finalize(self, verbose=False):
         pass
@@ -177,7 +177,6 @@ class DB(BaseDB):
     def commit(self):
         if hasattr(self, 'idx'): self.idx.commit()
         self.cursor.execute('COMMIT')
-        self.dirty = True
 
     ThrowException = object()
 

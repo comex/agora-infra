@@ -412,6 +412,7 @@ class CFJDB(DocDB):
         base = int(re.match('^[0-9]*', num).group(0))
         self.cursor.execute('INSERT OR REPLACE INTO cfjs(number, number_base, text) VALUES(?, ?, ?)', (num, base, fmt))
         # don't index here because values can change
+        self.dirty = True
 
     def summaries(self):
         return list(self.cursor.execute('SELECT number, summary FROM cfjs ORDER BY number_base DESC, number'))
