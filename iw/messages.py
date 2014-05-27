@@ -25,7 +25,7 @@ class MessagesDB(DocDB):
     doc_keycol = 'id'
     doc_textcol = 'text'
     name = 'messages'
-    version = 0
+    version = 1
 
     def datasources(self):
         return [MessagesDatasource.instance()]
@@ -35,14 +35,14 @@ class MessagesDB(DocDB):
         if self.new:
             self.cursor.execute('''
                 CREATE TABLE messages(
-                    id integer primary key,
+                    uniq_message_id blob primary key,
                     start integer,
                     end integer,
-                    subject text,
-                    from_ text,
-                    to_ text,
-					message_id text,
-                    text text,
+                    subject blob,
+                    from_ blob,
+                    to_ blob,
+                    message_id blob,
+                    text blob,
                     real_date integer,
                     list_id integer
                 );
@@ -59,11 +59,8 @@ class MessagesDB(DocDB):
     def insert(self, info):
         def fd(hdr):
             return stuff.faildecode(info.get(hdr, ''))
-        id = info['real_date'] * 1000
-        while id in self.dates: id += 1
         self.dates.add(id)
-        text = 'id: %s\nFrom: %s\nTo: %s\nSubject: %s\nReal-Date: %s\nMessage-ID: %s\n\n%s' % (
-			id,
+        text = 'From: %s\nTo: %s\nSubject: %s\nReal-Date: %s\nMessage-ID: %s\n\n%s' % (
             info['From'],
             info['To'],
             info['Subject'],
@@ -71,21 +68,30 @@ class MessagesDB(DocDB):
 			info['Message-ID'],
             info['text']
         )
-        bits = (
-            id,
-            info['start'],
-            info['end'],
-            info['Subject'],
-            info['From'],
-            info['To'],
-			info['Message-ID'],
-            text,
-            info['real_date'],
-            info['list_id']
-        )
-        self.cursor.execute('INSERT INTO messages(id, start, end, subject, from_, to_, message_id, text, real_date, list_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', bits)
+        umi = info['Message-ID']
+        count = 0
+        while True:
+            bits = (
+                umi,
+                info['start'],
+                info['end'],
+                info['Subject'],
+                info['From'],
+                info['To'],
+                info['Message-ID'],
+                text,
+                info['real_date'],
+                info['list_id']
+            )
+            self.cursor.execute('INSERT OR IGNORE INTO messages(uniq_message_id, start, end, subject, from_, to_, message_id, text, real_date, list_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', bits)
+            if self.conn.changes() != 0:
+                break
+            # we got a duplicate Message-ID
+            umi = '%s.%s' % (info['Message-ID'], count)
+            count += 1
+        rowid = self.conn.last_insert_rowid()
         if config.use_search:
-            self.idx.insert(id, text)
+            self.idx.insert(rowid, text)
 
     def last_end(self, list_id):
         res = self.cursor.execute('SELECT end FROM messages WHERE list_id = ? ORDER BY rowid DESC limit 1', (list_id,))
