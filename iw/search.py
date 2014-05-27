@@ -257,7 +257,7 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
         db = operators[None]
         r, trigrams = tree[1], tree[2]
         if trigrams is None or pystuff.force_unindexed: # no index
-            trigram_hits = db.keys()
+            trigram_hits = db.id_keys()
             if not asc: trigram_hits = trigram_hits[::-1]
         else:
             trigram_hits = (result for result, _ in db.idx.trigram.search(trigrams, asc=asc))

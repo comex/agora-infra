@@ -11,6 +11,7 @@ class Datasource(Singleton):
         self.did_download = set()
         if hasattr(self, 'urls'):
             self.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in self.urls]
+        self.dirty = False
 
     def download(self, verbose=False, url_filter=None, use_cont=False):
         for url, filename in self.urls:
@@ -57,10 +58,22 @@ class Datasource(Singleton):
             parser.add_argument('--download-' + self.name, action=pystuff.action(lambda: self.cli_download(argsf())), help='download %s' % self.name)
         parser.add_argument('--cache-' + self.name, action=pystuff.action(lambda: self.cli_cache(argsf())), help='cache %s' % self.name)
 
+class GitDatasource(Datasource):
+    def download(self, verbose=False, url_filter=None, use_cont=False):
+        # This will fail if the remote rebases.  Don't rebase.
+        for url, filename in self.urls:
+            if url_filter is not None and not re.search(url_filter, url): continue
+            if os.path.exists(filename):
+                subprocess.check_output(['git', 'pull'], cwd=filename)
+            else:
+                subprocess.check_output(['git', 'clone', url, filename])
 
 class BaseDB(Singleton):
     def __init__(self):
         self.search_operators = {None: self}
+
+    def finalize(self, verbose=False):
+        pass
 
     @classmethod
     def full_path(cls):
@@ -160,6 +173,7 @@ class DB(BaseDB):
     def commit(self):
         if hasattr(self, 'idx'): self.idx.commit()
         self.cursor.execute('COMMIT')
+        self.dirty = True
 
     def meta(self, name):
         return last(self.cursor.execute('SELECT %s FROM meta' % name))[0]
@@ -169,6 +183,9 @@ class DB(BaseDB):
 
 class DocDB(DB):
     def keys(self):
+        return set([id for id, in self.cursor.execute('SELECT %s FROM %s ORDER BY %s' % (self.doc_keycol, self.doc_table, self.doc_keycol))])
+
+    def id_keys(self):
         return set([id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol))])
 
     def items(self):

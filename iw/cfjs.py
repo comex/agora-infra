@@ -1,6 +1,6 @@
-import gzip, re, apsw, sys, datetime, time, os, tarfile, traceback, itertools
+import gzip, re, apsw, sys, datetime, time, os, tarfile, traceback, itertools, yaml
 import cStringIO, StringIO
-from datasource import Datasource, DB, DocDB
+from datasource import Datasource, GitDatasource, DB, DocDB
 from pystuff import remove_if_present, mydir, grab_lines_until, CursorWrapper, dict_execute, mydir, mkdir_if_absent, config
 import stuff, pystuff, search
 
@@ -351,7 +351,7 @@ class CFJDB(DocDB):
     version = 1
 
     def datasources(self):
-        return [StaticCFJDatasource.instance(), CotCDatasource.instance()]
+        return [StaticCFJDatasource.instance(), CotCDatasource.instance(), GitCFJDatasource.instance()]
 
     def __init__(self):
         DB.__init__(self)
@@ -371,7 +371,8 @@ class CFJDB(DocDB):
                 CREATE UNIQUE INDEX IF NOT EXISTS cfjs_number ON cfjs(number);
                 CREATE TABLE meta(
                     id integer primary key,
-                    last_date integer default 0,
+                    cotc_last_date integer default 0,
+                    git_last_date integer default 0,
                     update_date integer default 0
                 );
                 INSERT OR IGNORE INTO meta(id) VALUES(0);
@@ -380,13 +381,12 @@ class CFJDB(DocDB):
         if config.use_search:
             self.idx = search.CombinedIndex('cfjs_search', self)
 
-    def finalize(self, last_date, verbose=False):
+    def finalize(self, verbose=False):
         self.cursor.execute('''
             CREATE INDEX IF NOT EXISTS cfjs_number_base ON cfjs(number_base);
             CREATE INDEX IF NOT EXISTS cfjs_outcome ON cfjs(outcome);
             CREATE INDEX IF NOT EXISTS cfjs_caller ON cfjs(caller);
         ''')
-        self.set_meta('last_date', last_date)
         self.set_meta('update_date', time.time())
         self.rematch(verbose)
 
@@ -453,7 +453,7 @@ class CotCDatasource(Datasource):
     def cache(self, verbose):
         co = self.prepare_cotcdb(verbose)
         cfj = CFJDB.instance()
-        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta('last_date')))
+        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta('cotc_last_date')))
 
         if verbose:
             print >> sys.stderr, 'Formatting %s new cases...' % len(nums)
@@ -472,6 +472,7 @@ class CotCDatasource(Datasource):
                 raise
         if verbose:
             print >> sys.stderr, 'inserting...'
+        cfj.begin()
         for num, fmt in fmts:
             if fmt is None: fmt = ''
             try:
@@ -480,7 +481,8 @@ class CotCDatasource(Datasource):
                 if isinstance(e, KeyboardInterrupt): raise
                 print >> sys.stderr, 'failed to insert', num
                 traceback.print_exc()
-        cfj.finalize(co.last_date, verbose)
+        cfj.commit()
+        cfj.set_meta('cotc_last_date', co.last_date)
 
     def prepare_cotcdb(self, verbose):
         co = CotCDB()
@@ -505,9 +507,83 @@ class StaticCFJDatasource(Datasource):
                 cfj.insert(num, stuff.faildecode(open(fn).read().rstrip().replace('\r', '')))
         cfj.commit()
 
+class GitCFJDatasource(GitDatasource):
+    name = 'git-cfjs'
+    DB = CFJDB
+    urls = [('https://github.com/comex/agora-cfjs.git', 'agora-cfjs')]
+    def cache(self, verbose):
+        cfj = CFJDB.instance()
+        nums = cfj.keys()
+        fmts = []
+        last_date = cfj.meta('git_last_date')
+        for fn in os.listdir(self.urls[0][1]):
+            m = re.match('^([0-9].*)\.yaml', fn)
+            if not m:
+                continue
+            fn = os.path.join(self.urls[0][1], fn)
+            if os.path.getmtime(fn) < last_date:
+                continue
+            num = m.group(1).lstrip('0')
+            if num not in nums:
+                fmts.append((num, self.format(num, fn)))
+        cfj.begin()
+        for num, fmt in fmts:
+            cfj.insert(num, fmt)
+        cfj.commit()
+
+    def format(self, num, fn):
+        root = yaml.load(open(fn))
+        f = StringIO.StringIO()
+        eql = '=' * 72
+        hdr = 'CFJ %s' % (num,)
+        heql = '=' * (34 - len(hdr) / 2)
+        print >> f, '%s  %s  %s' % (heql, hdr, heql)
+        print >> f
+        print >> f, stuff.twrap(root['statement'], indent=4)
+        print >> f
+        print >> f, eql
+        print >> f
+
+        for event in root['events']:
+            ty = event['type']
+            if ty == 'called':
+                desc = 'Called by %s' % (event['who'],)
+            elif ty == 'assigned':
+                desc = 'Assigned to %s' % (event['who'],)
+                judge = event['who']
+            elif ty == 'recused':
+                desc = '%s recused' % (judge,)
+            elif ty == 'judged':
+                desc = 'Judged %s' % (event['judgement'],)
+            elif ty == 'appealed':
+                desc = 'Appealed by %s' % (event['who'],)
+            date = event['date']
+            date = date.strftime('%d %b %Y %H:%M:%S')
+            print >> f, ('%-52s%s' % (desc + ':', stuff.twrap(date, subsequent_indent=40)))
+
+        print >> f
+        print >> f, eql
+
+        for ex in root['exhibits']:
+            mid = ex['mid']
+            text = ex['text']
+
+            print >> f
+            print >> f, 'Exhibit by TODO: %s' % (mid)
+            print >> f
+            print >> f, text
+            print >> f
+            print >> f, eql
+
+        print >> f
+
+        return f.getvalue()[:-1]
 
 if __name__ == '__main__':
-    co = CFJDatasource().prepare_cotcdb(False)
-    print co.format(sys.argv[1])
+    if sys.argv[1].endswith('.yaml'):
+        print GitCFJDatasource.instance().format('XXXX', sys.argv[1])
+    else:
+        co = CotCDatasource().prepare_cotcdb(False)
+        print co.format(sys.argv[1])
 
 
