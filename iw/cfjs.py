@@ -340,6 +340,8 @@ class CotCDB:
                 if fn is not None: fn()
 
 class CFJDB(DocDB):
+    name = 'cfjs'
+
     doc_table = 'cfjs'
     doc_keycol = 'number'
     doc_ordercol = 'number_base'
@@ -348,8 +350,11 @@ class CFJDB(DocDB):
     path = 'cfjs.sqlite'
     version = 1
 
-    def __init__(self, create=False):
-        DB.__init__(self, create)
+    def datasources(self):
+        return [StaticCFJDatasource.instance(), CotCDatasource.instance()]
+
+    def __init__(self):
+        DB.__init__(self)
 
         if self.new:
             self.cursor.execute('''
@@ -422,8 +427,13 @@ class CFJDB(DocDB):
         row['title'] = 'CFJ %s' % row['number']
         return row
 
-class CFJDatasource(Datasource):
-    name = 'cfjs'
+    def add_cli_options(self, parser, argsf):
+        parser.add_argument('--cfj-rematch', action=pystuff.action(lambda: self.rematch(True)))
+        DocDB.add_cli_options(self, parser, argsf)
+
+
+class CotCDatasource(Datasource):
+    name = 'cotc'
     # No longer available
     #urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
     DB = CFJDB
@@ -442,13 +452,7 @@ class CFJDatasource(Datasource):
 
     def cache(self, verbose):
         co = self.prepare_cotcdb(verbose)
-        cfj = CFJDB(create=True)
-        if cfj.new:
-            sd = os.path.join(mydir, 'static_data', 'stare_detail')
-            for fn in os.listdir(sd):
-                num = fn.replace('.txt', '').lstrip('0')
-                fn = os.path.join(sd, fn)
-                cfj.insert(num, stuff.faildecode(open(fn).read().rstrip().replace('\r', '')))
+        cfj = CFJDB.instance()
         nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(cfj.meta('last_date')))
 
         if verbose:
@@ -486,9 +490,21 @@ class CFJDatasource(Datasource):
         co.import_(cStringIO.StringIO(unzipped), verbose)
         return co
 
-    def add_cli_options(self, parser, argsf):
-        parser.add_argument('--cfj-rematch', action=pystuff.action(lambda: CFJDB.instance().rematch(True)))
-        Datasource.add_cli_options(self, parser, argsf)
+class StaticCFJDatasource(Datasource):
+    name = 'static-cfjs'
+    DB = CFJDB
+    def cache(self, verbose):
+        cfj = CFJDB.instance()
+        nums = cfj.keys()
+        sd = os.path.join(mydir, 'static_data', 'stare_detail')
+        cfj.begin()
+        for fn in os.listdir(sd):
+            num = fn.replace('.txt', '').lstrip('0')
+            if num not in nums:
+                fn = os.path.join(sd, fn)
+                cfj.insert(num, stuff.faildecode(open(fn).read().rstrip().replace('\r', '')))
+        cfj.commit()
+
 
 if __name__ == '__main__':
     co = CFJDatasource().prepare_cotcdb(False)

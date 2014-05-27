@@ -11,7 +11,6 @@ class Datasource(Singleton):
         self.did_download = set()
         if hasattr(self, 'urls'):
             self.urls = [(url, os.path.join(mydir, 'downloads', filename)) for (url, filename) in self.urls]
-        self.operators = {}
 
     def download(self, verbose=False, url_filter=None, use_cont=False):
         for url, filename in self.urls:
@@ -49,19 +48,48 @@ class Datasource(Singleton):
 
     def preprocess_download(self, text): return text
 
-    def search(self, expr, *args, **kwargs):
-        self.operators[None] = self.DB.instance()
-        return search.do_query(expr, self.operators, *args, **kwargs)
-
     def cli_download(self, args):
         self.download(not args.quiet, args.url_filter)
     def cli_cache(self, args):
         self.cache(not args.quiet)
+    def add_cli_options(self, parser, argsf):
+        if hasattr(self, 'urls'):
+            parser.add_argument('--download-' + self.name, action=pystuff.action(lambda: self.cli_download(argsf())), help='download %s' % self.name)
+        parser.add_argument('--cache-' + self.name, action=pystuff.action(lambda: self.cli_cache(argsf())), help='cache %s' % self.name)
+
+
+class BaseDB(Singleton):
+    def __init__(self):
+        self.search_operators = {None: self}
+
+    @classmethod
+    def full_path(cls):
+        mkdir_if_absent(os.path.join(mydir, 'cache'))
+        return os.path.join(mydir, 'cache', cls.path)
+
+    def add_cli_options(self, parser, argsf):
+        if config.use_search and hasattr(self, 'search'):
+            parser.add_argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1), help='search %s' % self.name)
+
+        singular = self.name.rstrip('s')
+        parser.add_argument('--' + singular, action=pystuff.action(lambda expr: self.cli_show(argsf(), expr), nargs=1), help='show %s by primary key' % singular)
+
+        for source in self.datasources():
+            source.add_cli_options(parser, argsf)
+
+        # download and cache all datasources
+        parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())), help='download and cache %s' % self.name)
+
     def cli_update(self, args):
-        self.cli_download(args)
-        self.cli_cache(args)
+        for ds in self.datasources():
+            if hasattr(ds, 'urls'):
+                ds.cli_download(args)
+            ds.cli_cache(args)
+
+    def search(self, expr, *args, **kwargs):
+        return search.do_query(expr, self.search_operators, *args, **kwargs)
+
     def cli_search(self, args, expr):
-        db = self.DB.instance()
         ok, r = self.search(expr, limit=args.limit or None)
         if ok == 'empty':
             print '(empty query)'
@@ -78,7 +106,7 @@ class Datasource(Singleton):
                     first = False
                 else:
                     print '--'
-                row = db.get_by_id(id)
+                row = self.get_by_id(id)
                 text = row['text']
                 if args.full:
                     if args.color:
@@ -86,7 +114,7 @@ class Datasource(Singleton):
                     else:
                         print text
                 else:
-                    print 'id:', row[db.doc_keycol]
+                    print 'id:', row[self.doc_keycol]
                     hl = search.highlight_snippets(text, ctxs)
                     if args.color:
                         print hl.ansi()
@@ -102,44 +130,16 @@ class Datasource(Singleton):
         else:
             print result['text'] if isinstance(result, dict) else result
 
-    def add_cli_options(self, parser, argsf):
-        if hasattr(self, 'urls'):
-            parser.add_argument('--download-' + self.name, action=pystuff.action(lambda: self.cli_download(argsf())), help='download %s' % self.name)
-        parser.add_argument('--cache-' + self.name, action=pystuff.action(lambda: self.cli_cache(argsf())), help='cache %s' % self.name)
-        # download and cache
-        if hasattr(self, 'urls'):
-            parser.add_argument('--update-' + self.name, action=pystuff.action(lambda: self.cli_update(argsf())), help='download and cache %s' % self.name)
-
-        if config.use_search and hasattr(self, 'search'):
-            parser.add_argument('--search-' + self.name, action=pystuff.action(lambda expr: self.cli_search(argsf(), expr), nargs=1), help='search %s' % self.name)
-
-        if hasattr(self, 'DB'):
-            singular = self.name.rstrip('s')
-            parser.add_argument('--' + singular, action=pystuff.action(lambda expr: self.cli_show(argsf(), expr), nargs=1), help='show %s by primary key' % singular)
-
-    def cli_print_document(self, num, DB):
-        document = DB.instance().get(num)
-        if document is None:
-            print >> sys.stderr, 'No such document:', num
-            return
-        print document
-
-    def cli_add_print_document(self, parser, name, DB):
-        parser.add_argument('--%s' % name, action=pystuff.action(lambda num: self.cli_print_document(num, DB), nargs=1))
-
-class BaseDB(Singleton):
-    @classmethod
-    def full_path(cls):
-        mkdir_if_absent(os.path.join(mydir, 'cache'))
-        return os.path.join(mydir, 'cache', cls.path)
 
 class DB(BaseDB):
-    def __init__(self, create=False, **kwargs):
+    def __init__(self, **kwargs):
+        BaseDB.__init__(self)
         self.conn = apsw.Connection(self.full_path())
         self.cursor = pystuff.CursorWrapper(self.conn.cursor())
         self.new = False
+        create = True # xxx
         try:
-            version, = next(self.cursor.execute('SELECT version FROM version'))
+            version, = last(self.cursor.execute('SELECT version FROM version'))
         except apsw.SQLError:
             if not create:
                 raise
@@ -162,14 +162,14 @@ class DB(BaseDB):
         self.cursor.execute('COMMIT')
 
     def meta(self, name):
-        return next(self.cursor.execute('SELECT %s FROM meta' % name))[0]
+        return last(self.cursor.execute('SELECT %s FROM meta' % name))[0]
 
     def set_meta(self, name, value):
         self.cursor.execute('UPDATE meta SET %s = ?' % name, (value,))
 
 class DocDB(DB):
     def keys(self):
-        return [id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol))]
+        return set([id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol))])
 
     def items(self):
         return list(self.cursor.execute('SELECT %s, %s FROM %s' % (self.doc_keycol, self.doc_textcol, self.doc_table)))
@@ -207,8 +207,7 @@ class DocDB(DB):
             for id, text in self.cursor.execute('SELECT id, %s FROM %s' % (self.doc_textcol, self.doc_table)):
                 self.idx.insert(id, text)
 
-def all_sources():
-    from cfjs import CFJDatasource
-    from flr import FLRDatasource, RulesDatasource
-    from messages import MessagesDatasource
-    return [CFJDatasource.instance(), FLRDatasource.instance(), RulesDatasource.instance(), MessagesDatasource.instance()]
+def all_dbs():
+    from cfjs import CFJDB
+    return [CFJDB.instance()]
+

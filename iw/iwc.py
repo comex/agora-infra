@@ -1,7 +1,7 @@
 import argparse
 import datasource, pystuff
 
-all_sources = datasource.all_sources()
+all_dbs = datasource.all_dbs()
 parser = argparse.ArgumentParser(description='Agora database.')
 
 the_filter = None
@@ -9,16 +9,14 @@ def url_filter(filter):
     the_filter = filter
 parser.add_argument('--url-filter', action=pystuff.action(url_filter, nargs=1))
 
-for source in all_sources:
-    source.add_cli_options(parser, lambda: args)
+for db in all_dbs:
+    db.add_cli_options(parser, lambda: args)
 
 parser.add_argument('--color', '-C', action='store_true')
 parser.add_argument('--full', '-f', action='store_true')
 
 
-parser.add_argument('--download', '-d', action=pystuff.action(lambda: [s.cli_download(args) for s in al_sources]), help='download everything')
-parser.add_argument('--cache', '-c', action=pystuff.action(lambda: [s.cli_cache(args) for s in all_sources]), help='cache everything')
-parser.add_argument('--update', '-u', action=pystuff.action(lambda: [s.cli_update(args) for s in all_sources]), help='update everything')
+parser.add_argument('--update', '-u', action=pystuff.action(lambda: [db.cli_update(args) for db in all_dbs]), help='update everything')
 
 parser.add_argument('--quiet', '-q', action='store_true')
 parser.add_argument('--log-queries', action='store_true')
