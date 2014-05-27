@@ -432,6 +432,10 @@ class CotCDatasource(Datasource):
     #urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
     DB = CFJDB
 
+    def __init__(self):
+        Datasource.__init__(self)
+        self.db_dump = os.path.join(mydir, 'static_data', 'db_dump.tar.gz')
+
     def preprocess_download(self, text):
         data = gzip.GzipFile(fileobj=cStringIO.StringIO(text)).read()
         try:
@@ -445,9 +449,11 @@ class CotCDatasource(Datasource):
         return data
 
     def cache(self, verbose):
-        co = self.prepare_cotcdb(verbose)
         cfj = CFJDB.instance()
-        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(int(cfj.meta('cotc_last_date', 0))))
+        if os.path.getmtime(self.db_dump) < int(cfj.meta('cotc_last_date', 0)):
+            return
+        co = self.prepare_cotcdb(verbose)
+        nums = (set(co.all_nums()) - set(cfj.keys())) | set(co.nums_since(int(cfj.meta('cotc_last_case', 0))))
 
         if verbose:
             print >> sys.stderr, 'Formatting %s new cases...' % len(nums)
@@ -476,12 +482,13 @@ class CotCDatasource(Datasource):
                 print >> sys.stderr, 'failed to insert', num
                 traceback.print_exc()
         cfj.commit()
-        cfj.set_meta('cotc_last_date', co.last_date)
+        cfj.set_meta('cotc_last_case', co.last_date)
+        cfj.set_meta('cotc_last_date', int(time.time()))
 
     def prepare_cotcdb(self, verbose):
         co = CotCDB()
         #co.import_(self.urls[0][1], verbose)
-        zipped = open(os.path.join(mydir, 'static_data', 'db_dump.tar.gz'), 'rb').read()
+        zipped = open(self.db_dump, 'rb').read()
         unzipped = self.preprocess_download(zipped)
         co.import_(cStringIO.StringIO(unzipped), verbose)
         return co
@@ -524,6 +531,7 @@ class GitCFJDatasource(GitDatasource):
         for num, fmt in fmts:
             cfj.insert(num, fmt)
         cfj.commit()
+        cfj.set_meta('git_last_date', int(time.time()))
 
     def format(self, num, fn):
         root = yaml.load(open(fn))
