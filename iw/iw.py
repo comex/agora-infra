@@ -69,8 +69,7 @@ class cfj_num:
 
 def cfj_search(expr):
     cfjdb = cfjs.CFJDB.instance()
-    # should this be on DB?
-    kind, snd = cfjs.CFJDatasource.instance().search(expr, limit=None)
+    kind, snd = cfjdb.search(expr, limit=None)
     errors = results = None
     if kind == 'empty':
         return
