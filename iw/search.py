@@ -81,7 +81,7 @@ def lex_query(text):
     ''', text, re.X)
     return [{k: v for (k, v) in m.groupdict().iteritems() if v is not None} for m in ms]
 
-def parse_query(tokens, operators):
+def parse_query(tokens, operators, opts):
     errors = []
     stack = []
     def err_if_absent(error):
@@ -103,7 +103,8 @@ def parse_query(tokens, operators):
                     order = operand
                 continue
             if operator not in operators:
-                errors.append('No such operator %s' % operator)
+                errors.append('No such operator %s, have: %s' %
+                    (operator, ', '.join(o for o in operators.keys() if o is not None)))
                 continue
             if 'parens' in token:
                 got_operator_parens = True
@@ -145,10 +146,11 @@ def parse_query(tokens, operators):
             db = operators[operator]
             if hasattr(db, 'search_trigram'):
                 trigrams = p_trigrams(p)
-                #if trigrams is None:
-                #    errors.append('Regex un-indexable')
-                #    continue
-                trigrams = simplify_trigrams(trigrams)
+                if trigrams is None and opts.get('require_trigrams'):
+                    errors.append('Regex un-indexable')
+                    continue
+                if trigrams is not None:
+                    trigrams = simplify_trigrams(trigrams)
             else:
                 trigrams = None
             p_fix_spaces(p)
@@ -293,9 +295,9 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
     else:
         raise Exception('bad tree')
 
-def do_query(expr, operators, start=0, limit=10, timeout=2.5, asc=False):
+def do_query(expr, operators, start=0, limit=10, timeout=2.5, asc=False, opts={}):
     l = lex_query(expr)
-    ok, p, order = parse_query(l, operators)
+    ok, p, order = parse_query(l, operators, opts)
     if ok != 'ok':
         return (ok, p)
     if order is not None:

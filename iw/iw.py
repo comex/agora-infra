@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import cfjs, pystuff, search
+import cfjs, messages, pystuff, search
 import web
 pystuff.fix_web()
 import os, threading, re, __builtin__, urlparse
@@ -29,7 +29,7 @@ def fix_link(link):
 t_globals['fix_link'] = fix_link
 
 def link_to(link, text):
-    return '<a href="%s">%s</a>' % (web.websafe(fix_link(link)), text)
+    return '<a href="%s">%s</a>' % (fix_link(link), text)
 
 def autolink(text, kind=''):
     text = web.websafe(text)
@@ -39,18 +39,82 @@ def autolink(text, kind=''):
         # Appeal:                                 1831
         text = re.sub(re.compile('(^Appeal:\s+)([0-9]+[a-z]?)', re.M),
             lambda m: m.group(1) + link_to('cfj/%s' % m.group(2), m.group(2)), text)
-
+    def mess(m):
+        mid = m.group(2) or m.group(3)
+        return (m.group(1) or '') + link_to('message/?search=message-id:%s' % mid, mid)
+    text = re.sub('(Message-ID: )(&lt;.*?&gt;)|(&lt;[^@]{25,}@.*?&gt;)', mess, text)
     return text
 
 def plaintext(text):
      web.header('Content-Type', 'text/plain')
      return text
 
+def do_search(expr, db, base, redirect_if_one, get_title):
+    # todo: pagination
+    opts = {}
+    limit = None
+    if base == 'message':
+        opts['require_trigrams'] = True
+        limit = 100
+    kind, snd = db.search(expr, limit=limit, opts=opts)
+    errors = results = None
+    if kind == 'empty':
+        return
+    elif kind == 'errors':
+        errors = snd
+    elif kind == 'timeout':
+        errors = ['Query timeout.']
+    elif kind == 'ok':
+        results = []
+        for id, ctxs in snd:
+            row = db.get_by_id(id)
+            results.append((
+                get_title(row),
+                fix_link('%s/%s' % (base, row[db.doc_keycol])),
+                search.highlight_snippets(row[db.doc_textcol], ctxs).html()
+            ))
+        if len(results) == 1 and redirect_if_one:
+            raise web.seeother(results[0][1])
+    else:
+        assert False
+
+    return render.searchresults(expr, errors, results)
+
 def parse_query():
     q = web.ctx.query
     if q == '':
         return {}
     return urlparse.parse_qs(q[1:], keep_blank_values=True)
+
+class messages_uid:
+    def GET(self, uid, extension):
+        db = messages.MessagesDB.instance()
+        row = db.get(uid)
+        if row is None:
+            raise web.NotFound(render.fourohfour())
+        if extension == '.txt':
+            return plaintext(db.get_orig(row))
+        text = autolink(row['text'], 'message')
+        return render.message(
+            title=row['subject'],
+            doc=text,
+            txt='%s.txt' % (uid,),
+        )
+
+class messages_main:
+    def GET(self):
+        query = parse_query()
+        db = messages.MessagesDB.instance()
+        if query.has_key('search'):
+            if len(query.get('search', ())) >= 1:
+                expr = query['search'][0]
+                redirect_if_one = bool(re.match('^message-id:[^"/\s()]+$', expr))
+                result = do_search(expr, db, 'message', redirect_if_one,
+                    lambda row: row['subject'])
+                if result is not None:
+                    return result
+            return render.searchhelp()
+        return plaintext('todo')
 
 class cfj_num:
     def GET(self, num, extension):
@@ -67,36 +131,13 @@ class cfj_num:
             txt='%s.txt' % (num,),
         )
 
-def cfj_search(expr):
-    cfjdb = cfjs.CFJDB.instance()
-    kind, snd = cfjdb.search(expr, limit=None)
-    errors = results = None
-    if kind == 'empty':
-        return
-    elif kind == 'errors':
-        errors = snd
-    elif kind == 'timeout':
-        errors = ['Query timeout.']
-    elif kind == 'ok':
-        results = []
-        for id, ctxs in snd:
-            row = cfjdb.get_by_id(id)
-            results.append((
-                row['title'],
-                fix_link('cfj/%s' % row['number']),
-                search.highlight_snippets(row['text'], ctxs).html()
-            ))
-    else:
-        assert False
-
-    return render.searchresults(expr, errors, results)
-
 class cfj_main:
     def GET(self):
         query = parse_query()
         if query.has_key('search'):
             if len(query.get('search', ())) >= 1:
-                result = cfj_search(query['search'][0])
+                result = do_search(query['search'][0], cfjs.CFJDB.instance(), 'cfj',
+                    lambda row: row['title'])
                 if result is not None:
                     return result
             return render.searchhelp()
@@ -106,12 +147,13 @@ class cfj_main:
             summaries=summaries,
         )
 
-
 class index:
     def GET(self):
         return "Hello, world!"
 
 urls = [
+    '/message/?', 'messages_main',
+    '/message/(.*?)(\.txt)?', 'messages_uid',
     '/cfj/([0-9]+[a-z]?)(\.txt)?', 'cfj_num',
     '/cfj/?', 'cfj_main',
     '/', 'index',

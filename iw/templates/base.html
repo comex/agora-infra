@@ -15,10 +15,10 @@ $def with (page)
     #topbar li {
         display: block;
         float: left;
+        margin-left: 5px;
     }
     #topbar li.right {
         float: right;
-        margin-left: 5px;
     }
     #topbar form {
         display: inline;
@@ -32,10 +32,18 @@ $def with (page)
 <body>
 <ul id="topbar">
     <!--<li>Text text text text text text text</li>-->
-    $if page.page != 'cfjs':
-        <a href="$fix_link('cfj/')">CFJs</a>
-    $else:
-        CFJs
+    <li>
+        $if page.page != 'cfjs':
+            <a href="$fix_link('cfj/')">CFJs</a>
+        $else:
+            CFJs
+    </li>
+    <li class="space">
+        $if page.page != 'messages':
+            <a href="$fix_link('messages/')">Messages</a>
+        $else:
+            Messages
+    </li>
     <li class="right">
         <form action="." method="GET"><input type="text" name="search" value="$page.get('search', '')"><input type="submit" value="Search"></form>
     </li>

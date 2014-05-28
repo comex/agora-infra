@@ -61,6 +61,7 @@ class MessagesDB(DocDB):
                     real_date integer,
                     list_id integer
                 );
+                CREATE UNIQUE INDEX mmi ON messages(message_id);
             ''')
         if config.use_search:
             self.idx = search.CombinedIndex('messages_search', self)
@@ -120,12 +121,16 @@ class MessagesDB(DocDB):
 
     def finalize(self):
         self.cursor.execute('''
-            CREATE INDEX mumi ON message(uniq_message_id);
-            CREATE INDEX mt ON messages(to);
-            CREATE INDEX mrd ON messages(real_date);
-            CREATE INDEX mli ON messages(list_id);
-            CREATE INDEX mmi ON messages(message_id);
+            CREATE INDEX IF NOT EXISTS mumi ON messages(uniq_message_id);
+            CREATE INDEX IF NOT EXISTS mf ON messages(from_);
+            CREATE INDEX IF NOT EXISTS mt ON messages(to_);
+            CREATE INDEX IF NOT EXISTS ms ON messages(subject);
+            CREATE INDEX IF NOT EXISTS mrd ON messages(real_date);
+            CREATE INDEX IF NOT EXISTS mli ON messages(list_id);
         ''')
+
+    def get_orig(self, row):
+        return MessagesDatasource.instance().mmaps[row['list_id']][row['start']:row['end']]
 
 class MessagesDatasource(Datasource):
     name = 'messages'
@@ -142,6 +147,7 @@ class MessagesDatasource(Datasource):
                 return (None, local) if os.path.exists(local) else (url, fn)
             self.urls = map(check_local, self.urls)
         Datasource.__init__(self)
+        self.mmaps = [fnmmap(path) for (url, path) in self.urls]
 
     def download(self, *args, **kwargs):
         kwargs['use_cont'] = True
@@ -153,7 +159,7 @@ class MessagesDatasource(Datasource):
         for list_id, (url, path) in enumerate(self.urls):
             if verbose:
                 print >> sys.stderr, path
-            mm = fnmmap(path)
+            mm = self.mmaps[list_id]
             start = db.last_end(list_id)
             starts = [start + m.start() + 2 for m in re.finditer('\n\nFrom .*@', buffer(mm, start))]
             print >> sys.stderr, 'regex done'
@@ -180,3 +186,4 @@ class MessagesDatasource(Datasource):
                     info['text'] = stuff.faildecode(em.get_payload(decode=True))
                 db.insert(info)
         db.commit()
+        db.finalize()
