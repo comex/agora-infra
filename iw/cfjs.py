@@ -405,8 +405,8 @@ class CFJDB(DocDB):
             updates.append((judges, outcome, caller, summary, id))
         self.cursor.executemany('UPDATE cfjs SET judges = ?, outcome = ?, caller = ?, summary = ? WHERE number = ?', updates)
 
-        self.reindex_if_necessary(verbose)
         self.commit()
+        self.reindex_if_necessary(verbose)
 
     def insert(self, num, fmt):
         base = int(re.match('^[0-9]*', num).group(0))

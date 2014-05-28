@@ -247,8 +247,8 @@ class DocDB(DB):
             for id, text in self.cursor.execute('SELECT id, %s FROM %s' % (self.doc_textcol, self.doc_table)):
                 self.idx.insert(id, text)
 
-            self.idx.end()
-            self.end()
+            self.idx.commit()
+            self.commit()
 
 def all_dbs():
     from cfjs import CFJDB

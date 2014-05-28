@@ -27,8 +27,10 @@ parser.add_argument('--limit', action='store', dest='limit', help='limit for sea
 args = parser.parse_args()
 for dbgopt in ('log_queries', 'force_unindexed', 'print_trigram_hits'):
     setattr(pystuff, dbgopt, getattr(args, dbgopt))
-pystuff.run_actions(args)
 
-for db in all_dbs:
-    if db.dirty:
-        db.finalize(not args.quiet)
+try:
+    pystuff.run_actions(args)
+finally:
+    for db in all_dbs:
+        if db.dirty:
+            db.finalize(not args.quiet)
