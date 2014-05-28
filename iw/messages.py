@@ -20,11 +20,15 @@ def parse_date(date):
     return mktime_tz(parsedate_tz(date))
 
 class HeaderOperator:
-    def __init__(self, mdb, hdr, dbcol):
-        self.mdb, self.hdr, self.dbcol = mdb, hdr, dbcol
-        self.idx = search.WordIndex('messages_search_' + dbcol, mdb)
-    def search_word(self, *args, **kwargs):
-        return self.idx.search(*args, **kwargs)
+    def __init__(self, mdb, hdr, dbcol, exact=False):
+        self.mdb, self.hdr, self.dbcol, self.exact = mdb, hdr, dbcol, exact
+        if not exact:
+            self.idx = search.WordIndex('messages_search_' + dbcol, mdb)
+    def search_word(self, query, *args, **kwargs):
+        if self.exact:
+            return [(id, []) for id, in self.mdb.cursor.execute('SELECT id FROM %s WHERE %s = ?' % (self.mdb.doc_table, self.dbcol), (query,))]
+        else:
+            return self.idx.search(*args, **kwargs)
     def search_get_all(self):
         return list(self.mdb.cursor.execute('SELECT id, %s FROM %s' % (self.dbcol, self.mdb.doc_table)))
 
@@ -42,7 +46,7 @@ class MessagesDB(DocDB):
 
     def __init__(self):
         DB.__init__(self)
-        self.search_operators['message-id'] = HeaderOperator(self, 'Message-ID', 'message_id')
+        self.search_operators['message-id'] = HeaderOperator(self, 'Message-ID', 'message_id', exact=True)
         self.search_operators['from']       = HeaderOperator(self, 'From',       'from_')
         self.search_operators['to']         = HeaderOperator(self, 'To',         'to_')
         self.search_operators['subject']    = HeaderOperator(self, 'Subject',    'subject')
@@ -107,7 +111,7 @@ class MessagesDB(DocDB):
         if config.use_search:
             self.idx.insert(rowid, text)
             for ho in self.search_operators.values():
-                if ho is self: continue
+                if ho is self or not hasattr(ho, 'idx'): continue
                 ho.idx.insert(rowid, info[ho.hdr])
 
     def last_end(self, list_id):

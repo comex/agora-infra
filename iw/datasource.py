@@ -237,18 +237,25 @@ class DocDB(DB):
     def reindex_if_necessary(self, verbose=False):
         # Can't delete from contentless FTS tables.
         if config.use_search and self.conn.totalchanges() > 0:
-            if verbose:
-                print >> sys.stderr, 'reindexing...'
-            self.idx.clear()
+            self.reindex(verbose)
 
-            self.begin()
-            self.idx.begin()
+    def reindex(self, verbose):
+        if verbose:
+            print >> sys.stderr, 'reindexing...'
+        self.idx.clear()
 
-            for id, text in self.cursor.execute('SELECT id, %s FROM %s' % (self.doc_textcol, self.doc_table)):
-                self.idx.insert(id, text)
+        self.begin()
+        self.idx.begin()
 
-            self.idx.commit()
-            self.commit()
+        for id, text in self.cursor.execute('SELECT id, %s FROM %s' % (self.doc_textcol, self.doc_table)):
+            self.idx.insert(id, text)
+
+        self.idx.commit()
+        self.commit()
+
+    def add_cli_options(self, parser, argsf):
+        if config.use_search and hasattr(self, 'idx'):
+            parser.add_argument('--reindex-' + self.name, action=pystuff.action(lambda: self.reindex(not argsf().quiet)))
 
 def all_dbs():
     from cfjs import CFJDB

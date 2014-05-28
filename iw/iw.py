@@ -12,6 +12,7 @@ render = web.template.render(os.path.join(pystuff.mydir, 'templates'), base='bas
 if pystuff.config.is_qoid_us:
     domains = {
         'cfj': 'cfj.qoid.us',
+        '*root*': 'iw.qoid.us',
     }
 else:
     domains = {}
@@ -24,6 +25,8 @@ def fix_link(link):
     domain = domains.get(firstdir)
     if domain is not None:
         return 'http://%s/%s' % (domain, rest)
+    elif domains.has_key('*root*'):
+        return 'http://%s/%s' % (domains['*root*'], link)
     else:
         return '/%s' % (link,)
 t_globals['fix_link'] = fix_link
