@@ -71,10 +71,10 @@ def lex_query(text):
     ms = re.finditer(r'''
         (?P<or> OR (?= ["/\s()] ) \s* | \| \s* )?
         (?P<plusminus> [+-] )?
-        (
+        (?: (?P<operator> [a-zA-Z-]+ ) :)?
+        (?:
             " (?P<quoted> [^"]* ) "
           | / (?P<regex> (?: [^\\] | \\. )* ) / (?P<regopts> [a-zA-Z]* )
-          | (?P<operator> [a-zA-Z-]+ ) : (?P<operand> [^"/\s\(\)]* )
           | (?P<parens> [()] )
           | (?P<simple> [^"/\s()]+ )
         )
@@ -89,9 +89,26 @@ def parse_query(tokens, operators):
             errors.append(error)
     existing, was_and = None, False
     order = None
+    got_operator_parens = False
     for token in tokens:
         inverted = token.get('plusminus') == '-'
         is_or = bool(token.get('or'))
+        if 'operator' in token:
+            operator = token['operator'].lower()
+            if operator == 'order':
+                operand = token.get('simple', '').lower()
+                if operand not in ('asc', 'desc'):
+                    errors.append('Bad order (must be asc or desc)')
+                else:
+                    order = operand
+                continue
+            if operator not in operators:
+                errors.append('No such operator %s' % operator)
+                continue
+            if 'parens' in token:
+                got_operator_parens = True
+        else:
+            operator = None
         if 'parens' in token:
             if token['parens'] == '(':
                 stack.append((existing, inverted, is_or, was_and))
@@ -106,25 +123,12 @@ def parse_query(tokens, operators):
                     existing, inverted, is_or, was_and = stack.pop()
                     if tree is None: continue
         elif 'quoted' in token:
-            tree = ('lit', token['quoted'])
+            tree = ('lit', operator, token['quoted'])
         elif 'simple' in token:
             if token['simple'] == 'OR':
                 err_if_absent('Bad OR')
                 continue
-            tree = ('lit', token['simple'])
-        elif 'operator' in token:
-            operator, operand = token['operator'], token['operand']
-            if operator == 'order':
-                operand = operand.lower()
-                if operand not in ('asc', 'desc'):
-                    errors.append('Bad order (must be asc or desc)')
-                else:
-                    order = operand
-                continue
-            if operator not in operators or operator in ('regex', 'lit'):
-                errors.append('No such operator %s' % operator)
-                continue
-            tree = (operator, operand)
+            tree = ('lit', operator, token['simple'])
         elif 'regex' in token:
             regex, regopts = token['regex'], token['regopts']
             flags = 0
@@ -138,8 +142,8 @@ def parse_query(tokens, operators):
             except re.error as e:
                 errors.append('Regex error: %s' % e.message)
                 continue
-            db = operators[None]
-            if hasattr(db, 'idx'):
+            db = operators[operator]
+            if hasattr(db, 'search_trigram'):
                 trigrams = p_trigrams(p)
                 #if trigrams is None:
                 #    errors.append('Regex un-indexable')
@@ -149,7 +153,7 @@ def parse_query(tokens, operators):
                 trigrams = None
             p_fix_spaces(p)
             r = sre_compile.compile(p, flags)
-            tree = ('regex', r, trigrams)
+            tree = ('regex', operator, r, trigrams)
         if inverted: tree = ('not', tree)
         if is_or:
             if existing is None:
@@ -170,6 +174,8 @@ def parse_query(tokens, operators):
 
     if stack:
         errors.append('Mismatched (')
+    if got_operator_parens:
+        errors.append('No parens with an operator')
     if errors:
         return ('errors', errors, None)
     elif not existing:
@@ -189,11 +195,11 @@ def optimize_query(tree):
     if tree[0] in ('and', 'or'):
         kind = tree[0]
         args = []
-        lits = []
+        lits_by_op = {}
 
         def add_arg(r):
             if r[0] == 'lit':
-                lits.append(r[1])
+                lits_by_op.setdefault(r[1], []).append(r[2])
             else:
                 args.append(r)
 
@@ -203,11 +209,11 @@ def optimize_query(tree):
                 map(add_arg, r[1:])
             else:
                 add_arg(r)
-        if lits:
+        for operator, lits in lits_by_op.iteritems():
             if len(lits) == 1:
-                args.append(('lit', lits[0]))
+                args.append(('lit', operator, lits[0]))
             else:
-                args.append(('lit', (kind,) + tuple(lits)))
+                args.append(('lit', operator, (kind,) + tuple(lits)))
         if len(args) == 1:
             return args[0]
         else:
@@ -220,9 +226,9 @@ def optimize_query(tree):
             sub = sub[1]
         sub = optimize_query(sub)
         if not negative: return sub
-        if sub[0] == 'lit' and ' ' not in sub[1]:
+        if sub[0] == 'lit' and ' ' not in sub[2]:
             # can't do -"foo"
-            return ('lit', ('not', sub[1]))
+            return ('lit', sub[1], ('not', sub[2]))
         else:
             return tree
     else:
@@ -251,29 +257,30 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
         else:
             return itr
     elif tree[0] == 'lit':
-        db = operators[None]
-        return db.idx.word.search(tree[1], limit=limit, asc=asc)
+        op = operators[tree[1]]
+        # idx.word.search
+        return op.search_word(tree[2], limit=limit, asc=asc)
     elif tree[0] == 'regex':
-        db = operators[None]
-        r, trigrams = tree[1], tree[2]
+        op = operators[tree[1]]
+        r, trigrams = tree[2], tree[3]
         if trigrams is None or pystuff.force_unindexed: # no index
-            trigram_hits = db.id_keys()
+            trigram_hits = op.search_get_all()
             if not asc: trigram_hits = trigram_hits[::-1]
         else:
-            trigram_hits = (result for result, _ in db.idx.trigram.search(trigrams, asc=asc))
+            trigram_hits = ((result, None) for result, _ in op.search_trigram(trigrams, asc=asc))
         #list(trigram_hits); import sys; sys.exit(0)
         #db.cache_keys(trigram_hits)
         #db.cache_keys_done()
         results = set()
 
         def func():
-            for result in trigram_hits:
+            for result, text in trigram_hits:
                 if pystuff.print_trigram_hits: print '?', result
                 if time.time() > deadline:
                     raise QueryTimeoutException
-                text = db.get_by_id(result)
-                assert text is not None
-                if isinstance(text, dict): text = text['text']
+                if text is None:
+                    text = op.search_get(result)
+                    assert text is not None
                 it = r.finditer(text)
                 #it = re.finditer('^', text)
                 try:
@@ -526,6 +533,8 @@ def p_fix_spaces(p):
 
 # xxx
 def simplify_trigrams(trigrams):
+    while len(trigrams) > 8:
+        trigrams = [trigram for (i, trigram) in enumerate(trigrams) if i % 3 != 1]
     return trigrams
 
 class Index:
@@ -618,17 +627,22 @@ class CombinedIndex:
 
 if __name__ == '__main__':
     import sys
-    operators = {'foo': None}
+    class fake_db:
+        idx = None
+    operators = {'foo': None, None: fake_db()}
     if len(sys.argv) > 1:
         examples = sys.argv[1:]
     else:
         examples = [
+            'order:/bar/',
             'a OR f d OR (g h)',
             '+test bar -("hi"/test/+x-f) -f',
             '',
             '(OR)',
             '(-)',
             '/foo+/',
+            'foo:/bar/',
+            '/abcdefghijklmnopqrstuvwxyz123456789/',
         ]
     for example in examples:
         print repr(example)

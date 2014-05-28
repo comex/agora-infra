@@ -496,7 +496,7 @@ class StaticCFJDatasource(Datasource):
     name = 'static-cfjs'
     def cache(self, verbose):
         cfj = CFJDB.instance()
-        nums = cfj.keys()
+        nums = set(cfj.keys())
         sd = os.path.join(mydir, 'static_data', 'stare_detail')
         cfj.begin()
         for fn in os.listdir(sd):
@@ -511,7 +511,7 @@ class GitCFJDatasource(GitDatasource):
     urls = [('https://github.com/comex/agora-cfjs.git', 'agora-cfjs')]
     def cache(self, verbose):
         cfj = CFJDB.instance()
-        nums = cfj.keys()
+        nums = set(cfj.keys())
         fmts = []
         last_date = int(cfj.meta('git_last_date', 0))
         for fn in os.listdir(self.urls[0][1]):

@@ -178,6 +178,15 @@ class DB(BaseDB):
         if hasattr(self, 'idx'): self.idx.commit()
         self.cursor.execute('COMMIT')
 
+    def search_word(self, *args, **kwargs):
+        return self.idx.word.search(*args, **kwargs)
+
+    def search_trigram(self, *args, **kwargs):
+        return self.idx.trigram.search(*args, **kwargs)
+
+    def search_get(self, id):
+        return last(self.cursor.execute('SELECT %s FROM %s WHERE id = ?' % (self.doc_textcol, self.doc_table), (id,)))[0]
+
     ThrowException = object()
 
     def meta(self, name, default=ThrowException):
@@ -193,10 +202,10 @@ class DB(BaseDB):
 
 class DocDB(DB):
     def keys(self):
-        return set([id for id, in self.cursor.execute('SELECT %s FROM %s ORDER BY %s' % (self.doc_keycol, self.doc_table, self.doc_keycol))])
+        return [id for id, in self.cursor.execute('SELECT %s FROM %s ORDER BY %s' % (self.doc_keycol, self.doc_table, self.doc_keycol))]
 
     def id_keys(self):
-        return set([id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol))])
+        return [id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol))]
 
     def items(self):
         return list(self.cursor.execute('SELECT %s, %s FROM %s' % (self.doc_keycol, self.doc_textcol, self.doc_table)))

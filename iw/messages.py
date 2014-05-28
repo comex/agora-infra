@@ -19,10 +19,20 @@ email.utils._qdecode = qdecode
 def parse_date(date):
     return mktime_tz(parsedate_tz(date))
 
+class HeaderOperator:
+    def __init__(self, mdb, hdr, dbcol):
+        self.mdb, self.hdr, self.dbcol = mdb, hdr, dbcol
+        self.idx = search.WordIndex('messages_search_' + dbcol, mdb)
+    def search_word(self, *args, **kwargs):
+        return self.idx.search(*args, **kwargs)
+    def search_get_all(self):
+        return list(self.mdb.cursor.execute('SELECT id, %s FROM %s' % (self.dbcol, self.mdb.doc_table)))
+
 class MessagesDB(DocDB):
     path = 'messages.sqlite'
     doc_table = 'messages'
-    doc_keycol = 'id'
+    doc_keycol = 'uniq_message_id'
+    doc_ordercol = 'id'
     doc_textcol = 'text'
     name = 'messages'
     version = 1
@@ -32,10 +42,15 @@ class MessagesDB(DocDB):
 
     def __init__(self):
         DB.__init__(self)
+        self.search_operators['message-id'] = HeaderOperator(self, 'Message-ID', 'message_id')
+        self.search_operators['from']       = HeaderOperator(self, 'From',       'from_')
+        self.search_operators['to']         = HeaderOperator(self, 'To',         'to_')
+        self.search_operators['subject']    = HeaderOperator(self, 'Subject',    'subject')
         if self.new:
             self.cursor.execute('''
                 CREATE TABLE messages(
-                    uniq_message_id blob primary key,
+                    id integer primary key,
+                    uniq_message_id blob,
                     start integer,
                     end integer,
                     subject blob,
@@ -92,6 +107,9 @@ class MessagesDB(DocDB):
         rowid = self.conn.last_insert_rowid()
         if config.use_search:
             self.idx.insert(rowid, text)
+            for ho in self.search_operators.values():
+                if ho is self: continue
+                ho.idx.insert(rowid, info[ho.hdr])
 
     def last_end(self, list_id):
         res = self.cursor.execute('SELECT end FROM messages WHERE list_id = ? ORDER BY rowid DESC limit 1', (list_id,))
@@ -102,6 +120,7 @@ class MessagesDB(DocDB):
 
     def finalize(self):
         self.cursor.execute('''
+            CREATE INDEX mumi ON message(uniq_message_id);
             CREATE INDEX mt ON messages(to);
             CREATE INDEX mrd ON messages(real_date);
             CREATE INDEX mli ON messages(list_id);
