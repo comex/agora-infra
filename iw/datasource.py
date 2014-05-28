@@ -167,6 +167,7 @@ class DB(BaseDB):
             if not create:
                 raise Exception('bad version')
             else:
+                self.conn.close(force=True)
                 os.remove(self.full_path())
                 return self.__init__(**kwargs)
 
