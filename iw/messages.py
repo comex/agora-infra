@@ -61,7 +61,7 @@ class MessagesDB(DocDB):
                     real_date integer,
                     list_id integer
                 );
-                CREATE UNIQUE INDEX mmi ON messages(message_id);
+                CREATE UNIQUE INDEX mumi ON messages(uniq_message_id);
             ''')
         if config.use_search:
             self.idx = search.CombinedIndex('messages_search', self)
@@ -73,8 +73,6 @@ class MessagesDB(DocDB):
         self.dates = set(date for date, in self.cursor.execute('SELECT real_date FROM messages'))
 
     def insert(self, info):
-        def fd(hdr):
-            return stuff.faildecode(info.get(hdr, ''))
         self.dates.add(id)
         text = 'From: %s\nTo: %s\nSubject: %s\nReal-Date: %s\nMessage-ID: %s\n\n%s' % (
             info['From'],
@@ -121,7 +119,7 @@ class MessagesDB(DocDB):
 
     def finalize(self):
         self.cursor.execute('''
-            CREATE INDEX IF NOT EXISTS mumi ON messages(uniq_message_id);
+            CREATE INDEX IF NOT EXISTS mmi ON messages(message_id);
             CREATE INDEX IF NOT EXISTS mf ON messages(from_);
             CREATE INDEX IF NOT EXISTS mt ON messages(to_);
             CREATE INDEX IF NOT EXISTS ms ON messages(subject);
@@ -184,6 +182,9 @@ class MessagesDatasource(Datasource):
                         break
                 else:
                     info['text'] = stuff.faildecode(em.get_payload(decode=True))
+                # It seems that a significant amount of overhead is apsw
+                # encoding the data back to UTF-8.  But since I'm not sure
+                # whether it's valid, I'm not sure it's worth fixing.
                 db.insert(info)
         db.commit()
         db.finalize()
