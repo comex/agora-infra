@@ -45,7 +45,7 @@ def autolink(text, kind=''):
     def mess(m):
         mid = m.group(2) or m.group(3)
         return (m.group(1) or '') + link_to('message/?search=message-id:%s' % mid, mid)
-    text = re.sub('(Message-ID: )(&lt;.*?&gt;)|(&lt;[^@]{25,}@.*?&gt;)', mess, text)
+    text = re.sub('(Message-ID: )(&lt;[^&]*&gt;)|(&lt;[^&@]{25,}@[^&]*&gt;)', mess, text)
     return text
 
 def plaintext(text):
