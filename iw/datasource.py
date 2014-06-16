@@ -256,6 +256,7 @@ class DocDB(DB):
     def add_cli_options(self, parser, argsf):
         if config.use_search and hasattr(self, 'idx'):
             parser.add_argument('--reindex-' + self.name, action=pystuff.action(lambda: self.reindex(not argsf().quiet)))
+        DB.add_cli_options(self, parser, argsf)
 
 def all_dbs():
     from cfjs import CFJDB
