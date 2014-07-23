@@ -53,7 +53,7 @@ def colify(line, colstarts):
 def twrap(message, width=72, indent=0, subsequent_indent=None):
     indent = ' ' * indent
     subsequent_indent = indent if subsequent_indent is None else ' ' * subsequent_indent
-    return '\n'.join(textwrap.fill(line, width=width, initial_indent=indent, subsequent_indent=indent, break_on_hyphens=False) for line in message.split('\n'))
+    return '\n'.join(textwrap.fill(line, width=width, initial_indent=indent, subsequent_indent=subsequent_indent, break_on_hyphens=False) for line in message.split('\n'))
 
 def faildecode(text):
     if isinstance(text, unicode): return text
@@ -62,3 +62,46 @@ def faildecode(text):
     except:
         return text.decode('ISO-8859-2')
 
+class RowTable:
+    def __init__(self):
+        self.lines = []
+        self.col_info = {}
+
+    def row(self, line=[]):
+        if not isinstance(line, list):
+            line = [line]
+        self.lines.append(line)
+        return line
+
+    def print_block(self, out):
+        for o in out:
+            print o.rstrip()
+        out[:] = [''] * len(self.lines)
+
+    def print_col(self, col, llen, out, spacing_after, rjust):
+        cells = [line[col] if col < len(line) else '' for line in self.lines]
+        clen = max(map(len, cells))
+        if llen + clen > 80:
+            self.print_block(out)
+            print
+            llen = self.print_col(0, 0, out)
+        for j, val in enumerate(cells):
+            out[j] += (val.rjust if rjust else val.ljust)(clen) + ' ' * spacing_after
+        llen += clen + spacing_after
+        return llen
+
+    def print_all(self):
+        out = [''] * len(self.lines)
+        line0 = self.lines[0]
+        llen = 0
+        for col in xrange(max(map(len, self.lines))):
+            spacing_after = 3 if col == 0 else 2
+            rjust = False
+            if col < len(line0):
+                control = line0[col]
+                if control.startswith('>'):
+                    rjust = True
+                    control = control[1:]
+                line0[col] = control
+            llen = self.print_col(col, llen, out, spacing_after, rjust)
+        self.print_block(out)
