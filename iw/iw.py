@@ -139,7 +139,7 @@ class cfj_main:
         query = parse_query()
         if query.has_key('search'):
             if len(query.get('search', ())) >= 1:
-                result = do_search(query['search'][0], cfjs.CFJDB.instance(), 'cfj',
+                result = do_search(query['search'][0], cfjs.CFJDB.instance(), 'cfj', False,
                     lambda row: row['title'])
                 if result is not None:
                     return result
