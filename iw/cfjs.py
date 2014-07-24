@@ -559,6 +559,7 @@ class GitCFJDatasource(GitDatasource):
             else:
                 raise Exception('unknown event type %r' % ty)
             date = event['date']
+            assert isinstance(date, datetime.datetime)
             date = date.strftime('%d %b %Y %H:%M:%S')
             print >> f, ('%-52s%s' % (desc + ':', stuff.twrap(date, subsequent_indent=40)))
 
@@ -566,11 +567,13 @@ class GitCFJDatasource(GitDatasource):
         print >> f, eql
 
         for ex in root['exhibits']:
+            who = ex['who']
             mid = ex['mid']
             text = ex['text']
 
             print >> f
-            print >> f, 'Exhibit by TODO: %s' % (mid)
+            print >> f, mid
+            print >> f, 'Exhibit by %s:' % (who,)
             print >> f
             print >> f, text
             print >> f
