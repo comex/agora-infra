@@ -61,7 +61,7 @@ def faildecode(text):
     try:
         return text.decode('utf-8')
     except:
-        return text.decode('ISO-8859-2')
+        return text.decode('iso-8859-1')
 
 class RowTable:
     def __init__(self):
@@ -117,4 +117,4 @@ def maildecode(em):
     try:
         return unicode(pl, charset, 'replace')
     except LookupError:
-        return unicode(pl, 'iso-8859-2')
+        return unicode(pl, 'iso-8859-1')
