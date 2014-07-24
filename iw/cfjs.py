@@ -556,6 +556,8 @@ class GitCFJDatasource(GitDatasource):
                 desc = 'Judged %s' % (event['judgement'],)
             elif ty == 'appealed':
                 desc = 'Appealed by %s' % (event['who'],)
+            else:
+                raise Exception('unknown event type %r' % ty)
             date = event['date']
             date = date.strftime('%d %b %Y %H:%M:%S')
             print >> f, ('%-52s%s' % (desc + ':', stuff.twrap(date, subsequent_indent=40)))

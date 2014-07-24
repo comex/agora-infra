@@ -1,4 +1,4 @@
-import re, textwrap
+import re, textwrap, chardet
 
 def andify(strs):
     strs = tuple(strs)
@@ -56,7 +56,8 @@ def twrap(message, width=72, indent=0, subsequent_indent=None):
     return '\n'.join(textwrap.fill(line, width=width, initial_indent=indent, subsequent_indent=subsequent_indent, break_on_hyphens=False) for line in message.split('\n'))
 
 def faildecode(text):
-    if isinstance(text, unicode): return text
+    if isinstance(text, unicode):
+        return text
     try:
         return text.decode('utf-8')
     except:
@@ -105,3 +106,15 @@ class RowTable:
                 line0[col] = control
             llen = self.print_col(col, llen, out, spacing_after, rjust)
         self.print_block(out)
+
+def maildecode(em):
+    pl = em.get_payload(decode=True)
+    assert not isinstance(pl, unicode)
+    if em.get_content_charset() is None:
+        charset = chardet.detect(pl)['encoding']
+    else:
+        charset = em.get_content_charset()
+    try:
+        return unicode(pl, charset, 'replace')
+    except LookupError:
+        return unicode(pl, 'iso-8859-2')

@@ -182,10 +182,11 @@ class MessagesDatasource(Datasource):
                     info[a] = stuff.faildecode(em[a] or '')
                 for part in em.walk():
                     if part.get_content_type() == 'text/plain':
-                        info['text'] = stuff.faildecode(part.get_payload(decode=True))
+                        info['text'] = stuff.maildecode(part)
+                        stuff.faildecode(part.get_payload(decode=True))
                         break
                 else:
-                    info['text'] = stuff.faildecode(em.get_payload(decode=True))
+                    info['text'] = stuff.maildecode(em)
                 # It seems that a significant amount of overhead is apsw
                 # encoding the data back to UTF-8.  But since I'm not sure
                 # whether it's valid, I'm not sure it's worth fixing.
