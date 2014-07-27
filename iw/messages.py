@@ -149,7 +149,6 @@ class MessagesDatasource(Datasource):
                 return (None, local) if os.path.exists(local) else (url, fn)
             self.urls = map(check_local, self.urls)
         Datasource.__init__(self)
-        self.mmaps = [fnmmap(path) for (url, path) in self.urls]
 
     def download(self, *args, **kwargs):
         kwargs['use_cont'] = True
@@ -161,11 +160,11 @@ class MessagesDatasource(Datasource):
         for list_id, (url, path) in enumerate(self.urls):
             if verbose:
                 print >> sys.stderr, path
-            mm = self.mmaps[list_id]
+            mm = fnmmap(path)
             start = db.last_end(list_id)
             starts = [start + m.start() + 2 for m in re.finditer('\n\nFrom .*@', buffer(mm, start))]
-            print >> sys.stderr, 'regex done'
             cnt = len(starts)
+            print >> sys.stderr, 'got %s messages after %s' % (cnt, start)
             starts.append(len(mm))
             for i in xrange(cnt):
                 if verbose and i % 1000 == 0:
@@ -191,5 +190,6 @@ class MessagesDatasource(Datasource):
                 # encoding the data back to UTF-8.  But since I'm not sure
                 # whether it's valid, I'm not sure it's worth fixing.
                 db.insert(info)
+            mm.close()
         db.commit()
         db.finalize()
