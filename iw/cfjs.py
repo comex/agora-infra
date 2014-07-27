@@ -556,6 +556,14 @@ class GitCFJDatasource(GitDatasource):
                 desc = 'Judged %s' % (event['judgement'],)
             elif ty == 'appealed':
                 desc = 'Appealed by %s' % (event['who'],)
+            elif ty == 'reconsider?':
+                desc = 'Reconsideration requested by %s' % (event['who'],)
+            elif ty == 'reconsider!':
+                desc = 'Reconsideration initiated by %s' % (event['who'],)
+            elif ty == 'moot?':
+                desc = 'Moot intent by %s' % (event['who'],)
+            elif ty == 'moot!':
+                desc = 'Mooted by %s' % (event['who'],)
             else:
                 raise Exception('unknown event type %r' % ty)
             date = event['date']

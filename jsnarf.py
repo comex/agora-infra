@@ -1,6 +1,16 @@
 import sys, subprocess, re, email.utils, datetime, stuff, yaml
 kind, who, excerpt = sys.argv[1:]
-assert kind in ('called', 'assigned', 'recused', 'judged', 'argued')
+assert kind in (
+    'called',
+    'assigned',
+    'recused',
+    'judged',
+    'argued',
+    'reconsider?',
+    'reconsider!',
+    'moot?',
+    'moot!',
+)
 results = subprocess.check_output(['python', 'iw/iwc.py', '--search-messages', '"%s"' % excerpt]).rstrip().split('\n--\n')
 ids = []
 for result in results:
