@@ -51,17 +51,28 @@ for line, num in re.findall('^(([0-9]{4}) .*?)\s*$', stuff[1], re.M):
     prop = pbn[int(num)]
     prop['line'] = line
 
-m = re.search('Quorum is ([0-9]+)', stuff[1][:stuff[1].find('}{}{')])
+delimiter = '////' # '}{}{'
+
+m = re.search('Quorum is ([0-9]+)', stuff[1][:stuff[1].find(delimiter)])
 if m:
     quorum = int(m.group(1))
 
-#for text, num, ai, pf, authors in re.findall('\n(}{}{}[^\n]*\n\nProposal ([0-9]+) \(AI=([^,]*), PF=Y([^,]*)[^\)]*\) by ([^\n]*).*?)(?=\n(?:\n*$|}{}{}))', stuff[1], re.S):
-for text, num, title, authors, ai in re.findall('\n(}{}{}[^\n]*\n\nID: ([0-9]+)\nTitle: ([^\n]*)\nAuthor: ([^\n]*)\nAdoption Index: ([^\n]*)\n\n.*?)(?=\n(?:\n*$|}{}{}))', stuff[1], re.S):
+#for text, num, ai, authors in re.findall('\n(}{}{}[^\n]*\n\nProposal ([0-9]+) \(AI=([^\)]*)\) by ([^\n]*).*?)(?=\n(?:\n*$|}{}{}))', stuff[1], re.S):
+for text, num, title, ai, authors, coa in re.findall('''
+(''' + delimiter + '''[^\n]*
+
+ID: ([0-9]+)
+Title: ([^\n]*)
+Adoption index: ([^\n]*)
+Author: ([^\n]*)(?:
+Co-author: ([^\n]*))?
+
+.*?)(?=\n(?:\n*$|''' + delimiter + '))', stuff[1], re.S):
     prop = pbn[int(num)]
     prop['ai'] = float(ai)
     #prop['pf'] = int(pf)
     prop['text'] = text
-    prop['authors'] = authors.split(', ')
+    prop['authors'] = authors.split(', ') + (coa.split(', ') if coa else [])
 
 props.sort(key=lambda prop: prop['num'])
 players = sorted(players, key=lambda p: p.lower())
@@ -88,7 +99,7 @@ for prop in props:
         lucrative_vote = 'A'
         for author in prop['authors']:
             # *** does not take into account previous weekly gains
-            points_proposals[author] = min(15, points_voting[author] + int(prop['ai']))
+            points_proposals[author] = min(15, points_proposals[author] + int(prop['ai']))
     else:
         prop['result'] = 'x'
         lucrative_vote = 'F'
@@ -100,7 +111,7 @@ for prop in props:
         points_purses[player] += prop['purse_per']
     # *** ditto
     for voter in prop['votes'].keys():
-        points_voting[voter] += 5
+        points_voting[voter] = 5
 
     prop['summary'] = {}
     for player, votes in prop['votes'].items():
@@ -182,7 +193,7 @@ if points_purses:
     print 'Purse Splits'
     for prop in props:
         if prop['purse_per'] is None:
-            print '%-7s    -' % prop['num']
+            print '%-7s     -' % prop['num']
         else:
             print twrap('%-7s(%2d) %s' % (prop['num'], prop['purse_per'], ', '.join(prop['lucky'])), subsequent_indent=12)
 

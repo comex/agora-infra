@@ -33,7 +33,7 @@ for line in sys.stdin:
             votes[pn] = line[0]
         if line not in ('AGAINST', 'FOR', 'PRESENT') and not re.match('[0-9]{4}\s+[0-9]', line):
             more.append('** %s %s %s' % (pn, who, line))
-    m = re.match('(> )?(Proposal )?([0-9]{4})', line)
+    m = re.match('(> )?(Proposal |ID: )?([0-9]{4})', line)
     if m:
         pn = m.group(3)
         votes.setdefault(pn, '?')
