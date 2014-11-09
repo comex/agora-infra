@@ -85,7 +85,7 @@ class RowTable:
         if llen + clen > 80:
             self.print_block(out)
             print
-            llen = self.print_col(0, 0, out)
+            llen = self.print_col(0, 0, out, spacing_after, rjust)
         for j, val in enumerate(cells):
             out[j] += (val.rjust if rjust else val.ljust)(clen) + ' ' * spacing_after
         llen += clen + spacing_after

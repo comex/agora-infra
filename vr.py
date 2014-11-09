@@ -51,12 +51,14 @@ for line, num in re.findall('^(([0-9]{4}) .*?)\s*$', stuff[1], re.M):
     prop = pbn[int(num)]
     prop['line'] = line
 
-delimiter = '////' # '}{}{'
+delimiter = '////'
+#delimiter = '}{}{'
 
 m = re.search('Quorum is ([0-9]+)', stuff[1][:stuff[1].find(delimiter)])
 if m:
     quorum = int(m.group(1))
 
+coa = None
 #for text, num, ai, authors in re.findall('\n(}{}{}[^\n]*\n\nProposal ([0-9]+) \(AI=([^\)]*)\) by ([^\n]*).*?)(?=\n(?:\n*$|}{}{}))', stuff[1], re.S):
 for text, num, title, ai, authors, coa in re.findall('''
 (''' + delimiter + '''[^\n]*
@@ -65,7 +67,7 @@ ID: ([0-9]+)
 Title: ([^\n]*)
 Adoption index: ([^\n]*)
 Author: ([^\n]*)(?:
-Co-author: ([^\n]*))?
+Co-author(?:\(s\))?: ?([^\n]*))?
 
 .*?)(?=\n(?:\n*$|''' + delimiter + '))', stuff[1], re.S):
     prop = pbn[int(num)]
