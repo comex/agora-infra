@@ -79,10 +79,6 @@ Co-author(?:\(s\))?: ?([^\n]*))?
 props.sort(key=lambda prop: prop['num'])
 players = sorted(players, key=lambda p: p.lower())
 
-points_proposals = Counter()
-points_voting = Counter()
-points_purses = Counter()
-
 for prop in props:
     prop['f'] = prop['a'] = prop['n'] = 0
     for votes in prop['votes'].values():
@@ -99,21 +95,11 @@ for prop in props:
     elif prop['vi'] is None or (prop['vi'] > 1 and prop['vi'] >= prop['ai']):
         prop['result'] = '*'
         lucrative_vote = 'A'
-        for author in prop['authors']:
-            # *** does not take into account previous weekly gains
-            points_proposals[author] = min(15, points_proposals[author] + int(prop['ai']))
     else:
         prop['result'] = 'x'
         lucrative_vote = 'F'
 
     prop['lucky'] = lucky = [player for (player, votes) in prop['votes'].items() if votes == [lucrative_vote] * len(votes)]
-    prop['purse'] = quorum * 10 + 10
-    prop['purse_per'] = None if not lucky else max(prop['purse'] / len(lucky), 1)
-    for player in lucky:
-        points_purses[player] += prop['purse_per']
-    # *** ditto
-    for voter in prop['votes'].keys():
-        points_voting[voter] = 5
 
     prop['summary'] = {}
     for player, votes in prop['votes'].items():
@@ -160,7 +146,6 @@ lines['fa'] = t.row('F/A')
 t.row()
 lines['q'] = t.row('Quorum')
 lines['n'] = t.row('Voters')
-lines['p'] = t.row('Purse')
 
 for prop in props:
     lines['s'].append(str(prop['num']))
@@ -179,7 +164,6 @@ for prop in props:
     lines['fa'].append('%s/%s' % (prop['f'], prop['a']))
     lines['q'].append(str(prop['q']))
     lines['n'].append(str(prop['n']))
-    lines['p'].append(str(prop['purse']))
 
 t.print_all()
 
@@ -190,28 +174,7 @@ if notes:
     print
     for note in notes: print note
 
-if points_purses:
-    print
-    print 'Purse Splits'
-    for prop in props:
-        if prop['purse_per'] is None:
-            print '%-7s     -' % prop['num']
-        else:
-            print twrap('%-7s(%2d) %s' % (prop['num'], prop['purse_per'], ', '.join(prop['lucky'])), subsequent_indent=12)
-
 print
-
-t = RowTable()
-t.row(['Points Awarded', '>Proposals', '>Voting', '>Purses', '>Total'])
-for player in set(points_proposals.keys() + points_voting.keys() + points_purses.keys()):
-    t.row([player,
-        str(points_proposals[player] or ''),
-        str(points_voting[player] or ''),
-        str(points_purses[player] or ''),
-        str(points_proposals[player] + points_voting[player] + points_purses[player] or ''),
-    ])
-t.print_all()
-
 
 #print 'Yak awards:'
 #print_awards(yaks, True)
