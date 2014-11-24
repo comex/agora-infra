@@ -61,7 +61,7 @@ if m:
 coa = None
 #for text, num, ai, authors in re.findall('\n(}{}{}[^\n]*\n\nProposal ([0-9]+) \(AI=([^\)]*)\) by ([^\n]*).*?)(?=\n(?:\n*$|}{}{}))', stuff[1], re.S):
 for text, num, title, ai, authors, coa in re.findall('''
-(''' + delimiter + '''[^\n]*
+(DELIM[^\n]*
 
 ID: ([0-9]+)
 Title: ([^\n]*)
@@ -69,12 +69,19 @@ Adoption index: ([^\n]*)
 Author: ([^\n]*)(?:
 Co-author(?:\(s\))?: ?([^\n]*))?
 
-.*?)(?=\n(?:\n*$|''' + delimiter + '))', stuff[1], re.S):
+.*?)(?=\n(?:\n*$|DELIM))'''.replace('DELIM', delimiter), stuff[1], re.S):
     prop = pbn[int(num)]
     prop['ai'] = float(ai)
     #prop['pf'] = int(pf)
     prop['text'] = text
     prop['authors'] = authors.split(', ') + (coa.split(', ') if coa else [])
+
+for prop in props:
+    bad = False
+    if not prop.has_key('ai'):
+        print >> sys.stderr, 'Missing prop:', prop['num']
+        bad = True
+    if bad: sys.exit(1)
 
 props.sort(key=lambda prop: prop['num'])
 players = sorted(players, key=lambda p: p.lower())
@@ -173,8 +180,6 @@ print 'Ending Quorum: %s' % quorum
 if notes:
     print
     for note in notes: print note
-
-print
 
 #print 'Yak awards:'
 #print_awards(yaks, True)

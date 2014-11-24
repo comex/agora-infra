@@ -26,8 +26,15 @@ use IO::Handle;
 getline eq "THE FULL LOGICAL RULESET\n" or die;
 print "THE SHORT LOGICAL RULESET\n";
 until(peekline =~ /\A---/) {
-	my $d;
-	print ($d = getline);
+	my $d = getline;
+	if($d =~ /^Highest/) {
+		getline eq "\n" or die;
+		next;
+	}
+	if($d =~ /^Last proposal with recorded/) {
+		next;
+	}
+	print $d;
 }
 getline until peekline =~ /\A===/;
 
