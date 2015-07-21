@@ -154,15 +154,6 @@ class index:
     def GET(self):
         return "Hello, world!"
 
-urls = [
-    '/message/?', 'messages_main',
-    '/message/(.*?)(\.txt)?', 'messages_uid',
-    '/cfj/([0-9]+[a-z]?)(\.txt)?', 'cfj_num',
-    '/cfj/?', 'cfj_main',
-    '/', 'index',
-]
-
-
 lock = threading.Lock()
 def lock_it(handler):
     with lock:
@@ -170,7 +161,20 @@ def lock_it(handler):
 
 if __name__ == "__main__":
     web.config.debug = True
-    app = web.application(urls, globals())
+    cfj_app = web.application([
+        '/([0-9]+[a-z]?)(\.txt)?', 'cfj_num',
+        '/?', 'cfj_main',
+    ], globals())
+    iw_app = web.application([
+        '/message/?', 'messages_main',
+        '/message/(.*?)(\.txt)?', 'messages_uid',
+        '/cfj', cfj_app,
+        '/', 'index',
+    ], globals())
+    app = web.subdomain_application([
+        'cfj.qoid.us', cfj_app,
+        '.*', iw_app,
+    ])
     app.add_processor(lock_it)
     app.run()
 
