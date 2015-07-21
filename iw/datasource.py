@@ -27,13 +27,18 @@ class Datasource(Singleton):
                 print >> sys.stderr, 'Downloading %s...' % url
             try:
                 text = subprocess.check_output(
-                    ['curl', '--compressed', '-L', '-k', url] +
+                    ['curl', '--compressed', '-i', '-L', '-k', url] +
                     (['-s'] if not verbose else []) +
                     (['-C', str(cont)] if cont is not None else []))
             except subprocess.CalledProcessError as e:
                 if e.returncode == 33:
                     # curl thinks byte ranges aren't supported; actually there is nothing new
                     continue
+            if text.startswith('HTTP/1.1 416 '):
+                continue
+            if not text.startswith('HTTP/1.1 2'):
+                raise Exception('unknown HTTP response')
+            text = text[text.index('\r\n\r\n')+4:]
             text = self.preprocess_download(text)
             if not use_cont:
                 rcs = filename + ',v'

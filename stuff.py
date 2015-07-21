@@ -1,4 +1,4 @@
-import re, textwrap, chardet
+import re, textwrap, chardet, collections
 
 def andify(strs):
     strs = tuple(strs)
@@ -63,10 +63,85 @@ def faildecode(text):
     except:
         return text.decode('iso-8859-1')
 
+HorizSeparatorCell = collections.namedtuple('HorizSeparatorCell', 'sep items')
+
+def cell_item_info(cell):
+    if isinstance(cell, HorizSeparatorCell):
+        return (cell.items, cell.sep)
+    else:
+        return (cell.split(' '), ' ')
+
+def cell_len(cell):
+    if isinstance(cell, HorizSeparatorCell):
+        return len(cell.sep.join(cell.items))
+    else:
+        return len(cell)
+
+def cell_min_len(cell):
+    items, spacer = cell_item_info(cell)
+    return max(map(len, items))
+
+class ColTable:
+    def __init__(self, weights, width=80):
+        self.weights = weights
+        self.width = width
+        self.lines = []
+
+    def row(self, line=[]):
+        if not isinstance(line, list):
+            line = [line]
+        self.lines.append(line)
+        return line
+
+    def print_line(self, line, widths, spacers):
+        item_info = map(cell_item_info, line)
+        while any(items for (items, sep) in item_info):
+            oline = ''
+            for (items, sep), width, spacer in zip(item_info, widths, spacers):
+                x = ''
+                while items:
+                    new = x + ('' if x == '' else sep) + items[0]
+                    if len(new) > width:
+                        break
+                    x = new
+                    items.pop(0)
+                oline += x + ' ' * (width - len(x)) + spacer
+            print oline.rstrip()
+
+    def print_all(self):
+        ncols = len(self.weights)
+        cur_width = [None] * ncols
+        for line in self.lines:
+            line += [''] * (ncols - len(line))
+        spacers = ['  '] * (ncols - 1) + ['']
+        remaining = self.width - sum(map(len, spacers))
+        full_widths = [min(remaining, max(map(cell_len, (line[c] for line in self.lines)))) for c in xrange(ncols)]
+        min_widths = [min(remaining, max(map(cell_min_len, (line[c] for line in self.lines)))) for c in xrange(ncols)]
+        widths = min_widths[:]
+        ignore = [False] * ncols
+        remaining -= sum(min_widths)
+        total_weight = sum(self.weights)
+        for col, (full, weight) in enumerate(zip(full_widths, self.weights)):
+            r = remaining + widths[col]
+            if full <= r and (full / float(r)) <= total_weight * 1.5:
+                # full fit, i guess
+                remaining -= full - widths[col]
+                widths[col] = full
+                ignore[col] = True
+        remaining_weights = sum(weight for (col, weight) in enumerate(self.weights) if not ignore[col])
+        # split the difference
+        for col, weight in enumerate(self.weights):
+            if not ignore[col]:
+                diff = int(remaining * weight / float(remaining_weights))
+                widths[col] += diff
+                remaining -= diff
+
+        for line in self.lines:
+            self.print_line(line, widths, spacers)
+
 class RowTable:
     def __init__(self):
         self.lines = []
-        self.col_info = {}
 
     def row(self, line=[]):
         if not isinstance(line, list):

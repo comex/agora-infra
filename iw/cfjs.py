@@ -567,8 +567,9 @@ class GitCFJDatasource(GitDatasource):
             else:
                 raise Exception('unknown event type %r' % ty)
             date = event['date']
-            assert isinstance(date, datetime.datetime)
-            date = date.strftime('%d %b %Y %H:%M:%S')
+            if not isinstance(date, basestring):
+                assert isinstance(date, datetime.datetime)
+                date = date.strftime('%d %b %Y %H:%M:%S')
             print >> f, ('%-52s%s' % (desc + ':', stuff.twrap(date, subsequent_indent=40)))
 
         print >> f
