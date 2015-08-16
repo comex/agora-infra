@@ -129,7 +129,14 @@ class messages_main:
                 if result is not None:
                     return result
             return render.searchhelp('message')
-        return plaintext('todo')
+
+        results = []
+        for mid, subject, text in db.recent_stuff():
+            z = max(text.find('\n\n'), 0)
+            lines = text[z:].split('\n')
+            text = '\n'.join(lines[:5]).strip()
+            results.append((subject, fix_link('message/' + mid), text))
+        return render.searchresults('', None, results, 'message')
 
 class cfj_num:
     def GET(self, num, extension):

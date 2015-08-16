@@ -134,6 +134,9 @@ class MessagesDB(DocDB):
     def get_orig(self, row):
         return MessagesDatasource.instance().mmaps[row['list_id']][row['start']:row['end']]
 
+    def recent_stuff(self):
+        return list(self.cursor.execute('SELECT uniq_message_id, subject, text FROM messages ORDER BY id DESC limit 100'))
+
     is_super_big = True
 
 class MessagesDatasource(Datasource):
