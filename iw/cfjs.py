@@ -543,6 +543,7 @@ class GitCFJDatasource(GitDatasource):
         print >> f, eql
         print >> f
 
+        judge = None
         for event in root['events']:
             ty = event['type']
             if ty == 'called':
@@ -551,6 +552,8 @@ class GitCFJDatasource(GitDatasource):
                 desc = 'Assigned to %s' % (event['who'],)
                 judge = event['who']
             elif ty == 'recused':
+                if judge is None:
+                    raise Exception("'recused' without previous 'assigned'")
                 desc = '%s recused' % (judge,)
             elif ty == 'judged':
                 desc = 'Judged %s' % (event['judgement'],)
@@ -579,12 +582,13 @@ class GitCFJDatasource(GitDatasource):
             who = ex['who']
             mid = ex['mid']
             text = ex['text']
+            ty = {'judgement': 'Judgement', 'exhibit': 'Exhibit'}[ex.get('type', 'exhibit')]
 
             print >> f
             print >> f, mid
-            print >> f, 'Exhibit by %s:' % (who,)
+            print >> f, '%s by %s:' % (ty, who,)
             print >> f
-            print >> f, text
+            print >> f, stuff.twrap(text, width=78)
             print >> f
             print >> f, eql
 

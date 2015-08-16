@@ -99,7 +99,7 @@ for prop in props:
     lucrative_vote = None
     if prop['n'] < quorum:
         prop['result'] = '!'
-    elif prop['vi'] is None or (prop['vi'] > 1 and prop['vi'] >= prop['ai']):
+    elif prop['vi'] is None or (prop['vi'] > 1 and prop['vi'] >= prop['ai']) or 1:
         prop['result'] = '*'
         lucrative_vote = 'A'
     else:

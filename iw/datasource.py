@@ -152,7 +152,7 @@ class DB(BaseDB):
     def __init__(self, **kwargs):
         BaseDB.__init__(self)
         self.conn = apsw.Connection(self.full_path())
-        self.conn.setbusytimeout(1000)
+        self.conn.setbusytimeout(5000)
         self.cursor = pystuff.CursorWrapper(self.conn.cursor())
         self.new = False
         create = True # xxx

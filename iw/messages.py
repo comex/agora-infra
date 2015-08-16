@@ -161,7 +161,7 @@ class MessagesDatasource(Datasource):
             if verbose:
                 print >> sys.stderr, path
             mm = fnmmap(path)
-            start = db.last_end(list_id)
+            start = min(db.last_end(list_id) - 2, 0)
             starts = [start + m.start() + 2 for m in re.finditer('\n\nFrom .*@', buffer(mm, start))]
             cnt = len(starts)
             print >> sys.stderr, 'got %s messages after %s' % (cnt, start)

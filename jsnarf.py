@@ -57,6 +57,8 @@ if kind in ('called', 'judged', 'argued'):
     print '        mid: %s' % em['Message-ID']
     if kind != 'argued':
         print '        date: %s' % yd
+    if kind == 'judged':
+        print '        type: judgement'
 
     print '        text: |-'
     print '            ' + re.sub(re.compile('\s*$', re.M), '', body.replace('\n', '\n            ').encode('utf-8'))

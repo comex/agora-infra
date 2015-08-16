@@ -2,7 +2,7 @@
 import cfjs, messages, pystuff, search
 import web
 pystuff.fix_web()
-import os, threading, re, __builtin__, urlparse
+import os, threading, re, __builtin__, urlparse, urllib2
 
 t_globals = {}
 t_globals.update(__builtin__.__dict__)
@@ -44,7 +44,8 @@ def autolink(text, kind=''):
             lambda m: m.group(1) + link_to('cfj/%s' % m.group(2), m.group(2)), text)
     def mess(m):
         mid = m.group(2) or m.group(3)
-        return (m.group(1) or '') + link_to('message/?search=message-id:%s' % mid, mid)
+        unmid = mid.replace('&lt;', '<').replace('&gt;', '>') # xxx
+        return (m.group(1) or '') + link_to('message/?search=message-id:%s' % urllib2.quote(unmid), mid)
     text = re.sub('(Message-ID: )(&lt;[^&]*&gt;)|(&lt;([^&@]{25,}|[0-9A-F]{5,}[^&@]*)@[^&]*&gt;)', mess, text)
     return text
 
