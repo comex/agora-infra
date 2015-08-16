@@ -45,7 +45,7 @@ class MessagesDB(DocDB):
         return [MessagesDatasource.instance()]
 
     def __init__(self):
-        DB.__init__(self)
+        super(MessagesDB, self).__init__()
         self.search_operators['message-id'] = HeaderOperator(self, 'Message-ID', 'message_id', exact=True)
         self.search_operators['from']       = HeaderOperator(self, 'From',       'from_')
         self.search_operators['to']         = HeaderOperator(self, 'To',         'to_')
@@ -148,11 +148,11 @@ class MessagesDatasource(Datasource):
                 local = os.path.join(config.local_dir, os.path.basename(fn))
                 return (None, local) if os.path.exists(local) else (url, fn)
             self.urls = map(check_local, self.urls)
-        Datasource.__init__(self)
+        super(MessagesDatasource, self).__init__()
 
     def download(self, *args, **kwargs):
         kwargs['use_cont'] = True
-        return Datasource.download(self, *args, **kwargs)
+        return super(MessagesDatasource, self).download(*args, **kwargs)
 
     def cache(self, verbose=False):
         db = MessagesDB.instance()

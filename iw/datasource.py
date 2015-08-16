@@ -150,7 +150,7 @@ class BaseDB(Singleton):
 
 class DB(BaseDB):
     def __init__(self, **kwargs):
-        BaseDB.__init__(self)
+        super(DB, self).__init__()
         self.conn = apsw.Connection(self.full_path())
         self.conn.setbusytimeout(5000)
         self.cursor = pystuff.CursorWrapper(self.conn.cursor())
@@ -261,7 +261,7 @@ class DocDB(DB):
     def add_cli_options(self, parser, argsf):
         if config.use_search and hasattr(self, 'idx'):
             parser.add_argument('--reindex-' + self.name, action=pystuff.action(lambda: self.reindex(not argsf().quiet)))
-        DB.add_cli_options(self, parser, argsf)
+        super(DocDB, self).add_cli_options(parser, argsf)
 
 def all_dbs():
     from cfjs import CFJDB

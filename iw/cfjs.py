@@ -354,7 +354,7 @@ class CFJDB(DocDB):
         return [StaticCFJDatasource.instance(), CotCDatasource.instance(), GitCFJDatasource.instance()]
 
     def __init__(self):
-        DB.__init__(self)
+        super(CFJDB, self).__init__()
 
         if self.new:
             self.cursor.execute('''
@@ -423,7 +423,7 @@ class CFJDB(DocDB):
 
     def add_cli_options(self, parser, argsf):
         parser.add_argument('--cfj-rematch', action=pystuff.action(lambda: self.rematch(True)))
-        DocDB.add_cli_options(self, parser, argsf)
+        super(CFJDB, self).add_cli_options(parser, argsf)
 
 
 class CotCDatasource(Datasource):
@@ -432,7 +432,7 @@ class CotCDatasource(Datasource):
     #urls = [('http://cotc.psychose.ca/db_dump.tar.gz', 'dump.txt')]
 
     def __init__(self):
-        Datasource.__init__(self)
+        super(CotCDatasource, self).__init__()
         self.db_dump = os.path.join(mydir, 'static_data', 'db_dump.tar.gz')
 
     def preprocess_download(self, text):

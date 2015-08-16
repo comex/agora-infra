@@ -8,7 +8,7 @@ def action(callback, nargs=0):
     class MyAction(argparse.Action):
         def __init__(self, **kwargs):
             kwargs['nargs'] = nargs
-            argparse.Action.__init__(self, **kwargs)
+            super(MyAction, self).__init__(**kwargs)
         def __call__(self, parser, namespace, values, option_string=None):
             namespace.__dict__.setdefault('actions', []).append((callback, values))
     return MyAction

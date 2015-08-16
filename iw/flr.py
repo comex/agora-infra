@@ -71,7 +71,7 @@ class FLRDatasource(Datasource):
             print result['text']
 
     def add_cli_options(self, parser, argsf):
-        Datasource.add_cli_options(self, parser, argsf)
+        super(FLRDatasource, self).add_cli_options(parser, argsf)
         parser.add_argument('--flr-date', action=pystuff.action(lambda date: self.cli_show_date(date), nargs=1), help='show FLR by date')
 
 if __name__ == '__main__':
