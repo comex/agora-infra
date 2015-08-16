@@ -121,14 +121,14 @@ class messages_main:
         query = parse_query()
         db = messages.MessagesDB.instance()
         if query.has_key('search'):
-            if len(query.get('search', ())) >= 1:
+            if len(query.get('search', '')) >= 1:
                 expr = query['search'][0]
                 redirect_if_one = bool(re.match('^message-id:[^"/\s()]+$', expr))
                 result = do_search(expr, db, 'message', redirect_if_one,
                     lambda row: row['subject'])
                 if result is not None:
                     return result
-            return render.searchhelp()
+            return render.searchhelp('message')
         return plaintext('todo')
 
 class cfj_num:
@@ -150,12 +150,12 @@ class cfj_main:
     def GET(self):
         query = parse_query()
         if query.has_key('search'):
-            if len(query.get('search', ())) >= 1:
+            if len(query.get('search', '')) >= 1:
                 result = do_search(query['search'][0], cfjs.CFJDB.instance(), 'cfj', False,
                     lambda row: row['title'])
                 if result is not None:
                     return result
-            return render.searchhelp()
+            return render.searchhelp('cfj')
         # just list all CFJs
         summaries = cfjs.CFJDB.instance().summaries()
         return render.cfjs(
@@ -164,7 +164,7 @@ class cfj_main:
 
 class index:
     def GET(self):
-        return "Hello, world!"
+        return render.main()
 
 lock = threading.Lock()
 def lock_it(handler):
