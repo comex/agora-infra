@@ -85,7 +85,7 @@ def do_search(expr, db, base, redirect_if_one, get_title):
             row = db.get_by_id(id)
             results.append((
                 get_title(row),
-                fix_link('%s/%s' % (base, row[db.doc_keycol])),
+                fix_link('%s/%s' % (base, urllib2.quote(row[db.doc_keycol]))),
                 search.highlight_snippets(row[db.doc_textcol], ctxs).html()
             ))
         if len(results) == 1 and redirect_if_one:
@@ -103,6 +103,7 @@ def parse_query():
 
 class messages_uid:
     def GET(self, uid, extension):
+        uid = urllib2.unquote(uid)
         db = messages.MessagesDB.instance()
         row = db.get(uid)
         if row is None:

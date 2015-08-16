@@ -1,5 +1,6 @@
 import os, re, sre_parse, sys, functools, threading
 import email
+import email.header
 from email.utils import parsedate_tz, mktime_tz, formatdate
 from datasource import Datasource, DB, DocDB
 from pystuff import mydir, fnmmap, config, lru_cache
@@ -132,7 +133,10 @@ class MessagesDB(DocDB):
         ''')
 
     def get_orig(self, row):
-        return MessagesDatasource.instance().mmaps[row['list_id']][row['start']:row['end']]
+        md = MessagesDatasource.instance()
+        with open(md.urls[row['list_id']][1], 'rb') as fp:
+            fp.seek(row['start'])
+            return fp.read(row['end']-row['start'])
 
     def recent_stuff(self):
         return list(self.cursor.execute('SELECT uniq_message_id, subject, text FROM messages ORDER BY id DESC limit 100'))
@@ -166,7 +170,7 @@ class MessagesDatasource(Datasource):
             if verbose:
                 print >> sys.stderr, path
             mm = fnmmap(path)
-            start = min(db.last_end(list_id) - 2, 0)
+            start = max(db.last_end(list_id) - 2, 0)
             starts = [start + m.start() + 2 for m in re.finditer('\n\nFrom .*@', buffer(mm, start))]
             cnt = len(starts)
             print >> sys.stderr, 'got %s messages after %s' % (cnt, start)
@@ -183,7 +187,12 @@ class MessagesDatasource(Datasource):
                 info['real_date'] = parse_date(rec[rec.rfind('; ') + 2:])
                 info['list_id'] = list_id
                 for a in ('From', 'To', 'Subject', 'Date', 'Message-ID'):
-                    info[a] = stuff.faildecode(em[a] or '')
+                    hdr = em[a] or ''
+                    try:
+                        hdr = unicode(email.header.make_header(email.header.decode_header(hdr)))
+                    except:
+                        hdr = stuff.faildecode(hdr)
+                    info[a] = hdr
                 for part in em.walk():
                     if part.get_content_type() == 'text/plain':
                         info['text'] = stuff.maildecode(part)
