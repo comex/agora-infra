@@ -115,7 +115,7 @@ class BaseDB(Singleton):
         return search.do_query(expr, self.search_operators, *args, **kwargs)
 
     def cli_search(self, args, expr):
-        ok, r = self.search(expr, limit=args.limit or None)
+        ok, r = self.search(expr, limit=args.limit or None, timeout=args.timeout or None)
         if ok == 'empty':
             print '(empty query)'
         elif ok == 'errors':
@@ -193,6 +193,9 @@ class DB(BaseDB):
     def search_get(self, id):
         return last(self.cursor.execute('SELECT %s FROM %s WHERE id = ?' % (self.doc_textcol, self.doc_table), (id,)))[0]
 
+    def search_get_all(self, asc=True):
+        return self.cursor.execute('SELECT id, %s FROM %s ORDER BY id %s' % (self.doc_textcol, self.doc_table, 'ASC' if asc else 'DESC'))
+
     ThrowException = object()
 
     def meta(self, name, default=ThrowException):
@@ -207,14 +210,17 @@ class DB(BaseDB):
         self.cursor.execute('REPLACE INTO meta VALUES(?, ?)', (name, value))
 
 class DocDB(DB):
-    def keys(self):
-        return [id for id, in self.cursor.execute('SELECT %s FROM %s ORDER BY %s' % (self.doc_keycol, self.doc_table, self.doc_keycol))]
+    def ids_ordered(self):
+        return [id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol)).fetchall()]
 
-    def id_keys(self):
-        return [id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY %s' % (self.doc_table, self.doc_ordercol))]
+    def ids(self):
+        return [id for id, in self.cursor.execute('SELECT id FROM %s ORDER BY id' % (self.doc_table,)).fetchall()]
+
+    def keys(self):
+        return [id for id, in self.cursor.execute('SELECT %s FROM %s ORDER BY %s' % (self.doc_keycol, self.doc_table, self.doc_ordercol)).fetchall()]
 
     def items(self):
-        return list(self.cursor.execute('SELECT %s, %s FROM %s' % (self.doc_keycol, self.doc_textcol, self.doc_table)))
+        return list(self.cursor.execute('SELECT %s, %s FROM %s ORDER BY %s' % (self.doc_keycol, self.doc_textcol, self.doc_table, self.doc_ordercol)))
 
     def get(self, key):
         try:

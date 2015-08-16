@@ -23,6 +23,7 @@ parser.add_argument('--log-queries', action='store_true')
 parser.add_argument('--force-unindexed', action='store_true')
 parser.add_argument('--print-trigram-hits', action='store_true')
 parser.add_argument('--limit', action='store', dest='limit', help='limit for searches, or 0', type=int, default=10)
+parser.add_argument('--timeout', action='store', dest='timeout', help='timeout for searches', type=float)
 
 args = parser.parse_args()
 for dbgopt in ('log_queries', 'force_unindexed', 'print_trigram_hits'):

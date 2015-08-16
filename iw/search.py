@@ -1,4 +1,4 @@
-import re, sre_parse, sre_compile, sre_constants, collections, time, operator, itertools
+import re, sre_parse, sre_compile, sre_constants, collections, time, operator, itertools, sys
 from collections import namedtuple
 from pystuff import config, mkdir_if_absent
 import pystuff, stuff
@@ -193,24 +193,37 @@ def pprint(tree, indent=''):
     else:
         print indent + str(tree)
 
+def can_nest_lit_operators(sup, sub):
+    # see parentheses crap
+    return sup == 'and' or sub == 'not'
+
 def optimize_query(tree):
     if tree[0] in ('and', 'or'):
+        if len(tree) == 2:
+            # avoid weird behavior below with 'not'
+            return optimize_query(tree[1])
         kind = tree[0]
         args = []
         lits_by_op = {}
 
         def add_arg(r):
-            if r[0] == 'lit':
+            if r[0] == kind:
+                return map(add_arg, r)
+            elif r[0] == 'lit' and isinstance(r[2], tuple) and r[2][0] == kind:
+                # this has ugly complexity, wrapping recursively than unwrapping
+                return [add_arg(('lit', r[1], n)) for n in r[2][1:]]
+
+            if r[0] == 'lit' and (not isinstance(r[2], tuple) or can_nest_lit_operators(kind, r[2][0])):
                 lits_by_op.setdefault(r[1], []).append(r[2])
+            elif r[0] == 'not' and r[1][0] == 'lit' and not isinstance(r[1][2], 'tuple') and ' ' not in r[1][2]:
+                # ' ' check is cause we can't do -"foo" with dumb-paren sqlite
+                lits_by_op.setdefault(r[1][1], []).append(('not', r[1][2]))
             else:
                 args.append(r)
 
         for subtree in [tree[1], tree[2]]:
             r = optimize_query(subtree)
-            if r[0] == tree[0]:
-                map(add_arg, r[1:])
-            else:
-                add_arg(r)
+            add_arg(r)
         for operator, lits in lits_by_op.iteritems():
             if len(lits) == 1:
                 args.append(('lit', operator, lits[0]))
@@ -228,11 +241,10 @@ def optimize_query(tree):
             sub = sub[1]
         sub = optimize_query(sub)
         if not negative: return sub
-        if sub[0] == 'lit' and ' ' not in sub[2]:
-            # can't do -"foo"
-            return ('lit', sub[1], ('not', sub[2]))
-        else:
-            return tree
+        #if sub[0] == 'lit' and isinstance(sub[2], basestring) and ' ' not in sub[2]:
+        #    # can't do -"foo"
+        #    return ('lit', sub[1], ('not', sub[2]))
+        return ('not', sub)
     else:
         return tree
 
@@ -243,14 +255,14 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
         raise QueryTimeoutException
     if tree[0] == 'or':
         return union_iterables(
-            [run_query(subtree, operators, deadline, limit)
+            [run_query(subtree, operators, deadline, limit, asc)
              for subtree in tree[1:]],
             asc)
     elif tree[0] == 'and':
-        positive = [run_query(subtree, operators, deadline, None)
+        positive = [run_query(subtree, operators, deadline, None, asc)
                     for subtree in tree[1:]
                     if subtree[0] != 'not']
-        negative = [run_query(subtree[1], operators, deadline, None)
+        negative = [run_query(subtree[1], operators, deadline, None, asc)
                     for subtree in tree[1:]
                     if subtree[0] == 'not']
         itr = intersect_iterables(positive, asc)
@@ -266,8 +278,7 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
         op = operators[tree[1]]
         r, trigrams = tree[2], tree[3]
         if trigrams is None or pystuff.force_unindexed: # no index
-            trigram_hits = op.search_get_all()
-            if not asc: trigram_hits = trigram_hits[::-1]
+            trigram_hits = op.search_get_all(asc=asc)
         else:
             trigram_hits = ((result, None) for result, _ in op.search_trigram(trigrams, asc=asc))
         #list(trigram_hits); import sys; sys.exit(0)
@@ -292,6 +303,9 @@ def run_query(tree, operators, deadline, limit=None, asc=False):
                 else:
                     yield (result, [FoundRegex(itertools.chain([m], it))])
         return func()
+    elif tree[0] == 'not':
+        return subtract_iterables(operators[None].ids()[::(-1, 1)[asc]],
+                                  run_query(tree[1], operators, deadline, None, asc))
     else:
         raise Exception('bad tree')
 
@@ -567,24 +581,11 @@ class Index:
     def to_sql(bit):
         if not isinstance(bit, tuple): return bit
         return {'and': ' ', 'or': ' OR '}[bit[0]].join(
-            ('-%s' % s[1]) if isinstance(s, tuple) # ('not', x)
+            ('-%s' % s[1]) if isinstance(s, tuple) and s[0] == 'not'
             else ('"%s"' % s)
             for s in bit[1:])
 
     def search(self, query, limit=None, asc=False):
-        if not (isinstance(query, tuple) and query[0] != 'not'): query = ('and', query)
-
-        # deoptimize
-        tuples = []
-        nontuples = []
-        kind = query[0]
-        for bit in query[1:]:
-            (tuples if isinstance(bit, tuple) and bit[0] != 'not' else nontuples).append(bit)
-        if tuples:
-            if nontuples: tuples.append((kind,) + tuple(nontuples))
-            subresults = [self.search(subquery, limit if kind == 'and' else None, asc) for subquery in tuples]
-            return (intersect_iterables if kind == 'and' else union_iterables)(subresults, asc)
-
         sql = Index.to_sql(query)
         cursor = pystuff.CursorWrapper(self.db.conn.cursor())
         result = cursor.execute(self.search_stmt % ('ASC' if asc else 'DESC'), (sql, 10000000 if limit is None else limit))
@@ -628,7 +629,6 @@ class CombinedIndex:
         self.trigram.clear()
 
 if __name__ == '__main__':
-    import sys
     class fake_db:
         idx = None
     operators = {'foo': None, None: fake_db()}

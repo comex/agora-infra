@@ -29,8 +29,8 @@ class HeaderOperator:
             return [(id, []) for id, in self.mdb.cursor.execute('SELECT id FROM %s WHERE %s = ?' % (self.mdb.doc_table, self.dbcol), (query,))]
         else:
             return self.idx.search(*args, **kwargs)
-    def search_get_all(self):
-        return list(self.mdb.cursor.execute('SELECT id, %s FROM %s' % (self.dbcol, self.mdb.doc_table)))
+    def search_get_all(self, asc=True):
+        return self.mdb.cursor.execute('SELECT id, %s FROM %s ORDER BY id %s' % (self.dbcol, self.mdb.doc_table, 'ASC' if asc else 'DESC'))
 
 class MessagesDB(DocDB):
     path = 'messages.sqlite'
@@ -133,6 +133,8 @@ class MessagesDB(DocDB):
 
     def get_orig(self, row):
         return MessagesDatasource.instance().mmaps[row['list_id']][row['start']:row['end']]
+
+    is_super_big = True
 
 class MessagesDatasource(Datasource):
     name = 'messages'
