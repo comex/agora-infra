@@ -348,12 +348,12 @@ def m_to_range(m):
 class FoundLit:
     def __init__(self, query):
         self.query = query
-    def ranges(self, text):
         bits = [re.escape(q) for q in self.query[1:] if not isinstance(q, tuple)]
+        self.r = r'\b(%s)\b' % '|'.join(bits)
+    def ranges(self, text):
         if not bits:
             return []
-        r = r'\b(%s)\b' % '|'.join(bits)
-        return (m_to_range(m) for m in re.finditer(r, text, re.I))
+        return (m_to_range(m) for m in re.finditer(self.r, text, re.I))
 
 class FoundRegex:
     def __init__(self, it):

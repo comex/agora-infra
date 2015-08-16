@@ -69,7 +69,7 @@ def do_search(expr, db, base, redirect_if_one, get_title):
     opts = {}
     limit = None
     if base == 'message':
-        opts['require_trigrams'] = True
+        #opts['require_trigrams'] = True
         limit = 100
     kind, snd = db.search(expr, limit=limit, opts=opts)
     errors = results = None
