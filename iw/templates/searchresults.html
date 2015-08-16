@@ -1,6 +1,8 @@
-$def with (query, errors, results)
+$def with (query, errors, results, kind)
 $var title: Search Results
 $var page: searchresults
+$var query: $:query
+$var kind: $:kind
 
 $if errors is not None:
     Errors:<br>

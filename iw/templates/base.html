@@ -33,19 +33,13 @@ $def with (page)
 <ul id="topbar">
     <!--<li>Text text text text text text text</li>-->
     <li>
-        $if page.page != 'cfjs':
-            <a href="$fix_link('cfj/')">CFJs</a>
-        $else:
-            CFJs
+        $:render_section_link(page, 'cfj', 'cfj/', 'CFJs')
     </li>
     <li class="space">
-        $if page.page != 'messages':
-            <a href="$fix_link('messages/')">Messages</a>
-        $else:
-            Messages
+        $:render_section_link(page, 'message', 'message/', 'Messages')
     </li>
     <li class="right">
-        <form action="." method="GET"><input type="text" name="search" value="$page.get('search', '')"><input type="submit" value="Search"></form>
+        <form action="." method="GET"><input type="text" name="search" value="$page.get('query', '')"><input type="submit" value="Search"></form>
     </li>
     $:page.get('topbar_stuff', '')
     <div style="clear: both"></div>
